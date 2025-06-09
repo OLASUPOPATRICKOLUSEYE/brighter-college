@@ -2,6 +2,16 @@
 
 export let role = "teacher";
 
+export const frontOfficeData = [
+  
+]
+
+
+
+
+
+
+
 export const teachersData = [
   {
     id: 1,
