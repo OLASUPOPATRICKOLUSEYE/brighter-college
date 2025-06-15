@@ -1,9 +1,10 @@
 import Image from "next/image";
 import BigCalender from "@/components/BigCalender";
-import Announcements from "@/components/Announcements";
 import Link from "next/link"
 import Performance from "@/components/Performance";
 import FormModal from "@/components/FormModal";
+import Announcements from "@/components/Announcements";
+
 
 const SingleTeacherPage = () => {
   return (

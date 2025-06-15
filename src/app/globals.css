@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.icon-button {
+  @apply w-8 h-8 flex items-center justify-center rounded-full text-white;
+}
+
+
 .react-calendar {
   width: 100% !important;
   border: none !important;

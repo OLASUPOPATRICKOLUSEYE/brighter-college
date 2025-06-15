@@ -65,7 +65,7 @@ import {
   MdCall,            
   MdSend,            
   MdInbox,           
- MdPayment,
+  MdPayment,
   MdAccountBalance,
   MdMoneyOff,
   MdForward,
@@ -119,12 +119,23 @@ import {
 } from "react-icons/md";
 
 const menuItems = [
-{
+  {
+    title: "Dashboard",
+    icon: <MdDashboard className="text-lg" />,
+    items: [
+      { icon: <MdQuestionAnswer />, label: "Admin Dashboard", href: "/admin", visible: "admin" },
+      { icon: <MdBookOnline />, label: "Teacher Dashboard", href: "/teacher", visible: "teacher" },
+      { icon: <MdCall />, label: "Receptionist Dashboard", href: "/receptionist", visible: "receptionist" },
+      { icon: <MdSend />, label: "Librarian Dashboard", href: "/librarian", visible: "librarian" },
+      { icon: <MdSend />, label: "Librarian Dashboard", href: "/accountant", visible: "accountant" },
+    ],
+  },
+  {
   title: "Front Office",
   icon: <MdQuestionAnswer className="text-lg" />,
   items: [
     { icon: <MdQuestionAnswer />, label: "Admission Enquiry", href: "/list/frontoffice/admission", visible: ["admin", "teacher"] },
-    { icon: <MdBookOnline />, label: "Visitor Book", href: "/list/frontoffice/visitorbook", visible: ["admin", "teacher"] },
+    { icon: <MdBookOnline />, label: "Visitor Book", href: "/list/frontoffice/visitorlist", visible: ["admin", "teacher"] },
     { icon: <MdCall />, label: "Phone Call Log", href: "/list/frontoffice/phonecalllog", visible: ["admin", "teacher"] },
     { icon: <MdSend />, label: "Postal Dispatch", href: "/list/frontoffice/postaldispatch", visible: ["admin", "teacher"] },
     { icon: <MdInbox />, label: "Postal Receive", href: "/list/frontoffice/postalreceive", visible: ["admin", "teacher"] },
@@ -538,7 +549,7 @@ const Menu = () => {
           {/* Parent button */}
           <button
             type="button"
-            className={`hidden lg:flex items-center justify-between text-gray-400 font-light px-2 py-4 rounded-md transition-colors
+            className={`hidden lg:flex items-center justify-between text-gray-400 font-light px-2 py-2 rounded-md transition-colors
               ${openParent === group.title ? "bg-lamaSkyLight text-gray-800" : "hover:bg-lamaSkyLight"}
             `}
             onClick={() => handleParentClick(group.title)}
@@ -580,7 +591,7 @@ const Menu = () => {
                       <Link
                         href={item.href}
                         key={item.label}
-                        className="relative flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-4 md:px-2 rounded-md hover:bg-lamaSkyLight group"
+                        className="relative flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight group"
                       >
                         {/* Child icon */}
                         <div className="text-lg">{item.icon}</div>
