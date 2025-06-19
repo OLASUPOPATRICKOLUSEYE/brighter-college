@@ -1,73 +1,76 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useRouter } from "next/navigation";
-import InputField from "@/components/InputField";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const schema = z.object({
-  purpose: z.string().min(5, "Purpose is required"),
-  description: z.string().min(5, "Description is required"),
+  purpose: z.string().min(3, "Purpose is required"),
+  description: z.string().optional(),
 });
 
-type Inputs = z.infer<typeof schema>;
+type FormData = z.infer<typeof schema>;
 
-const PurposeForm = ({ type, data }: { type: "create" | "update"; data?: any }) => {
+export default function PurposeForm() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<Inputs>({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: data || {},
   });
 
-  const onSubmit = async (formData: Inputs) => {
-    try {
-      const res = await fetch(
-        type === "create" ? "/api/purpose" : `/api/purpose/${data?._id}`,
-        {
-          method: type === "create" ? "POST" : "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
 
-      if (!res.ok) throw new Error("Something went wrong!");
-      router.refresh();
-      router.back();
-    } catch (err) {
-      alert((err as any).message);
+    const toastId = toast.loading("Submitting Purpose...");
+
+    try {
+      const res = await fetch("/api/purpose", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) throw new Error(result.error || "Something went wrong");
+
+      toast.success("Purpose Submitted Successfully!", { id: toastId });
+
+      // Navigate to Purpose List after slight delay
+      setTimeout(() => {
+        router.push("/list/purpose");
+      }, 800);
+    } catch (err: any) {
+      toast.error(err.message || "Submission failed!", { id: toastId });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Add Purpose" : "Update Purpose"}
-      </h1>
-
-      <InputField label="Purpose *" name="purpose" register={register} error={errors.purpose} />
-
-      <div className="flex flex-col">
-        <label className="text-xs font-medium mb-1">Description *</label>
-        <textarea
-          rows={3}
-          className="p-2 border rounded-md text-sm"
-          {...register("description")}
-        ></textarea>
-        {errors.description && <span className="text-xs text-red-400">{errors.description.message}</span>}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label>Purpose</label>
+        <input {...register("purpose")} className="border p-2 w-full" />
+        {errors.purpose && <p className="text-red-500 text-sm">{errors.purpose.message}</p>}
       </div>
 
-      <div className="flex justify-end">
-        <button type="submit" disabled={isSubmitting} className="bg-gray-700 text-white px-6 py-2 rounded">
-          {isSubmitting ? "Submitting..." : type === "create" ? "Save" : "Update"}
-        </button>
+      <div>
+        <label>Description</label>
+        <textarea {...register("description")} className="border p-2 w-full" rows={4} />
       </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-lamaYellow text-white px-4 py-2 rounded font-bold disabled:bg-lamaPurple"
+      >
+        {loading ? "Submitting..." : "Submit"}
+      </button>
     </form>
   );
-};
-
-export default PurposeForm;
+}

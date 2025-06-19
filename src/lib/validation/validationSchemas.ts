@@ -16,6 +16,17 @@ export const visitorSchema = z.object({
   note: z.string().optional(),
 });
 
+export const phoneCallLogSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  phone: z.string().min(1, "Phone is required"),
+  date: z.string().min(1, "Date is required"),
+  description: z.string().optional(),
+  nextFollowUpDate: z.string().optional(),
+  duration: z.string().optional(),
+  callType: z.string().optional(),
+  note: z.string().optional(),
+});
+
 export const purposeSchema = z.object({
   purpose: z.string().min(5, "Purpose is required"),
   description: z.string().min(5, "Description is required"),

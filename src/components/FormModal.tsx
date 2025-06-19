@@ -1,36 +1,43 @@
 "use client";
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { FiPlus, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiTrash2, FiX, FiEye } from "react-icons/fi";
 
-const VisitorForm = dynamic(() => import("./forms/VisitorForm"), { loading: () => <h1>Loading.......</h1>, });
-const PhoneCallLogForm = dynamic(() => import("./forms/PhoneCallLogForm"), { loading: () => <h1>Loading.......</h1>, });
-const PostalDispatchForm = dynamic(() => import("./forms/PostalDispatchForm"), { loading: () => <h1>Loading.......</h1>, });
-const PostalReceiveForm = dynamic(() => import("./forms/PostalReceiveForm"), { loading: () => <h1>Loading.......</h1>, });
-const PurposeForm = dynamic(() => import("./forms/PurposeForm"), { loading: () => <h1>Loading.......</h1>, });
+const VisitorForm = dynamic(() => import("./forms/VisitorForm"), { loading: () => <h1>Loading.......</h1> });
+const PhoneCallLogForm = dynamic(() => import("./forms/PhoneCallLogForm"), { loading: () => <h1>Loading.......</h1> });
+const PostalDispatchForm = dynamic(() => import("./forms/PostalDispatchForm"), { loading: () => <h1>Loading.......</h1> });
+const PostalReceiveForm = dynamic(() => import("./forms/PostalReceiveForm"), { loading: () => <h1>Loading.......</h1> });
+const PurposeForm = dynamic(() => import("./forms/PurposeForm"), { loading: () => <h1>Loading.......</h1> });
 
-
-
-const forms: { [key: string]: (props: { type: "create" | "update"; data?: any }) => JSX.Element; } = {
+const forms: { [key: string]: (props: { type: "create" | "update"; data?: any }) => JSX.Element } = {
   visitor: ({ type, data }) => <VisitorForm type={type} data={data} />,
   phonecalllog: ({ type, data }) => <PhoneCallLogForm type={type} data={data} />,
   postaldispatch: ({ type, data }) => <PostalDispatchForm type={type} data={data} />,
   postalreceive: ({ type, data }) => <PostalReceiveForm type={type} data={data} />,
   purpose: ({ type, data }) => <PurposeForm type={type} data={data} />,
-  
+};
+
+// View-only component (basic implementation, customize as needed)
+const ViewModalContent = ({ data }: { data: any }) => {
+  if (!data) return <div>No data available to view.</div>;
+
+  return (
+    <div className="space-y-2">
+      {Object.entries(data).map(([key, value]) => (
+        <div key={key} className="flex gap-2">
+          <span className="font-semibold capitalize">{key}:</span>
+          <span>{typeof value === "string" || typeof value === "number" ? value : JSON.stringify(value)}</span>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 interface FormModalProps {
-  table:
-    | "visitor"
-    | "phonecalllog"
-    | "postaldispatch"
-    | "postalreceive"
-    | "purpose"
-
-  type: "create" | "update" | "delete";
+  table: "visitor" | "phonecalllog" | "postaldispatch" | "postalreceive" | "purpose";
+  type: "create" | "update" | "delete" | "view";
   data?: any;
-  id?: Number;
+  id?: string;
 }
 
 const FormModal = ({ table, type, data, id }: FormModalProps) => {
@@ -41,7 +48,9 @@ const FormModal = ({ table, type, data, id }: FormModalProps) => {
       ? "bg-lamaYellow text-white"
       : type === "update"
       ? "bg-lamaSky text-white"
-      : "bg-lamaGrayLight hover:bg-lamaGray text-white";
+      : type === "delete"
+      ? "bg-lamaGrayLight hover:bg-lamaGray text-white"
+      : "bg-lamaPurple text-white"; // Color for "view"
 
   const [open, setOpen] = useState(false);
 
@@ -59,6 +68,15 @@ const FormModal = ({ table, type, data, id }: FormModalProps) => {
       );
     }
 
+    if (type === "view") {
+      return (
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-4 capitalize">View {table} Details</h2>
+          <ViewModalContent data={data} />
+        </div>
+      );
+    }
+
     if ((type === "create" || type === "update") && typeof forms[table] === "function") {
       return forms[table]({ type, data });
     }
@@ -70,6 +88,7 @@ const FormModal = ({ table, type, data, id }: FormModalProps) => {
     if (type === "create") return <FiPlus size={20} />;
     if (type === "update") return <FiEdit2 size={20} />;
     if (type === "delete") return <FiTrash2 size={20} />;
+    if (type === "view") return <FiEye size={20} />;
     return null;
   };
 
