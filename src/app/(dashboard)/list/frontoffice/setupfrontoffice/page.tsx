@@ -1,13 +1,11 @@
 "use client";
 import { useState } from "react";
-import Complaint from "./complaint/page";  // 👈 add /page
+import Complaint from "./complaint/page";
 import Purpose from "./purpose/page";
 
 const tabs = [
   { label: "Purpose", component: <Purpose /> },
   { label: "Source", component: <Complaint /> },
-  { label: "Reference", component: <Purpose /> },
-  { label: "Complaint Type", component: <Complaint /> },
 ];
 
 const SetupFrontOfficePage = () => {

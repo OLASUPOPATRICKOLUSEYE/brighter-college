@@ -60,7 +60,7 @@ const Purpose = () => {
     if (!confirm("Are you sure you want to delete?")) return;
     try {
       await fetch(`/api/purpose/${id}`, { method: "DELETE" });
-      fetchPurposes(); // Refresh after delete
+      fetchPurposes();
     } catch (err) {
       console.error(err);
       alert("Failed to delete purpose.");
