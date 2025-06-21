@@ -7,8 +7,8 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 
-const Purpose = () => {
-  const [purposes, setPurposes] = useState<any[]>([]);
+const ComplaintType = () => {
+  const [complainttypes, setComplaintTypes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +18,7 @@ const Purpose = () => {
   const router = useRouter();
   const page = Number(searchParams.get("page")) || 1;
 
-  const fetchPurposes = useCallback(async () => {
+  const fetchComplaintTypes = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -26,16 +26,16 @@ const Purpose = () => {
       if (searchTerm) queryParams.append("search", searchTerm);
       queryParams.append("page", page.toString());
 
-      const res = await fetch(`/api/purpose?${queryParams.toString()}`);
-      if (!res.ok) throw new Error("Purposes Not Found");
+      const res = await fetch(`/api/complainttype?${queryParams.toString()}`);
+      if (!res.ok) throw new Error("Complaint Type Not Found");
       const data = await res.json();
 
-      setPurposes(data.data || []);
+      setComplaintTypes(data.data || []);
       setTotal(data.total || 0);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to fetch data");
-      setPurposes([]);
+      setComplaintTypes([]);
       setTotal(0);
     } finally {
       setLoading(false);
@@ -43,23 +43,23 @@ const Purpose = () => {
   }, [searchTerm, page]);
 
   useEffect(() => {
-    fetchPurposes();
-  }, [fetchPurposes]);
+    fetchComplaintTypes();
+  }, [fetchComplaintTypes]);
 
   const handleSuccess = () => {
-    fetchPurposes();
+    fetchComplaintTypes();
     router.refresh();
   };
 
   const renderRow = (item: any) => (
     <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
-      <td className="p-4">{item.purpose}</td>
+      <td className="p-4">{item.complainttype}</td>
       <td className="hidden md:table-cell p-4">{item.description}</td>
       <td className="p-4">
         <div className="flex gap-2">
-          <FormModal table="purpose" type="view" data={item} onSuccess={handleSuccess} />
-          <FormModal table="purpose" type="update" data={item} onSuccess={handleSuccess} />
-          <FormModal table="purpose" type="delete" id={item._id} onSuccess={handleSuccess} />
+          <FormModal table="complainttype" type="view" data={item} onSuccess={handleSuccess} />
+          <FormModal table="complainttype" type="update" data={item} onSuccess={handleSuccess} />
+          <FormModal table="complainttype" type="delete" id={item._id} onSuccess={handleSuccess} />
         </div>
       </td>
     </tr>
@@ -69,11 +69,11 @@ const Purpose = () => {
     <div className="bg-white p-4 rounded-md flex-1">
       {/* Header with Title + Search + Add */}
       <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0 md:text-left">
-        <h1 className="text-lg font-semibold">All Purposes</h1>
+        <h1 className="text-lg font-semibold">All Complaint Type</h1>
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="purpose" type="create" onSuccess={handleSuccess} />
+          <FormModal table="complainttype" type="create" onSuccess={handleSuccess} />
         </div>
       </div>
 
@@ -87,12 +87,12 @@ const Purpose = () => {
           <table className="w-full border-collapse mt-4 table-fixed">
             <thead>
               <tr className="text-left text-gray-500 text-sm">
-                <th className="p-4">Purpose</th>
+                <th className="p-4">Complaint Type</th>
                 <th className="hidden md:table-cell p-4">Description</th>
                 <th className="p-4">Action</th>
               </tr>
             </thead>
-            <tbody>{purposes.map((item) => renderRow(item))}</tbody>
+            <tbody>{complainttypes.map((item) => renderRow(item))}</tbody>
           </table>
         </div>
       )}
@@ -105,4 +105,4 @@ const Purpose = () => {
   );
 };
 
-export default Purpose;
+export default ComplaintType;

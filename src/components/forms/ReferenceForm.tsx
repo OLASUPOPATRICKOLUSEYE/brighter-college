@@ -8,14 +8,13 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const schema = z.object({
-  purpose: z.string().min(3, "Purpose is required"),
-  description: z.string().optional(), 
+  reference: z.string().min(3, "Reference is required"),
+  description: z.string().optional(),
 });
-
 
 type FormData = z.infer<typeof schema>;
 
-export default function PurposeForm({
+export default function ReferenceForm({
   type,
   data,
   onClose,
@@ -40,17 +39,17 @@ export default function PurposeForm({
 
   useEffect(() => {
     if (type === "update" && data) {
-      setValue("purpose", data.purpose || "");
+      setValue("reference", data.reference || "");
       setValue("description", data.description || "");
     }
   }, [type, data, setValue]);
 
   const onSubmit = async (formData: FormData) => {
     setLoading(true);
-    const toastId = toast.loading(type === "create" ? "Submitting Purpose..." : "Updating Purpose...");
+    const toastId = toast.loading(type === "create" ? "Submitting Reference..." : "Updating Reference...");
 
     try {
-      const res = await fetch(type === "create" ? "/api/purpose" : `/api/purpose/${data?._id}`, {
+      const res = await fetch(type === "create" ? "/api/reference" : `/api/reference/${data?._id}`, {
         method: type === "create" ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -60,13 +59,12 @@ export default function PurposeForm({
 
       if (!res.ok) throw new Error(result.error || "Something went wrong");
 
-      toast.success(type === "create" ? "Purpose Submitted Successfully!" : "Purpose Updated Successfully!", {
+      toast.success(type === "create" ? "Reference Submitted Successfully!" : "Reference Updated Successfully!", {
         id: toastId,
       });
 
       if (onClose) onClose();
-      if (onSuccess) onSuccess(); 
-
+      if (onSuccess) onSuccess();
     } catch (err: any) {
       toast.error(err.message || "Submission failed!", { id: toastId });
     } finally {
@@ -77,9 +75,9 @@ export default function PurposeForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label>Purpose</label>
-        <input {...register("purpose")} className="border p-2 w-full" />
-        {errors.purpose && <p className="text-red-500 text-sm">{errors.purpose.message}</p>}
+        <label>Reference</label>
+        <input {...register("reference")} className="border p-2 w-full" />
+        {errors.reference && <p className="text-red-500 text-sm">{errors.reference.message}</p>}
       </div>
 
       <div>
@@ -95,6 +93,5 @@ export default function PurposeForm({
         {loading ? (type === "create" ? "Submitting..." : "Updating...") : type === "create" ? "Submit" : "Update"}
       </button>
     </form>
-
   );
 }

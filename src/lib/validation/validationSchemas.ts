@@ -28,6 +28,21 @@ export const phoneCallLogSchema = z.object({
 });
 
 export const purposeSchema = z.object({
-  purpose: z.string().min(5, "Purpose is required"),
-  description: z.string().min(5, "Description is required"),
+  purpose: z.string().min(3, "Purpose is required"),
+  description: z.string().optional(), 
+});
+
+export const complaintTypeSchema = z.object({
+  complainttype: z.string().min(3, "Complaint Type is required"),
+  description: z.string().optional(),
+});
+
+export const sourceSchema = z.object({
+  source: z.string().min(3, "Source is required"),
+  description: z.string().optional(),
+});
+
+export const referenceSchema = z.object({
+  reference: z.string().min(3, "Reference is required"),
+  description: z.string().optional(),
 });

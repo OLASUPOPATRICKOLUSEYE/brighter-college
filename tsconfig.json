@@ -13,9 +13,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",                        // ✅ Added for path aliases
+    "baseUrl": ".",                      
     "paths": {
-      "@/*": ["src/*"]                     // ✅ '@' now points to 'src' directory
+      "@/*": ["src/*"]                    
     },
     "plugins": [
       {

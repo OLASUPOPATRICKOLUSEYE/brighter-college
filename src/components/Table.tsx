@@ -8,7 +8,7 @@ const Table = ({
   data: any[];
 }) => {
   return (
-    <table className="w-full table-fixed border-collapse mt-4 min-w-[1000px]">
+    <table className="w-full table-fixed border-collapse mt-4">
       <thead>
         <tr className="text-left text-gray-500 text-sm">
           {columns.map((col) => (

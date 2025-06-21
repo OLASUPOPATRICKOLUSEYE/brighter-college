@@ -1,29 +1,35 @@
 "use client";
 import { useState } from "react";
-import Complaint from "./complaint/page";
+import ComplaintType from "./complainttype/page";
 import Purpose from "./purpose/page";
-
-const tabs = [
-  { label: "Purpose", component: <Purpose /> },
-  { label: "Source", component: <Complaint /> },
-];
+import Source from "./source/page";
+import Reference from "./reference/page";
 
 const SetupFrontOfficePage = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState<number>(0);
+
+  const tabs: { label: string; component: JSX.Element }[] = [
+    { label: "Purpose", component: <Purpose /> },
+    { label: "Complaint Type", component: <ComplaintType /> },
+    { label: "Source", component: <Source /> },
+    { label: "Reference", component: <Reference /> },
+  ];
 
   return (
     <div className="">
-      <h1 className="text-2xl font-bold mb-4">Setup Front Office</h1>
+      <h1 className="text-lg sm:text-xl font-bold mb-4 sm:text-left">
+        Setup Front Office
+      </h1>
 
-      {/* Tabs */}
-      <div className="flex space-x-2 w-[30%] mb-6 border-b bg-lamaYellow rounded-tr-full">
+      {/* Grid layout on small screens (2 columns), horizontal flex on larger screens */}
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:space-x-2 sm:gap-0 mb-4">
         {tabs.map((tab, index) => (
           <button
             key={index}
-            className={`px-4 py-2 text-sm font-medium ${
+            className={`w-full sm:w-auto px-3 py-2 text-sm sm:text-base border rounded ${
               activeTab === index
-                ? "bg-white rounded-tr-full text-lamaGray"
-                : "text-gray-600"
+                ? "bg-lamaYellow hover:bg-lamaGray text-white rounded-tr-full"
+                : "bg-gray-200 hover:bg-lamaGray hover:text-white"
             }`}
             onClick={() => setActiveTab(index)}
           >
@@ -32,8 +38,10 @@ const SetupFrontOfficePage = () => {
         ))}
       </div>
 
-      {/* Tab Content */}
-      <div>{tabs[activeTab].component}</div>
+      {/* Table container with white background and horizontal scroll */}
+      <div className="bg-white p-2 rounded shadow overflow-x-auto">
+        {tabs[activeTab].component}
+      </div>
     </div>
   );
 };
