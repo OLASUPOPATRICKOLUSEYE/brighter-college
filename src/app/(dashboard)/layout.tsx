@@ -1,33 +1,54 @@
-
+"use client";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Menu from "@/components/Menu";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-export default function DashboardLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="h-screen flex overflow-hidden">
-      {/* LEFT SIDEBAR */}
-      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[16%] p-4 flex flex-col overflow-y-auto">
-        <Link
-          href="/"
-          className="flex items-center justify-center lg:justify-start gap-2 mb-4"
-        >
+    <div className="h-screen flex relative">
+      {/* Sidebar for large screens */}
+      <div className="hidden lg:block z-20 w-[16%] p-4 flex-col bg-white border-r overflow-y-auto">
+        <Link href="/" className="flex items-center justify-center lg:justify-start gap-2 mb-4">
           <Image src="/logo.png" alt="logo" width={32} height={32} />
-          <span className="hidden lg:block font-bold">Brighter College</span>
+          <span className="hidden lg:block font-bold text-gray-800">Brighter College</span>
         </Link>
-        <hr className="w-full"/>
+        <hr className="w-full mb-2 border-gray-300" />
         <Menu />
       </div>
 
-      {/* RIGHT CONTENT */}
-      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[84%] bg-[#F7F8FA] flex flex-col overflow-hidden">
-        <Navbar />
-        <div className="flex-1 overflow-y-auto p-4">{children}</div>
+      {/* Sidebar overlay for small screens */}
+      {isSidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-30 bg-black bg-opacity-40" onClick={() => setIsSidebarOpen(false)}>
+          <div
+            className="absolute left-0 top-0 h-full w-64 bg-white shadow-lg p-4 overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <Image src="/logo.png" alt="logo" width={32} height={32} />
+              <span className=" lg:block font-bold text-gray-800">Brighter College</span>
+              <button onClick={() => setIsSidebarOpen(false)} className="text-xl font-bold">×</button>
+            </div>
+            <hr className="mb-2 border-gray-300" />
+            <Menu />
+          </div>
+        </div>
+      )}
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col bg-[#F7F8FA] overflow-hidden">
+        {/* Navbar stays at the top */}
+        <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
+        {/* Content takes remaining height and is scrollable */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {children}
+        </div>
+        {/* Footer stays at the bottom */}
+        <Footer />
       </div>
     </div>
   );

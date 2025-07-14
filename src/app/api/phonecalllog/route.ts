@@ -1,12 +1,35 @@
 import { NextResponse } from "next/server";
 import PhoneCallLog from "@/lib/models/PhoneCallLog";
 import { connectDB } from "@/lib/mongodb";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     await connectDB();
-    const phoneCallLogs = await PhoneCallLog.find();
-    return NextResponse.json({ data: phoneCallLogs }, { status: 200 });
+
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get("page") || "1", 10);
+
+    let query: any = {};
+
+    if (search) {
+      // Search by name, phone or description (optional, add/remove fields)
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { note: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const total = await PhoneCallLog.countDocuments(query);
+    const phonecalllogs = await PhoneCallLog.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * ITEM_PER_PAGE)
+      .limit(ITEM_PER_PAGE);
+
+    return NextResponse.json({ data: phonecalllogs, total }, { status: 200 });
   } catch (error) {
     console.error("GET /api/phonecalllog error:", error);
     return NextResponse.json({ error: "Failed to fetch phone call logs" }, { status: 500 });
@@ -18,23 +41,27 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.name || body.name.trim() === "") {
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    const requiredFields = ["name", "phone", "date", "description", "nextfollowupdate", "callduration", "note", "calltype"];
+
+    for (const field of requiredFields) {
+      if (!body[field] || body[field].toString().trim() === "") {
+        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+      }
     }
 
     const newPhoneCallLog = await PhoneCallLog.create({
       name: body.name,
       phone: body.phone,
-      date: body.date,
-      description: body.description || "",
-      nextFollowUpDate: body.nextFollowUpDate || "",
-      duration: body.duration || "",
-      callType: body.callType || "",
-      note: body.note || "",
+      date: new Date(body.date),
+      description: body.description,
+      nextfollowupdate: new Date(body.nextfollowupdate),
+      callduration: body.callduration,
+      note: body.note,
+      calltype: body.calltype,
     });
 
     return NextResponse.json(
-      { message: "Phone call log created successfully", data: newPhoneCallLog },
+      { message: "Phone Call Log created successfully", data: newPhoneCallLog },
       { status: 201 }
     );
   } catch (error) {

@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from 'react-hot-toast';
+import MainHeader from "@/components/MainHeader"
+import MainFooter from "@/components/MainFooter"
+
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Pascal College Management System",
+  title: "Brighter College Management System",
   description: "Designed and Developed By: ZachPascal Global Tech",
 };
 
@@ -17,25 +20,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+    <body className={inter.className}>
+    <MainHeader />
         {children}
          <Toaster
           position="bottom-right"
           toastOptions={{
             success: {
               style: {
-                background: '#4ade80', // green-400
+                background: '#4ade80', 
                 color: '#fff',
               },
             },
             error: {
               style: {
-                background: '#f87171', // red-400
+                background: '#f87171', 
                 color: '#fff',
               },
             },
           }}
         />
+        <MainFooter />
       </body>
     </html>
   );

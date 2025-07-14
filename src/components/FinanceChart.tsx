@@ -31,16 +31,16 @@ const FinanceChart = () => {
   return (
     <div className="bg-white rounded-lg w-full h-full p-4 flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Finance</h1>
         <Image src="/moreDark.png" alt="More" width={20} height={20} className="cursor-pointer"/>
       </div>
       {/* Chart Area */}
-      <div className="flex-grow h-[450px]"> {/* Define chart height here */}
+      <div className="flex-grow "> 
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 5, right: 30, left: 20, bottom: 15 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
             <XAxis

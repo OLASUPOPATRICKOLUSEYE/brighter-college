@@ -4,10 +4,9 @@ import dynamic from "next/dynamic";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiEye } from "react-icons/fi";
 import toast from "react-hot-toast";
 
-const VisitorForm = dynamic(() => import("./forms/VisitorForm"), { loading: () => <h1>Loading.......</h1> });
+const AdmissionEnquiryForm = dynamic(() => import("./forms/AdmissionEnquiryForm"), { loading: () => <h1>Loading.......</h1> });
 const PhoneCallLogForm = dynamic(() => import("./forms/PhoneCallLogForm"), { loading: () => <h1>Loading.......</h1> });
-const PostalDispatchForm = dynamic(() => import("./forms/PostalDispatchForm"), { loading: () => <h1>Loading.......</h1> });
-const PostalReceiveForm = dynamic(() => import("./forms/PostalReceiveForm"), { loading: () => <h1>Loading.......</h1> });
+const ComplaintForm = dynamic(() => import("./forms/ComplaintForm"), { loading: () => <h1>Loading.......</h1> });
 const PurposeForm = dynamic(() => import("./forms/PurposeForm"), { loading: () => <h1>Loading.......</h1> });
 const ComplaintTypeForm = dynamic(() => import("./forms/ComplaintTypeForm"), { loading: () => <h1>Loading.......</h1> });
 const SourceForm = dynamic(() => import("./forms/SourceForm"), { loading: () => <h1>Loading.......</h1> });
@@ -18,10 +17,9 @@ const ReferenceForm = dynamic(() => import("./forms/ReferenceForm"), { loading: 
 const forms: {
   [key: string]: (props: { type: "create" | "update"; data?: any; onClose?: () => void; onSuccess?: () => void }) => JSX.Element;
 } = {
-  visitor: ({ type, data, onClose, onSuccess }) => <VisitorForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
+  admissionenquiry: ({ type, data, onClose, onSuccess }) => <AdmissionEnquiryForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
   phonecalllog: ({ type, data, onClose, onSuccess }) => <PhoneCallLogForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
-  postaldispatch: ({ type, data, onClose, onSuccess }) => <PostalDispatchForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
-  postalreceive: ({ type, data, onClose, onSuccess }) => <PostalReceiveForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
+  complaint: ({ type, data, onClose, onSuccess }) => <ComplaintForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
   purpose: ({ type, data, onClose, onSuccess }) => <PurposeForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
   complainttype: ({ type, data, onClose, onSuccess }) => <ComplaintTypeForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
   source: ({ type, data, onClose, onSuccess }) => <SourceForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} />,
@@ -47,7 +45,7 @@ const ViewModalContent = ({ data }: { data: any }) => {
 };
 
 interface FormModalProps {
-  table: "visitor" | "phonecalllog" | "postaldispatch" | "postalreceive" | "purpose" | "complainttype" | "source" | "reference";
+  table: "admissionenquiry" | "phonecalllog" | "complaint" | "purpose" | "complainttype" | "source" | "reference";
   type: "create" | "update" | "delete" | "view";
   data?: any;
   id?: string;
@@ -137,7 +135,7 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
       </button>
 
       {open && (
-        <div className="w-screen h-screen fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+        <div className="w-screen h-screen fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center pl-24">
           <div className="bg-white p-6 rounded-md relative w-[95%] md:w-[90%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] max-h-[95vh] overflow-y-auto">
             <Form />
             <button

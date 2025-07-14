@@ -17,7 +17,7 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
   };
 
   return (
-    <div className="p-4 flex items-center justify-between text-gray-500">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-gray-500 p-3">
       <button
         disabled={!hasPrev}
         className="py-2 px-4 rounded-md bg-slate-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
@@ -26,13 +26,18 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
         Prev
       </button>
 
-      <div className="flex items-center gap-2 text-sm">
+      {/* On small screens, show fewer buttons or compact */}
+      <div className="flex flex-wrap justify-center gap-2 text-sm">
         {Array.from({ length: Math.ceil(count / ITEM_PER_PAGE) }, (_, index) => {
           const pageIndex = index + 1;
           return (
             <button
               key={pageIndex}
-              className={`px-5 text-white py-4 rounded-full ${page === pageIndex ? "bg-lamaYellow" : ""}`}
+              className={`px-3 py-2 rounded-md ${
+                page === pageIndex
+                  ? "bg-lamaYellow text-white"
+                  : "bg-gray-300 text-gray-700"
+              } text-xs`}
               onClick={() => changePage(pageIndex)}
             >
               {pageIndex}

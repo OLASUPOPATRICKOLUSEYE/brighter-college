@@ -1,12 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import Link from "next/link";
-import { role } from "@/lib/data";
 import {
-  MdDashboard,
   MdQuestionAnswer,
   MdAccessibility,
   MdAccountBalance,
@@ -118,20 +110,8 @@ import {
   MdWidgets,
 } from "react-icons/md";
 
-type MenuItem = {
-  icon: JSX.Element;
-  label: string;
-  href: string;
-  visible: string | string[];
-};
 
-type MenuGroup = {
-  title: string;
-  icon: JSX.Element;
-  items: MenuItem[];
-};
-
-const menuItems: MenuGroup[] = [
+const menuItems = [
     {
       title: "Dashboard",
       icon: <MdDashboard className="text-lg" />,
@@ -535,60 +515,5 @@ const menuItems: MenuGroup[] = [
       { icon: <MdSystemUpdate />, label: "System Update", href: "/list/system-setting/system-update", visible: ["admin", "teacher"] },
     ],
   },
+
 ];
-
-const Menu = () => {
-  const [openGroup, setOpenGroup] = useState<string | null>(null);
-
-  const toggleGroup = (title: string) => {
-    setOpenGroup((prev) => (prev === title ? null : title));
-  };
-
-  const isVisible = (visible: string | string[]) =>
-    Array.isArray(visible) ? visible.includes(role) : visible === role;
-
-  return (
-    <div className="mt-2 text-sm">
-      {menuItems.map((group) => (
-        <div key={group.title} className="mb-2">
-          <button
-            type="button"
-            onClick={() => toggleGroup(group.title)}
-            className={`w-full flex items-center justify-between px-2 py-2 rounded-md text-gray-700 font-semibold hover:bg-gray-100 ${
-              openGroup === group.title ? "bg-gray-200" : ""
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {group.icon}
-              <span>{group.title}</span>
-            </div>
-            <span>{openGroup === group.title ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-          </button>
-
-          {openGroup === group.title && (
-            <div className="mt-2 flex flex-col gap-1">
-              {group.items
-                .filter((item) => isVisible(item.visible))
-                .map((item) => (
-                  <Link
-                    href={item.href}
-                    key={item.label}
-                    className="flex items-center gap-2 py-2 px-2 rounded-md text-gray-600 hover:bg-gray-100 text-sm"
-                  >
-                    <div className="text-lg">{item.icon}</div>
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
-            </div>
-          )}
-        </div>
-      ))}
-
-      <button className="bg-lamaYellow text-white w-full py-4 rounded-md hover:bg-lamaPurple mt-24 text-center">
-        LOGOUT
-      </button>
-    </div>
-  );
-};
-
-export default Menu;

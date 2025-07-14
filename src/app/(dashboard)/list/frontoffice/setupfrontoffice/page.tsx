@@ -39,7 +39,7 @@ const SetupFrontOfficePage = () => {
       </div>
 
       {/* Table container with white background and horizontal scroll */}
-      <div className="bg-white p-2 rounded shadow overflow-x-auto">
+      <div className="bg-white rounded shadow overflow-x-auto">
         {tabs[activeTab].component}
       </div>
     </div>

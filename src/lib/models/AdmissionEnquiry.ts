@@ -1,22 +1,41 @@
-import mongoose, { Schema, models } from "mongoose";
+import mongoose, { Schema, Document, Model, models } from "mongoose";
 
-const AdmissionEnquirySchema = new Schema(
+export interface IAdmissionEnquiry extends Document {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  description: string;
+  note: string;
+  date: string; 
+  nextfollowupdate: string; 
+  assignedstaff: string;
+  reference: string;
+  source: string;
+  class: string;
+  numberofchild: number;
+}
+
+const AdmissionEnquirySchema = new Schema<IAdmissionEnquiry>(
   {
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
-    email: { type: String, required: true },
-    address: { type: String },
-    description: { type: String },
-    note: { type: String },
-    date: { type: String, required: true },
-    nextFollowUpDate: { type: String },
-    assignedTeacher: { type: String },
-    reference: { type: String, enum: ["student", "staff", "partnerschool", "self"], required: true },
-    source: { type: String },
-    class: { type: String },
-    numberOfChild: { type: Number },
+    name: { type: String, required: true, minlength: 5 },
+    phone: { type: String, required: true, minlength: 5 },
+    email: { type: String, required: true, minlength: 5 },
+    address: { type: String, required: true, minlength: 5 },
+    description: { type: String, required: true, minlength: 5 },
+    note: { type: String, required: true, minlength: 5 },
+    date: { type: String, required: true, minlength: 5 },
+    nextfollowupdate: { type: String, required: true, minlength: 5 },
+    assignedstaff: { type: String, required: true, minlength: 5 },
+    reference: { type: String, required: true, minlength: 1 },
+    source: { type: String, required: true, minlength: 1 },
+    class: { type: String, required: true, minlength: 2 },
+    numberofchild: { type: Number, required: true, min: 1 },
   },
   { timestamps: true }
 );
 
-export default models.AdmissionEnquiry || mongoose.model("AdmissionEnquiry", AdmissionEnquirySchema);
+const AdmissionEnquiry: Model<IAdmissionEnquiry> =
+  models.AdmissionEnquiry || mongoose.model<IAdmissionEnquiry>("AdmissionEnquiry", AdmissionEnquirySchema);
+
+export default AdmissionEnquiry;

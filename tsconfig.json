@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -13,9 +13,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",                      
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]                    
+      "@/*": ["src/*"]
     },
     "plugins": [
       {

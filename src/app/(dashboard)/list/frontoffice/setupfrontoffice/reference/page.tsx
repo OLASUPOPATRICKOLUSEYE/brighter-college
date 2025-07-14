@@ -54,7 +54,7 @@ const Reference = () => {
   const renderRow = (item: any) => (
     <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
       <td className="p-4">{item.reference}</td>
-      <td className="hidden md:table-cell p-4">{item.description}</td>
+      <td className="p-4">{item.description}</td>
       <td className="p-4">
         <div className="flex gap-2">
           <FormModal table="reference" type="view" data={item} onSuccess={handleSuccess} />
@@ -66,8 +66,8 @@ const Reference = () => {
   );
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1">
-      <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0 md:text-left">
+    <div className="bg-white rounded-md flex-1">
+      <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0 md:text-left">
         <h1 className="text-lg font-semibold">All References</h1>
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
@@ -76,8 +76,8 @@ const Reference = () => {
         </div>
       </div>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && <p className="px-4">Loading...</p>}
+      {error && <p className="text-red-500 px-4">{error}</p>}
 
       {!loading && !error && (
         <div className="w-full overflow-x-auto">

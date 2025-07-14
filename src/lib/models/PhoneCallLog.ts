@@ -1,31 +1,31 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
-export interface IPhoneCall extends Document {
+export interface IPhoneCallLog extends Document {
   name: string;
   phone: string;
-  date: string;
-  description?: string;
-  nextFollowUpDate?: string;
-  duration?: string;          // CHANGED from callDuration to duration
-  note?: string;
-  callType: "Incoming" | "Outgoing"; // match casing if possible
+  date: Date;
+  description: string;
+  nextfollowupdate: Date;
+  callduration: string;
+  note: string;
+  calltype: "incoming" | "outgoing";
 }
 
-const PhoneCallLogSchema = new Schema<IPhoneCall>(
+const PhoneCallLogSchema = new Schema<IPhoneCallLog>(
   {
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    date: { type: String, required: true },
-    description: { type: String },
-    nextFollowUpDate: { type: String },
-    duration: { type: String },          // CHANGED from callDuration to duration
-    note: { type: String },
-    callType: { type: String, enum: ["Incoming", "Outgoing"], required: true }, // match form
+    date: { type: Date, required: true },
+    description: { type: String, required: true },
+    nextfollowupdate: { type: Date, required: true },
+    callduration: { type: String, required: true },
+    note: { type: String, required: true },
+    calltype: { type: String, enum: ["incoming", "outgoing"], required: true },
   },
   { timestamps: true }
 );
 
-const PhoneCallLog: Model<IPhoneCall> =
-  models.PhoneCallLog || mongoose.model<IPhoneCall>("PhoneCallLog", PhoneCallLogSchema);
+const PhoneCallLog: Model<IPhoneCallLog> =
+  models.PhoneCallLog || mongoose.model<IPhoneCallLog>("PhoneCallLog", PhoneCallLogSchema);
 
 export default PhoneCallLog;
