@@ -6,13 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { sourceSchema } from "@/lib/validation/validationSchemas";
+import InputField from "../InputField";
 
-const schema = z.object({
-  source: z.string().min(3, "Source is required"),
-  description: z.string().optional(),
-});
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof sourceSchema>;
 
 export default function SourceForm({
   type,
@@ -34,37 +32,48 @@ export default function SourceForm({
     setValue,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(sourceSchema),
+    defaultValues: {},
   });
 
   useEffect(() => {
     if (type === "update" && data) {
-      setValue("source", data.source || "");
-      setValue("description", data.description || "");
+      Object.keys(data).forEach((key) => {
+        if (key in data) {
+          setValue(key as keyof FormData, data[key]);
+        }
+      });
     }
   }, [type, data, setValue]);
 
   const onSubmit = async (formData: FormData) => {
     setLoading(true);
-    const toastId = toast.loading(type === "create" ? "Submitting Source..." : "Updating Source...");
+    const toastId = toast.loading(type === "create" ? "Submitting..." : "Updating...");
 
     try {
-      const res = await fetch(type === "create" ? "/api/source" : `/api/source/${data?._id}`, {
-        method: type === "create" ? "POST" : "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        type === "create" ? "/api/source" : `/api/source/${data?._id}`,
+        {
+          method: type === "create" ? "POST" : "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const result = await res.json();
 
       if (!res.ok) throw new Error(result.error || "Something went wrong");
 
-      toast.success(type === "create" ? "Source Submitted Successfully!" : "Source Updated Successfully!", {
-        id: toastId,
-      });
+      toast.success(
+        type === "create"
+          ? "Source Submitted successfully!"
+          : "Source Updated successfully!",
+        { id: toastId }
+      );
 
-      if (onClose) onClose();
-      if (onSuccess) onSuccess();
+      onClose?.();
+      onSuccess?.();
+      router.refresh();
     } catch (err: any) {
       toast.error(err.message || "Submission failed!", { id: toastId });
     } finally {
@@ -73,25 +82,43 @@ export default function SourceForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label>Source</label>
-        <input {...register("source")} className="border p-2 w-full" />
-        {errors.source && <p className="text-red-500 text-sm">{errors.source.message}</p>}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col text-black space-y-4 text-sm">
+      <h1 className="text-xl font-semibold">
+        {type === "create" ? "Add Source" : "Update Source"}
+      </h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5 pt-4">
+        <InputField label="Source *" name="source" register={register} error={errors.source} />        
+        
+        {/* Description */}
+        <div className="flex flex-col">
+          <label className="text-[16px] font-medium text-black mb-1">Description *</label>
+          <textarea
+            rows={3}
+            className="p-2 border rounded-md text-sm"
+            {...register("description")}
+          ></textarea>
+          {errors.description && (
+            <span className="text-xs text-red-400">{errors.description.message}</span>
+          )}
+        </div>
       </div>
 
       <div>
-        <label>Description</label>
-        <textarea {...register("description")} className="border p-2 w-full" rows={4} />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-lamaYellow text-white px-6 py-2 rounded font-semibold disabled:bg-gray-400"
+        >
+          {loading
+            ? type === "create"
+              ? "Submitting..."
+              : "Updating..."
+            : type === "create"
+            ? "Submit"
+            : "Update"}
+        </button>
       </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-lamaYellow text-white px-4 py-2 rounded font-bold disabled:bg-lamaPurple"
-      >
-        {loading ? (type === "create" ? "Submitting..." : "Updating...") : type === "create" ? "Submit" : "Update"}
-      </button>
     </form>
   );
 }

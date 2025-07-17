@@ -22,6 +22,8 @@ const config: Config = {
         lamaYellowLight: "#FEFCE8",
         lamaGrayLight: "#6D7175",
         lamaGray: "#2E3031",
+        pascalRed: "#c8102e",
+        pascalBlue: "#1e2a45",
       },
     },
   },

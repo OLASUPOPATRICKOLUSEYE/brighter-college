@@ -7,7 +7,7 @@ export interface IPurpose extends Document {
 
 const PurposeSchema = new Schema<IPurpose>(
   {
-    purpose: { type: String, required: true },
+    purpose: { type: String, required: true, minlength: 5 },
     description: { type: String, default: "" },
   },
   { timestamps: true }

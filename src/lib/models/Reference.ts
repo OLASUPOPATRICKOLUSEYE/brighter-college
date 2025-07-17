@@ -7,7 +7,7 @@ export interface IReference extends Document {
 
 const ReferenceSchema = new Schema<IReference>(
   {
-    reference: { type: String, required: true, trim: true },
+    reference: { type: String, required: true, trim: true, minlength: 5 },
     description: { type: String, default: "" },
   },
   { timestamps: true }

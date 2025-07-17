@@ -4,6 +4,20 @@
 @tailwind utilities;
 
 
+body {
+  overflow-x: hidden;
+}
+
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+
 .icon-button {
   @apply w-8 h-8 flex items-center justify-center rounded-full text-white;
 }

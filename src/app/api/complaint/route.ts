@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Complaint from "@/lib/models/Complaint";
 import { connectDB } from "@/lib/mongodb";
-import { ITEM_PER_PAGE } from "@/lib/settings"; // ✅ Pagination setting
+import { ITEM_PER_PAGE } from "@/lib/settings";
 
 export async function GET(req: Request) {
   try {
@@ -39,7 +39,6 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const requiredFields = [
-      "sno",
       "complaintType",
       "source",
       "complainBy",
@@ -47,19 +46,23 @@ export async function POST(req: Request) {
       "date",
       "description",
       "actionTaken",
-      "assign",
+      "assignedStaff",
       "note",
-      "attachDocument",
+      "attachment",
     ];
 
     for (const field of requiredFields) {
-      if (!body[field] || body[field].toString().trim() === "") {
+      if (
+        body[field] === undefined ||
+        body[field] === null ||
+        (typeof body[field] === "string" && body[field].trim() === "") ||
+        (Array.isArray(body[field]) && body[field].length === 0)
+      ) {
         return NextResponse.json({ error: `${field} is required` }, { status: 400 });
       }
     }
 
     const newComplaint = await Complaint.create({
-      sno: body.sno,
       complaintType: body.complaintType,
       source: body.source,
       complainBy: body.complainBy,
@@ -67,17 +70,17 @@ export async function POST(req: Request) {
       date: body.date,
       description: body.description,
       actionTaken: body.actionTaken,
-      assign: body.assign,
+      assignedStaff: body.assignedStaff,
       note: body.note,
-      attachDocument: body.attachDocument,
+      attachment: body.attachment,
     });
 
     return NextResponse.json(
-      { message: "Complaint created successfully", data: newComplaint },
+      { message: "Complaint Created Successfully", data: newComplaint },
       { status: 201 }
     );
   } catch (error) {
     console.error("POST /api/complaint error:", error);
-    return NextResponse.json({ error: "Failed to create complaint" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to Create Complaint" }, { status: 500 });
   }
 }

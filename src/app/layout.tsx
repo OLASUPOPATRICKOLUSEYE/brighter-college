@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from 'react-hot-toast';
-import MainHeader from "@/components/MainHeader"
-import MainFooter from "@/components/MainFooter"
+// import MainHeader from "@/components/MainHeader";
+
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
     <body className={inter.className}>
-    <MainHeader />
+    {/* <MainHeader /> */}
         {children}
          <Toaster
           position="bottom-right"
@@ -40,7 +40,6 @@ export default function RootLayout({
             },
           }}
         />
-        <MainFooter />
       </body>
     </html>
   );

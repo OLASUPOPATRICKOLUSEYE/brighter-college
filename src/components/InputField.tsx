@@ -22,7 +22,7 @@ const InputField = ({
 }: InputFieldProps) => {
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label className="text-xs text-gray-500">{label}</label>
+      <label className="text-[16px] font-medium text-black mb-1">{label}</label>
       <input
         type={type}
         {...register(name)}

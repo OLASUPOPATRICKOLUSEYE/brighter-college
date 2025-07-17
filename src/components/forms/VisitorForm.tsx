@@ -1,206 +1,293 @@
 "use client";
+
+import React, { useEffect, useState } from "react";
 import NextImage from "next/image";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
-import InputField from "@/components/InputField";
+import { z } from "zod";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/utils";
+import InputField from "../InputField";
+import { visitorSchema } from "@/lib/validation/validationSchemas";
 
-const Schema = z.object({
-  visitorName: z.string().min(1, "Visitor Name is required"),
-  phone: z.string().min(1, "Phone is required"),
-  note: z.string().min(1, "Note is required"),
-  idCard: z.string().min(1, "ID Card is required"),
-  numberOfPersons: z.string().min(1, "Number of Persons is required"),
-  date: z.string().min(1, "Date is required"),
-  inTime: z.string().min(1, "In Time is required"),
-  outTime: z.string().min(1, "Out Time is required"),
-  purpose: z.enum([
-    "Student Meeting",
-    "Staff Meeting",
-    "Marketing",
-    "Parent Teacher Meeting",
-    "Event Meeting",
-  ]),
-  meetingWith: z.enum(["Student", "Staff"]),
-  studentName: z.string().optional(),
-  studentSection: z.string().optional(),
-  staffName: z.string().optional(),
-  img: z
-    .any()
-    .refine((files) => files?.length > 0, "At least one image is required"),
-});
+type FormData = z.infer<typeof visitorSchema>;
 
-// Refinement for conditional required fields
-const schema = Schema.superRefine((data, ctx) => {
-  if (data.meetingWith === "Student") {
-    if (!data.studentName || data.studentName.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Student Name is required",
-        path: ["studentName"],
-      });
-    }
-    if (!data.studentSection || data.studentSection.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Student Section is required",
-        path: ["studentSection"],
-      });
-    }
-  }
-});
+type PurposeType = {
+  _id: string;
+  purpose: string;
+};
 
-type Inputs = z.infer<typeof schema>;
-
-const VisitorForm = ({ type, data }: { type: "create" | "update"; data?: any }) => {
-  const [meetingWith, setMeetingWith] = useState<"Student" | "Staff" | "">("");
+const VisitorForm = ({
+  type,
+  data,
+  onClose,
+  onSuccess,
+}: {
+  type: "create" | "update";
+  data?: any;
+  onClose?: () => void;
+  onSuccess?: () => void;
+}) => {
+  const router = useRouter();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [purposes, setPurposes] = useState<PurposeType[]>([]);
+
 
   const {
     register,
     handleSubmit,
-    resetField,
     setValue,
     formState: { errors },
-  } = useForm<Inputs>({
-    resolver: zodResolver(schema),
+  } = useForm<FormData>({
+    resolver: zodResolver(visitorSchema),
+    defaultValues: data || {
+      date: formatDate(new Date()).split(" ")[0],
+      inTime: new Date().toTimeString().slice(0, 5),
+      outTime: new Date().toTimeString().slice(0, 5),
+    },
   });
 
-  const onSubmit = (formData: Inputs) => {
-    console.log(formData);
-  };
+  useEffect(() => {
+    if (type === "update" && data?.attachment) {
+      setExistingImages(data.attachment);
+    }
+  }, [type, data]);
 
-  const handleMeetingWithChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value as "Student" | "Staff" | "";
-    setMeetingWith(value);
-    resetField("studentName");
-    resetField("studentSection");
-    resetField("staffName");
-  };
+  const toBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      const imageFiles = filesArray.filter((file) => file.type.startsWith("image/")); // ✅ Filter only images
+      const imageFiles = Array.from(e.target.files).filter((file) =>
+        file.type.startsWith("image/") || file.type === "application/pdf"
+      );
       setSelectedFiles(imageFiles);
-      setValue("img", imageFiles);
+      setValue("attachment", [...existingImages, ...imageFiles]);
+    }
+  };
+
+  useEffect(() => {
+  const fetchPurposes = async () => {
+    try {
+      const res = await fetch("/api/purpose");
+      const data = await res.json();
+
+      if (res.ok) {
+        setPurposes(Array.isArray(data.data) ? data.data : []);
+      } else {
+        throw new Error(data.error || "Failed to fetch purposes");
+      }
+    } catch (err) {
+      toast.error("Failed to load purposes");
+    }
+  };
+
+  fetchPurposes();
+}, []);
+
+
+  const handleRemoveExistingImage = (index: number) => {
+    const updated = existingImages.filter((_, i) => i !== index);
+    setExistingImages(updated);
+    setValue("attachment", [...updated, ...selectedFiles]);
+  };
+
+  const onSubmit = async (formData: FormData) => {
+    try {
+      if (existingImages.length === 0 && selectedFiles.length === 0) {
+        toast.error("Please select at least one document");
+        return;
+      }
+
+      const toastId = toast.loading("Uploading Files...");
+      const uploadedUrls: string[] = [...existingImages];
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const base64 = await toBase64(selectedFiles[i]);
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64 }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Upload Failed");
+        uploadedUrls.push(result.url);
+        setUploadProgress(Math.round(((i + 1) / selectedFiles.length) * 100));
+      }
+
+      toast.loading(type === "create" ? "Saving..." : "Updating...", {
+        id: toastId,
+      });
+
+      const payload = {
+        ...formData,
+        attachment: uploadedUrls,
+      };
+
+      const response = await fetch(
+        type === "create"
+          ? "/api/visitors"
+          : `/api/visitors/${data?._id}`,
+        {
+          method: type === "create" ? "POST" : "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Submission failed");
+
+      toast.success(
+        `Visitor info ${type === "create" ? "created" : "updated"} successfully!`,
+        { id: toastId }
+      );
+
+      onClose?.();
+      onSuccess?.();
+      if (!onClose && !onSuccess) {
+        router.push("/dashboard/visitor");
+        router.refresh();
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
     }
   };
 
   return (
-    <form className="flex flex-col gap-6 text-gray-500" onSubmit={handleSubmit(onSubmit)}>
-      <h1 className="text-xl font-semibold">{type === "create" ? "Add Visitor" : "Update Visitor"}</h1>
+    <form
+      className="flex flex-col text-black space-y-4 text-sm"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <h1 className="text-xl font-semibold">
+        {type === "create" ? "Add Visitor" : "Update Visitor"}
+      </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Purpose */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-4">
         <div className="flex flex-col">
-          <label className="text-xs font-medium mb-1">Purpose *</label>
-          <select className="p-2 border rounded-md text-sm" {...register("purpose")}>
-            <option value="">Select</option>
-            <option value="Student Meeting">Student Meeting</option>
-            <option value="Staff Meeting">Staff Meeting</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Parent Teacher Meeting">Parent Teacher Meeting</option>
-            <option value="Event Meeting">Event Meeting</option>
-          </select>
-          {errors.purpose && <span className="text-xs text-red-400">{errors.purpose.message}</span>}
-        </div>
-
-        {/* Meeting With */}
-        <div className="flex flex-col">
-          <label className="text-xs font-medium mb-1">Meeting With *</label>
+          <label className="text-[16px] font-medium mb-1">Purpose *</label>
           <select
+            {...register("purpose")}
             className="p-2 border rounded-md text-sm"
-            {...register("meetingWith")}
-            onChange={handleMeetingWithChange}
+            defaultValue=""
           >
-            <option value="">Select</option>
-            <option value="Student">Student</option>
-            <option value="Staff">Staff</option>
+            <option value="" disabled>Select Purpose</option>
+            {purposes.map((item) => (
+              <option key={item._id} value={item.purpose}>
+                {item.purpose}
+              </option>
+            ))}
           </select>
-          {errors.meetingWith && <span className="text-xs text-red-400">{errors.meetingWith.message}</span>}
+          {errors.purpose && (
+            <span className="text-xs text-red-400">{errors.purpose.message}</span>
+          )}
         </div>
-
-        {/* Conditional Inputs */}
-        {meetingWith === "Student" && (
-          <>
-            <InputField
-              label="Student Name *"
-              name="studentName"
-              register={register}
-              error={errors.studentName}
-            />
-            <InputField
-              label="Student Section *"
-              name="studentSection"
-              register={register}
-              error={errors.studentSection}
-            />
-          </>
-        )}
-        {meetingWith === "Staff" && (
-          <InputField
-            label="Staff Name *"
-            name="staffName"
-            register={register}
-            error={errors.staffName}
-          />
-        )}
-
-        {/* Visitor Name */}
+        <InputField label="Meeting With *" name="meetingWith" register={register} error={errors.meetingWith} />
         <InputField label="Visitor Name *" name="visitorName" register={register} error={errors.visitorName} />
         <InputField label="Phone *" name="phone" register={register} error={errors.phone} />
         <InputField label="ID Card *" name="idCard" register={register} error={errors.idCard} />
-        <InputField label="Number Of Person *" name="numberOfPersons" register={register} error={errors.numberOfPersons} />
+        <InputField label="Number Of Person *" name="numberOfPerson" type="number" register={register} error={errors.numberOfPerson} />
         <InputField label="Date *" name="date" type="date" register={register} error={errors.date} />
         <InputField label="In Time *" name="inTime" type="time" register={register} error={errors.inTime} />
         <InputField label="Out Time *" name="outTime" type="time" register={register} error={errors.outTime} />
 
-        {/* Upload Files */}
+        {/* File Upload */}
         <div className="flex flex-col col-span-1 lg:col-span-1">
-          <label htmlFor="img" className="text-xs font-medium mb-1">Attach Images *</label>
+          <label className="text-[16px] font-medium mb-1">Attach Document *</label>
           <label
-            htmlFor="img"
-            className="flex items-center gap-2 border border-dashed p-3 rounded-md text-xs text-gray-500 cursor-pointer"
+            htmlFor="attachment"
+            className="flex items-center gap-2 border border-dashed p-3 rounded-md text-xs cursor-pointer"
           >
             <NextImage src="/upload.png" alt="upload" width={20} height={20} />
-            Drag and drop images here or click
+            Drag and drop or click to upload
           </label>
           <input
             type="file"
-            id="img"
-            accept="image/*" // ✅ Accept images only
+            id="attachment"
+            accept="image/*,.pdf"
             multiple
             className="hidden"
             onChange={handleFileChange}
           />
-          {errors.img && <span className="text-xs text-red-400">{errors.img.message as string}</span>}
+          {errors.attachment && (
+            <span className="text-xs text-red-400">
+              {errors.attachment.message as string}
+            </span>
+          )}
           <div className="flex flex-wrap gap-2 mt-2">
+            {existingImages.map((url, idx) => (
+              <div key={`existing-${idx}`} className="relative">
+                <img
+                  src={url}
+                  alt={`Existing ${idx}`}
+                  className="w-20 h-20 object-cover rounded border"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveExistingImage(idx)}
+                  className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
             {selectedFiles.map((file, idx) => (
-              <span key={idx} className="text-xs border rounded px-2 py-1 bg-gray-100">
-                {file.name}
-              </span>
+              <img
+                key={`selected-${idx}`}
+                src={URL.createObjectURL(file)}
+                alt={`New ${idx}`}
+                className="w-20 h-20 object-cover rounded border"
+              />
             ))}
           </div>
+
+          {uploadProgress > 0 && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+              <div
+                className="bg-yellow-500 h-2.5 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Note */}
       <div className="flex flex-col">
-        <label className="text-xs font-medium mb-1">Note *</label>
+        <label className="text-[16px] font-medium mb-1">Note *</label>
         <textarea
           rows={3}
           className="p-2 border rounded-md text-sm"
           {...register("note")}
         ></textarea>
-        {errors.note && <span className="text-xs text-red-400">{errors.note.message}</span>}
+        {errors.note && (
+          <span className="text-xs text-red-400">{errors.note.message}</span>
+        )}
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end">
-        <button type="submit" className="bg-gray-600 text-white rounded px-5 py-2">
-          {type === "create" ? "Save" : "Update"}
+      <div className="flex justify-start">
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-lamaYellow text-white px-6 py-2 rounded-md font-semibold disabled:bg-gray-400"
+        >
+          {loading
+            ? type === "create"
+              ? "Submitting..."
+              : "Updating..."
+            : type === "create"
+            ? "Submit"
+            : "Update"}
         </button>
       </div>
     </form>

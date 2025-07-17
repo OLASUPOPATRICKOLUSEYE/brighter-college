@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar for large screens */}
       <div className="hidden lg:block z-20 w-[16%] p-4 flex-col bg-white border-r overflow-y-auto">
         <Link href="/" className="flex items-center justify-center lg:justify-start gap-2 mb-4">
-          <Image src="/logo.png" alt="logo" width={32} height={32} />
+          <Image src="/images.png" alt="logo" width={50} height={50} />
           <span className="hidden lg:block font-bold text-gray-800">Brighter College</span>
         </Link>
         <hr className="w-full mb-2 border-gray-300" />
@@ -29,8 +29,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <Image src="/logo.png" alt="logo" width={32} height={32} />
-              <span className=" lg:block font-bold text-gray-800">Brighter College</span>
+              <Image src="/images.png" alt="logo" width={50} height={50} />
+              <span className=" lg:block font-bold text-gray-800 pr-3">Brighter College</span>
               <button onClick={() => setIsSidebarOpen(false)} className="text-xl font-bold">×</button>
             </div>
             <hr className="mb-2 border-gray-300" />

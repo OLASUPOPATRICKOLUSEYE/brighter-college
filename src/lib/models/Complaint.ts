@@ -9,27 +9,81 @@ export interface IComplaint extends Document {
   date: string;
   description: string;
   actionTaken: string;
-  assign: string;
+  assignedStaff: string;
   note: string;
-  attachDocument: string[]; // ✅ Should be array of URLs now
+  attachment: string[]; // Array of uploaded document/image URLs
 }
 
 const ComplaintSchema = new Schema<IComplaint>(
   {
-    sno: { type: String, required: true, minlength: 1 },
-    complaintType: { type: String, required: true, minlength: 1 },
-    source: { type: String, required: true,  minlength: 1},
-    complainBy: { type: String, required: true, minlength: 5 },
-    phone: { type: String, required: true, minlength: 5 },
-    date: { type: String, required: true, minlength: 5 },
-    description: { type: String, required: true, minlength: 5 },
-    actionTaken: { type: String, required: true, minlength: 5 },
-    assign: { type: String, required: true, minlength: 5 },
-    note: { type: String, required: true, minlength: 5 },
-    attachDocument: { type: [String], required: true },
+    complaintType: {
+      type: String,
+      required: [true, "Complaint Type is required"],
+      minlength: 1,
+      trim: true,
+    },
+    source: {
+      type: String,
+      required: [true, "Source is required"],
+      minlength: 1,
+      trim: true,
+    },
+    complainBy: {
+      type: String,
+      required: [true, "Complain By is required"],
+      minlength: 5,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: [true, "Phone number is required"],
+      minlength: 5,
+      trim: true,
+    },
+    date: {
+      type: String,
+      required: [true, "Date is required"],
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+      minlength: 5,
+      trim: true,
+    },
+    actionTaken: {
+      type: String,
+      required: [true, "Action Taken is required"],
+      minlength: 5,
+      trim: true,
+    },
+    assignedStaff: {
+      type: String,
+      required: [true, "Assigned is required"],
+      minlength: 5,
+      trim: true,
+    },
+    note: {
+      type: String,
+      required: [true, "Note is required"],
+      minlength: 5,
+      trim: true,
+    },
+    attachment: {
+      type: [String],
+      required: [true, "Attachment is required"],
+      validate: {
+        validator: function (val: string[]) {
+          return Array.isArray(val) && val.length > 0;
+        },
+        message: "At least one document/image must be uploaded",
+      },
+    },
   },
   { timestamps: true }
 );
 
-const Complaint: Model<IComplaint> = models.Complaint || mongoose.model<IComplaint>("Complaint", ComplaintSchema);
+const Complaint: Model<IComplaint> =
+  models.Complaint || mongoose.model<IComplaint>("Complaint", ComplaintSchema);
+
 export default Complaint;

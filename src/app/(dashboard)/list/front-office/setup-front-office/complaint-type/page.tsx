@@ -1,0 +1,101 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import TableSearch from "@/components/TableSearch";
+import FormModal from "@/components/FormModal";
+import Pagination from "@/components/Pagination";
+import { ITEM_PER_PAGE } from "@/lib/settings";
+
+const ComplaintType = () => {
+  const [complaintTypes, setComplaintTypes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [total, setTotal] = useState<number>(0);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = Number(searchParams.get("page")) || 1;
+
+  const fetchComplaintTypes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryParams = new URLSearchParams();
+      if (searchTerm) queryParams.append("search", searchTerm);
+      queryParams.append("page", page.toString());
+
+      const res = await fetch(`/api/complainttype?${queryParams.toString()}`);
+      if (!res.ok) throw new Error("Complaint Type Not Found");
+      const data = await res.json();
+
+      setComplaintTypes(data.data || []);
+      setTotal(data.total || 0);
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch data");
+      setComplaintTypes([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, page]);
+
+  useEffect(() => {
+    fetchComplaintTypes();
+  }, [fetchComplaintTypes]);
+
+  const handleSuccess = () => {
+    fetchComplaintTypes();
+    router.refresh();
+  };
+
+  return (
+    <div className="bg-white rounded-md flex-1">
+      <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0">
+        <h1 className="text-lg font-semibold">All Complaint Type</h1>
+        <div className="flex flex-col sm:flex-row gap-2 items-center">
+          <TableSearch value={searchTerm} onChange={setSearchTerm} />
+          <FormModal table="complainttype" type="create" onSuccess={handleSuccess} />
+        </div>
+      </div>
+
+      {loading && <p className="px-4">Loading...</p>}
+      {error && <p className="text-red-500 px-4">{error}</p>}
+
+      {!loading && !error && (
+        <div className="w-full overflow-x-auto">
+          <table className="w-full border-collapse mt-4 text-sm table-fixed">
+            <thead>
+              <tr className="text-left text-gray-500">
+                <th className="p-4 w-2/3">Complaint Type</th>
+                <th className="p-4 w-2/3">Description</th>
+                <th className="p-4 w-1/3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {complaintTypes.map((item) => (
+                <tr key={item._id} className="border-b border-gray-200 hover:bg-slate-100">
+                  <td className="p-4">{item.complainttype}</td>
+                  <td className="p-4">{item.description}</td>
+                  <td className="p-4">
+                    <div className="flex justify-end gap-2">
+                      <FormModal table="complainttype" type="view" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="complainttype" type="update" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="complainttype" type="delete" id={item._id} onSuccess={handleSuccess} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {!loading && total > ITEM_PER_PAGE && (
+        <Pagination page={page} count={total} />
+      )}
+    </div>
+  );
+};
+
+export default ComplaintType;

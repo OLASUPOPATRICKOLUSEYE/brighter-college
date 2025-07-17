@@ -7,7 +7,7 @@ export interface ISource extends Document {
 
 const SourceSchema = new Schema<ISource>(
   {
-    source: { type: String, required: true, trim: true },
+    source: { type: String, required: true, trim: true, minlength: 5 },
     description: { type: String, default: "" },
   },
   { timestamps: true }

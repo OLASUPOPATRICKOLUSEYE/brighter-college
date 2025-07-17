@@ -7,7 +7,7 @@ export interface IComplaintType extends Document {
 
 const complaintTypeSchema = new Schema<IComplaintType>(
   {
-    complainttype: { type: String, required: true },
+    complainttype: { type: String, required: true, trim: true, minlength: 5 },
     description: { type: String, default: "" },
   },
   { timestamps: true }

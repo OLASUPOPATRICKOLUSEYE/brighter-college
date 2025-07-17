@@ -1,0 +1,22 @@
+// models/studentHouse.ts
+import mongoose, { Schema, Document, models, Model } from "mongoose";
+
+export interface IStudentHouse extends Document {
+  studenthouse: string;
+  description?: string;
+  houseId: string;
+}
+
+const StudentHouseSchema = new Schema<IStudentHouse>(
+  {
+    studenthouse: { type: String, required: true, minlength: 3 },
+    description: { type: String },
+    houseId: { type: String, required: true }, 
+  },
+  { timestamps: true }
+);
+
+const StudentHouse: Model<IStudentHouse> =
+  models.StudentHouse || mongoose.model<IStudentHouse>("StudentHouse", StudentHouseSchema);
+
+export default StudentHouse;

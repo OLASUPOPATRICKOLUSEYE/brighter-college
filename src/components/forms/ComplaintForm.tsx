@@ -1,22 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import NextImage from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/utils";
+import InputField from "../InputField";
 import { complaintSchema } from "@/lib/validation/validationSchemas";
 
 type FormData = z.infer<typeof complaintSchema>;
 
 type OptionType = {
   _id: string;
-  source?: string;
   complainttype?: string;
+  source?: string;
 };
 
-export default function ComplaintForm({
+const ComplaintForm = ({
   type,
   data,
   onClose,
@@ -26,12 +29,14 @@ export default function ComplaintForm({
   data?: any;
   onClose?: () => void;
   onSuccess?: () => void;
-}) {
+}) => {
   const router = useRouter();
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sources, setSources] = useState<OptionType[]>([]);
-  const [complainttypes, setComplaintTypes] = useState<OptionType[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [complaintTypes, setComplaintTypes] = useState<OptionType[]>([]);
+  const [sources, setSources] = useState<OptionType[]>([]);
 
   const {
     register,
@@ -40,141 +45,157 @@ export default function ComplaintForm({
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(complaintSchema),
+    defaultValues: data || {
+      date: formatDate(new Date()).split(" ")[0],
+    },
   });
+
+  useEffect(() => {
+    if (type === "update" && data?.attachment) {
+      setExistingImages(data.attachment);
+    }
+  }, [type, data]);
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [srcRes, typeRes] = await Promise.all([
-          fetch("/api/source"),
+        const [typeRes, sourceRes] = await Promise.all([
           fetch("/api/complainttype"),
+          fetch("/api/source"),
         ]);
-        const srcData = await srcRes.json();
         const typeData = await typeRes.json();
-
-        setSources(Array.isArray(srcData) ? srcData : srcData.data || []);
-        setComplaintTypes(Array.isArray(typeData) ? typeData : typeData.data || []);
+        const sourceData = await sourceRes.json();
+        setComplaintTypes(Array.isArray(typeData.data) ? typeData.data : []);
+        setSources(Array.isArray(sourceData.data) ? sourceData.data : []);
       } catch (err) {
-        toast.error("Failed to fetch source or complaint types");
+        toast.error("Failed to fetch complaint type or source");
       }
     };
-
     fetchOptions();
   }, []);
 
-  useEffect(() => {
-    if (type === "update" && data) {
-      Object.keys(data).forEach((key) => {
-        if (key !== "attachDocument" && key in data) {
-          setValue(key as keyof FormData, data[key]);
-        }
-      });
+  const toBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const imageFiles = Array.from(e.target.files).filter((file) =>
+        file.type.startsWith("image/")
+      );
+      setSelectedFiles(imageFiles);
+      setValue("attachment", [...existingImages, ...imageFiles]);
     }
-  }, [type, data, setValue]);
+  };
+
+  const handleRemoveExistingImage = (index: number) => {
+    const updated = existingImages.filter((_, i) => i !== index);
+    setExistingImages(updated);
+    setValue("attachment", [...updated, ...selectedFiles]);
+  };
 
   const onSubmit = async (formData: FormData) => {
-    setLoading(true);
-    setUploadProgress(0);
-    const toastId = toast.loading(type === "create" ? "Submitting..." : "Updating...");
-
     try {
-      const formDataObj = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === "attachDocument" && value instanceof File) {
-          formDataObj.append(key, value);
-        } else {
-          formDataObj.append(key, value as string);
-        }
-      });
+      if (existingImages.length === 0 && selectedFiles.length === 0) {
+        toast.error("Please select at least one image");
+        return;
+      }
 
-      const req = new XMLHttpRequest();
-      req.open(type === "create" ? "POST" : "PUT", type === "create" ? "/api/complaint" : `/api/complaint/${data?._id}`);
+      const toastId = toast.loading("Uploading Images...");
+      const uploadedUrls: string[] = [...existingImages];
 
-      req.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress(percentComplete);
-        }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const base64 = await toBase64(selectedFiles[i]);
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64 }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Upload Failed");
+        uploadedUrls.push(result.url);
+        setUploadProgress(Math.round(((i + 1) / selectedFiles.length) * 100));
+      }
+
+      toast.loading(type === "create" ? "Submitting..." : "Updating...", { id: toastId });
+
+      const payload = {
+        ...formData,
+        attachment: uploadedUrls,
       };
 
-      req.onload = () => {
-        if (req.status >= 200 && req.status < 300) {
-          toast.success(type === "create" ? "Submitted Successfully!" : "Updated Successfully!", {
-            id: toastId,
-          });
-          onClose?.();
-          onSuccess?.();
-          router.refresh();
-        } else {
-          const errorResponse = JSON.parse(req.responseText);
-          toast.error(errorResponse?.error || "Submission failed!", { id: toastId });
+      const response = await fetch(
+        type === "create"
+          ? "/api/complaint"
+          : `/api/complaint/${data?._id}`,
+        {
+          method: type === "create" ? "POST" : "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         }
-        setLoading(false);
-        setUploadProgress(0);
-      };
+      );
 
-      req.onerror = () => {
-        toast.error("Network error", { id: toastId });
-        setLoading(false);
-        setUploadProgress(0);
-      };
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Submission failed");
 
-      req.send(formDataObj);
-    } catch (err: any) {
-      toast.error(err.message || "Submission failed!", { id: toastId });
-      setLoading(false);
-      setUploadProgress(0);
+      toast.success(
+        `Complaint ${type === "create" ? "created" : "updated"} successfully!`,
+        { id: toastId }
+      );
+
+      onClose?.();
+      onSuccess?.();
+      if (!onClose && !onSuccess) {
+        router.push("/dashboard/complaint");
+        router.refresh();
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-sm">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <form
+      className="flex flex-col text-black space-y-4 text-sm"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <h1 className="text-xl font-semibold">
+        {type === "create" ? "Add Complaint" : "Update Complaint"}
+      </h1>
 
-        {/* ✅ Regular Inputs */}
-        {[
-          { label: "S/No", name: "sno", type: "text" },
-          { label: "Complain By", name: "complainBy", type: "text" },
-          { label: "Phone", name: "phone", type: "tel" },
-          { label: "Date", name: "date", type: "date" },
-          { label: "Action Taken", name: "actionTaken", type: "text" },
-          { label: "Assign", name: "assign", type: "text" },
-        ].map((field) => (
-          <div key={field.name}>
-            <label className="block mb-1 font-medium">{field.label}</label>
-            <input
-              type={field.type}
-              {...register(field.name as keyof FormData)}
-              className="border p-2 w-full rounded"
-            />
-            {errors[field.name as keyof FormData] && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors[field.name as keyof FormData]?.message}
-              </p>
-            )}
-          </div>
-        ))}
-
-        {/* ✅ Complaint Type Select */}
-        <div>
-          <label className="block mb-1 font-medium">Complaint Type</label>
-          <select {...register("complaintType")} className="border p-2 w-full rounded">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-4">
+        {/* Complaint Type */}
+        <div className="flex flex-col">
+          <label className="text-[16px] font-medium mb-1">Complaint Type *</label>
+          <select
+            {...register("complaintType")}
+            className="p-2 border rounded-md text-sm"
+            defaultValue=""
+          >
             <option value="">Select Complaint Type</option>
-            {complainttypes.map((type) => (
-              <option key={type._id} value={type.complainttype}>
-                {type.complainttype}
+            {complaintTypes.map((item) => (
+              <option key={item._id} value={item.complainttype}>
+                {item.complainttype}
               </option>
             ))}
           </select>
           {errors.complaintType && (
-            <p className="text-red-500 text-xs mt-1">{errors.complaintType.message}</p>
+            <span className="text-xs text-red-400">{errors.complaintType.message}</span>
           )}
         </div>
 
-        {/* ✅ Source Select */}
-        <div>
-          <label className="block mb-1 font-medium">Source</label>
-          <select {...register("source")} className="border p-2 w-full rounded">
+        {/* Source */}
+        <div className="flex flex-col">
+          <label className="text-[16px] font-medium mb-1">Source *</label>
+          <select
+            {...register("source")}
+            className="p-2 border rounded-md text-sm"
+            defaultValue=""
+          >
             <option value="">Select Source</option>
             {sources.map((src) => (
               <option key={src._id} value={src.source}>
@@ -183,74 +204,121 @@ export default function ComplaintForm({
             ))}
           </select>
           {errors.source && (
-            <p className="text-red-500 text-xs mt-1">{errors.source.message}</p>
+            <span className="text-xs text-red-400">{errors.source.message}</span>
+          )}
+        </div>
+
+        <InputField label="Complain By *" name="complainBy" register={register} error={errors.complainBy} />
+        <InputField label="Phone *" name="phone" register={register} error={errors.phone} />
+        <InputField label="Date *" name="date" type="date" register={register} error={errors.date} />
+        <InputField label="Action Taken *" name="actionTaken" register={register} error={errors.actionTaken} />
+        <InputField label="Assigned Staff *" name="assignedStaff" register={register} error={errors.assignedStaff} />
+
+        {/* File Upload */}
+        <div className="flex flex-col col-span-1 lg:col-span-1">
+          <label className="text-[16px] font-medium mb-1">Attach Images *</label>
+          <label
+            htmlFor="attachment"
+            className="flex items-center gap-2 border border-dashed p-3 rounded-md text-xs cursor-pointer"
+          >
+            <NextImage src="/upload.png" alt="upload" width={20} height={20} />
+            Drag and drop or click to upload
+          </label>
+          <input
+            type="file"
+            id="attachment"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          {errors.attachment && (
+            <span className="text-xs text-red-400">
+              {errors.attachment.message as string}
+            </span>
+          )}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {existingImages.map((url, idx) => (
+              <div key={`existing-${idx}`} className="relative">
+                <img
+                  src={url}
+                  alt={`Existing ${idx}`}
+                  className="w-20 h-20 object-cover rounded border"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveExistingImage(idx)}
+                  className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            {selectedFiles.map((file, idx) => (
+              <img
+                key={`selected-${idx}`}
+                src={URL.createObjectURL(file)}
+                alt={`New ${idx}`}
+                className="w-20 h-20 object-cover rounded border"
+              />
+            ))}
+          </div>
+
+          {uploadProgress > 0 && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+              <div
+                className="bg-yellow-500 h-2.5 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ✅ Description */}
-      <div className="lg:col-span-3">
-        <label className="block mb-1 font-medium">Description</label>
+      {/* Description */}
+      <div className="flex flex-col">
+        <label className="text-[16px] font-medium mb-1">Description *</label>
         <textarea
+          rows={3}
+          className="p-2 border rounded-md text-sm"
           {...register("description")}
-          className="border p-2 w-full rounded"
-          rows={3}
-        />
+        ></textarea>
         {errors.description && (
-          <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
+          <span className="text-xs text-red-400">{errors.description.message}</span>
         )}
       </div>
 
-      {/* ✅ Note */}
-      <div className="lg:col-span-3">
-        <label className="block mb-1 font-medium">Note</label>
+      {/* Note */}
+      <div className="flex flex-col">
+        <label className="text-[16px] font-medium mb-1">Note *</label>
         <textarea
-          {...register("note")}
-          className="border p-2 w-full rounded"
           rows={3}
-        />
+          className="p-2 border rounded-md text-sm"
+          {...register("note")}
+        ></textarea>
         {errors.note && (
-          <p className="text-red-500 text-xs mt-1">{errors.note.message}</p>
+          <span className="text-xs text-red-400">{errors.note.message}</span>
         )}
       </div>
 
-      {/* ✅ Attach Document */}
-      <div className="lg:col-span-3">
-        <label className="block mb-1 font-medium">Attach Document</label>
-        <input
-          type="file"
-          {...register("attachDocument")}
-          className="border p-2 w-full rounded"
-        />
-        {errors.attachDocument && (
-          <p className="text-red-500 text-xs mt-1">{errors.attachDocument.message}</p>
-        )}
+      {/* Submit Button */}
+      <div className="flex justify-start">
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-lamaYellow text-white px-6 py-2 rounded-md font-semibold disabled:bg-gray-400"
+        >
+          {loading
+            ? type === "create"
+              ? "Submitting..."
+              : "Updating..."
+            : type === "create"
+            ? "Submit"
+            : "Update"}
+        </button>
       </div>
-
-      {/* ✅ Tailored Upload Progress Bar */}
-      {loading && (
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-            style={{ width: `${uploadProgress}%` }}
-          />
-        </div>
-      )}
-
-      {/* ✅ Submit Button */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-lamaYellow text-white px-4 py-2 rounded font-bold disabled:bg-gray-400"
-      >
-        {loading
-          ? type === "create"
-            ? "Submitting..."
-            : "Updating..."
-          : type === "create"
-          ? "Submit"
-          : "Update"}
-      </button>
     </form>
   );
-}
+};
+
+export default ComplaintForm;

@@ -13,14 +13,14 @@ export interface IPhoneCallLog extends Document {
 
 const PhoneCallLogSchema = new Schema<IPhoneCallLog>(
   {
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
-    date: { type: Date, required: true },
-    description: { type: String, required: true },
-    nextfollowupdate: { type: Date, required: true },
-    callduration: { type: String, required: true },
-    note: { type: String, required: true },
-    calltype: { type: String, enum: ["incoming", "outgoing"], required: true },
+    name: { type: String, required: true, minlength: 5 },
+    phone: { type: String, required: true, minlength: 5 },
+    date: { type: Date, required: true, minlength: 5 },
+    description: { type: String, required: true, minlength: 5 },
+    nextfollowupdate: { type: Date, required: true, minlength: 5 },
+    callduration: { type: String, required: true, minlength: 5 },
+    note: { type: String, required: true, minlength: 5 },
+    calltype: { type: String, enum: ["incoming", "outgoing"], required: true, minlength: 1 },
   },
   { timestamps: true }
 );
