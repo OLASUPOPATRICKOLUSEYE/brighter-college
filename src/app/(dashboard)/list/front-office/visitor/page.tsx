@@ -75,6 +75,8 @@ const VisitorListPage = () => {
                 key={i}
                 src={file}
                 alt={`Attachment ${i + 1}`}
+                height={64}
+                width={64}
                 className="w-16 h-16 object-cover rounded border"
               />
             ))}
