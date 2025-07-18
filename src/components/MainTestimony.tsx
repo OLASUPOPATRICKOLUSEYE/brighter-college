@@ -153,7 +153,7 @@ const MainTestimony = () => {
               <h3 className="text-xl font-semibold text-lamaYellow">{person.name}</h3>
               <p className="text-sm text-white mb-3">{person.position}</p>
               <p className="text-white text-sm leading-relaxed italic">
-                "{person.testimony}"
+                {person.testimony}
               </p>
             </div>
           </div>
