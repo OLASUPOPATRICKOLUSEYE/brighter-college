@@ -6,6 +6,7 @@ import TableSearch from "@/components/TableSearch";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import Image from "next/image";
 
 const PostalReceivePage = () => {
   const [postalReceives, setPostalReceives] = useState<any[]>([]);
@@ -63,7 +64,7 @@ const PostalReceivePage = () => {
   {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
     <div className="flex flex-wrap gap-2">
       {item.attachment.map((file: string, i: number) => (
-        <img
+        <Image
           key={i}
           src={file}
           alt={`Attachment ${i + 1}`}

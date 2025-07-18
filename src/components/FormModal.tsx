@@ -162,7 +162,7 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
       return forms[table]({ type, data, onClose: () => setOpen(false), onSuccess });
     }
 
-    return <div className="text-center text-red-500">Form Not Found for "{table}"</div>;
+    return <div className="text-center text-red-500">Form Not Found for {table}</div>;
   };
 
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";

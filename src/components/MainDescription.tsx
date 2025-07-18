@@ -55,15 +55,15 @@ const MainDescription = () => {
             Brighter College Residential School
           </h2>
           <p className="text-gray-600 text-sm leading-relaxed text-justify">
-            Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+            Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard
             dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
             type specimen book.
 
-            Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+            Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard
             dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
             type specimen book.
 
-            Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+            Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard
             dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
             type specimen book.
           </p>
