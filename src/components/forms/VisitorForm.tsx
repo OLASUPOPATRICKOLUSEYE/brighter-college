@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import InputField from "../InputField";
 import { visitorSchema } from "@/lib/validation/validationSchemas";
+import Image from "next/image";
 
 type FormData = z.infer<typeof visitorSchema>;
 
@@ -226,7 +227,7 @@ const VisitorForm = ({
           <div className="flex flex-wrap gap-2 mt-2">
             {existingImages.map((url, idx) => (
               <div key={`existing-${idx}`} className="relative">
-                <img
+                <Image
                   src={url}
                   alt={`Existing ${idx}`}
                   className="w-20 h-20 object-cover rounded border"
@@ -241,7 +242,7 @@ const VisitorForm = ({
               </div>
             ))}
             {selectedFiles.map((file, idx) => (
-              <img
+              <Image
                 key={`selected-${idx}`}
                 src={URL.createObjectURL(file)}
                 alt={`New ${idx}`}

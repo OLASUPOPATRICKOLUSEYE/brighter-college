@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/utils";
 import InputField from "@/components/InputField";
 import { postalDispatchSchema } from "@/lib/validation/validationSchemas";
 import { z } from "zod";
+import Image from "next/image";
 
 type FormData = z.infer<typeof postalDispatchSchema>;
 
@@ -179,7 +180,7 @@ const PostalDispatchForm = ({
           <div className="flex flex-wrap gap-2 mt-2">
             {existingImages.map((url, idx) => (
               <div key={`existing-${idx}`} className="relative">
-                <img
+                <Image
                   src={url}
                   alt={`Existing ${idx}`}
                   className="w-20 h-20 object-cover rounded border"
@@ -194,7 +195,7 @@ const PostalDispatchForm = ({
               </div>
             ))}
             {selectedFiles.map((file, idx) => (
-              <img
+              <Image
                 key={`selected-${idx}`}
                 src={URL.createObjectURL(file)}
                 alt={`New ${idx}`}
