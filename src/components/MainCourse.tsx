@@ -67,8 +67,10 @@ const MainCourse = () => {
       setItemsPerPage(1);
     } else if (width < 1024) {
       setItemsPerPage(2);
-    } else {
+    } else if (width < 1440) {
       setItemsPerPage(3);
+    } else {
+      setItemsPerPage(4); // Plasma TVs and ultra-wide screens
     }
   };
 
@@ -88,9 +90,7 @@ const MainCourse = () => {
 
     const interval = setInterval(() => {
       let nextPage = currentPageRef.current + 1;
-      if (nextPage >= totalPages) {
-        nextPage = 0;
-      }
+      if (nextPage >= totalPages) nextPage = 0;
 
       const itemWidth = container.clientWidth / itemsPerPage;
       container.scrollTo({
@@ -100,7 +100,7 @@ const MainCourse = () => {
 
       currentPageRef.current = nextPage;
       setCurrentPage(nextPage);
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [itemsPerPage, totalPages]);
@@ -119,11 +119,13 @@ const MainCourse = () => {
   };
 
   return (
-    <section className="bg-white py-10 px-2 sm:px-6 md:px-10 lg:px-16 xl:px-48 w-full">
+    <section className="bg-white py-10 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
       {/* Header */}
-      <div className="max-w-5xl mx-auto mb-10 text-center">
-        <h2 className="text-3xl font-bold text-[#7a1f1f] mb-2">Our Courses</h2>
-        <p className="text-gray-600 max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto mb-10 text-center">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#7a1f1f] mb-3">
+          Our Courses
+        </h2>
+        <p className="text-gray-600 max-w-3xl mx-auto text-sm sm:text-base">
           Explore our wide range of academic programs designed for excellence.
         </p>
       </div>
@@ -131,39 +133,49 @@ const MainCourse = () => {
       {/* Carousel */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto scroll-smooth no-scrollbar"
+        className="flex overflow-x-auto scroll-smooth no-scrollbar transition-all duration-300"
       >
         {courseList.map((course, index) => (
           <div
             key={index}
-            className="flex-shrink-0 px-1"
+            className="flex-shrink-0 px-2 md:px-3"
             style={{
               width: `${100 / itemsPerPage}%`,
               boxSizing: "border-box",
             }}
           >
-            <div className="w-full flex flex-col items-center bg-white border rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="relative w-full h-72 rounded-md overflow-hidden mb-4">
+            <div className="w-full flex flex-col items-center bg-white border rounded-xl shadow-md hover:shadow-lg transition duration-300">
+              <div className="relative w-full h-64 sm:h-72 md:h-80 rounded-t-xl overflow-hidden">
                 <Image
                   src={course.image}
                   alt={course.title}
                   fill
                   className="object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  priority
                 />
               </div>
-              <p className="text-sm font-semibold text-pascalRed w-full px-4 mb-2">{course.category}</p>
-              <h3 className="text-xl font-bold text-pascalBlue w-full px-4 mb-2">{course.title}</h3>
-              <p className="text-sm text-gray-600 text-justify w-full px-4 mb-5">{course.description}</p>
-              <button className="px-4 py-2 mb-5 bg-pascalRed text-white rounded-full text-sm hover:bg-pascalBlue transition-all duration-300">
-                Apply Now
-              </button>
+              <div className="p-4 w-full">
+                <p className="text-xs sm:text-sm font-semibold text-pascalRed mb-1">
+                  {course.category}
+                </p>
+                <h3 className="text-lg sm:text-xl font-bold text-pascalBlue mb-2">
+                  {course.title}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 text-justify mb-4">
+                  {course.description}
+                </p>
+                <button className="px-4 py-2 bg-pascalRed text-white rounded-full text-sm hover:bg-pascalBlue transition-all duration-300">
+                  Apply Now
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Dot Pagination */}
-      <div className="flex justify-center mt-10 space-x-2">
+      <div className="flex justify-center mt-8 space-x-3">
         {Array.from({ length: totalPages }).map((_, i) => (
           <button
             key={i}

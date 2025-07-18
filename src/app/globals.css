@@ -3,11 +3,25 @@
 @tailwind components;
 @tailwind utilities;
 
-
-body {
+html, body {
+  /* height: 100%; */
   overflow-x: hidden;
+    @apply scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-white overflow-x-hidden;
 }
 
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
 
 .no-scrollbar {
   scrollbar-width: none;

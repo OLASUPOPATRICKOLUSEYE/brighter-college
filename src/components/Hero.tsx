@@ -45,7 +45,7 @@ const Hero = () => {
       {/* Arrows */}
       <button
         onClick={goToPrevious}
-        className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 sm:p-3 rounded-full z-10"
+        className="absolute left-2 sm:left-4 top-1/2 lg:top-1/2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 sm:p-3 rounded-full z-10"
         aria-label="Previous Slide"
       >
         <FaChevronLeft size={20} />
@@ -53,7 +53,7 @@ const Hero = () => {
 
       <button
         onClick={goToNext}
-        className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 sm:p-3 rounded-full z-10"
+        className="absolute right-2 sm:right-4 top-1/2 lg:top-1/2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 sm:p-3 rounded-full z-10"
         aria-label="Next Slide"
       >
         <FaChevronRight size={20} />

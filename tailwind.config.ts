@@ -25,8 +25,13 @@ const config: Config = {
         pascalRed: "#c8102e",
         pascalBlue: "#1e2a45",
       },
+      screens: {
+        xxl: '1600px', // Custom Plasma TV breakpoint
+      },
     },
   },
-  plugins: [],
+    plugins: [
+    require("tailwind-scrollbar"),
+  ],
 };
 export default config;

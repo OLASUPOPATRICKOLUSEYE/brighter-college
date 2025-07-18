@@ -29,11 +29,11 @@ const MainAbout = () => {
   };
 
   return (
-    <section className="bg-white py-10 px-2 sm:px-6 md:px-10 lg:px-16 xl:px-48 w-full">
+    <section className="bg-white py-10 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
       {/* About Us Header */}
       <div className="max-w-7xl mx-auto mb-10 text-center">
-        <h2 className="text-3xl font-bold text-[#7a1f1f] mb-2">About Us</h2>
-        <p className="text-gray-600 max-w-3xl mx-auto">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#7a1f1f] mb-2">About Us</h2>
+        <p className="text-gray-600 max-w-3xl mx-auto text-sm sm:text-base">
           Fusce sem dolor, interdum in efficitur at, faucibus nec lorem. Sed nec
           molestie justo.
         </p>
@@ -41,7 +41,7 @@ const MainAbout = () => {
 
       {/* About Content */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10 items-center">
-        {/* Image */}
+        {/* Image Section */}
         <div className="w-full lg:w-1/2">
           <Image
             src="/bg2.jpg"
@@ -49,16 +49,17 @@ const MainAbout = () => {
             width={600}
             height={300}
             className="rounded-lg shadow-lg w-full h-auto object-cover"
+            priority
           />
         </div>
 
-        {/* Text Section */}
+        {/* Text + Collapsible */}
         <div className="w-full lg:w-1/2">
           <div className="mb-6">
-            <h3 className="text-3xl font-bold text-[#7a1f1f] mb-3">
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#7a1f1f] mb-3">
               WELCOME TO Brighter College
             </h3>
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -66,12 +67,15 @@ const MainAbout = () => {
             </p>
           </div>
 
-          {/* Collapsible Sections */}
+          {/* Accordion Items */}
           <div className="space-y-4">
             {collapsibles.map((item, index) => {
               const isOpen = openIndex === index;
               return (
-                <div key={index} className="border rounded-lg overflow-hidden transition-all duration-300">
+                <div
+                  key={index}
+                  className="border rounded-lg overflow-hidden transition-all duration-300"
+                >
                   <button
                     onClick={() => toggleAccordion(index)}
                     className="w-full flex justify-between items-center px-4 py-3 bg-pascalRed text-white font-medium text-left text-sm hover:bg-pascalRed/90 transition"
@@ -83,7 +87,7 @@ const MainAbout = () => {
                   <div
                     className={`grid transition-all duration-300 ease-in-out ${
                       isOpen ? "grid-rows-[1fr] py-3 px-4" : "grid-rows-[0fr] px-4"
-                    } overflow-hidden text-sm text-gray-700`}
+                    } overflow-hidden text-sm sm:text-base text-gray-700`}
                   >
                     <div className="overflow-hidden">
                       <p>{item.content}</p>

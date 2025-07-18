@@ -12,7 +12,7 @@ import MainTestimony from "@/components/MainTestimony";
 export default function HomePage() {
   return (
     <>
-      <div className="pt-[150px] md:pt-[180px] lg:pt-[250px]">
+      <div className="">
         <Hero />
       </div>
         <MainDescription />

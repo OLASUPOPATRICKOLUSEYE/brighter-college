@@ -3,48 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const staffList = [
-  {
-    id: 1,
-    name: "OLASUPO, Patrick O",
-    field: "Chemistry Teacher",
-    image: "/staff1.jpg",
-  },
-  {
-    id: 2,
-    name: "ADEBAYO, Grace T",
-    field: "Biology Teacher",
-    image: "/staff2.jpg",
-  },
-  {
-    id: 3,
-    name: "AJAYI, David K",
-    field: "English Teacher",
-    image: "/staff3.jpg",
-  },
-  {
-    id: 4,
-    name: "FATIMA, Sulaimon M",
-    field: "Physics Teacher",
-    image: "/staff4.jpg",
-  },
-  {
-    id: 5,
-    name: "OLUWASEUN, Racheal B",
-    field: "Economics Teacher",
-    image: "/staff5.jpg",
-  },
-  {
-    id: 6,
-    name: "IDOWU, Rihanat B",
-    field: "Math Teacher",
-    image: "/staff2.jpg",
-  },
-  {
-    id: 7,
-    name: "LAWAL, Idris A",
-    field: "Geography Teacher",
-    image: "/staff3.jpg",
-  },
+  { id: 1, name: "OLASUPO, Patrick O", field: "Chemistry Teacher", image: "/staff1.jpg" },
+  { id: 2, name: "ADEBAYO, Grace T", field: "Biology Teacher", image: "/staff2.jpg" },
+  { id: 3, name: "AJAYI, David K", field: "English Teacher", image: "/staff3.jpg" },
+  { id: 4, name: "FATIMA, Sulaimon M", field: "Physics Teacher", image: "/staff4.jpg" },
+  { id: 5, name: "OLUWASEUN, Racheal B", field: "Economics Teacher", image: "/staff5.jpg" },
+  { id: 6, name: "IDOWU, Rihanat B", field: "Math Teacher", image: "/staff2.jpg" },
+  { id: 7, name: "LAWAL, Idris A", field: "Geography Teacher", image: "/staff3.jpg" },
 ];
 
 const MainStaff = () => {
@@ -52,9 +17,8 @@ const MainStaff = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const currentPageRef = useRef(0); // <- track current page without re-render
+  const currentPageRef = useRef(0);
 
-  // Detect screen size and set items per page
   const updateLayout = () => {
     const width = window.innerWidth;
     if (width < 640) {
@@ -72,34 +36,32 @@ const MainStaff = () => {
     return () => window.removeEventListener("resize", updateLayout);
   }, []);
 
-  // Update total pages on screen resize or layout change
   useEffect(() => {
     setTotalPages(Math.ceil(staffList.length / itemsPerPage));
   }, [itemsPerPage]);
 
-  // Auto-scroll based on itemsPerPage (stop at last page)
-    useEffect(() => {
-      const container = scrollRef.current;
-      if (!container) return;
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
 
-      const interval = setInterval(() => {
-        let nextPage = currentPageRef.current + 1;
-        if (nextPage >= totalPages) {
-          nextPage = 0; // Loop back to the first page
-        }
+    const interval = setInterval(() => {
+      let nextPage = currentPageRef.current + 1;
+      if (nextPage >= totalPages) {
+        nextPage = 0;
+      }
 
-        const itemWidth = container.clientWidth / itemsPerPage;
-        container.scrollTo({
-          left: itemWidth * itemsPerPage * nextPage,
-          behavior: "smooth",
-        });
+      const itemWidth = container.clientWidth / itemsPerPage;
+      container.scrollTo({
+        left: itemWidth * itemsPerPage * nextPage,
+        behavior: "smooth",
+      });
 
-        currentPageRef.current = nextPage;
-        setCurrentPage(nextPage);
-      }, 2000); 
+      currentPageRef.current = nextPage;
+      setCurrentPage(nextPage);
+    }, 3000);
 
-      return () => clearInterval(interval);
-    }, [itemsPerPage, totalPages]);
+    return () => clearInterval(interval);
+  }, [itemsPerPage, totalPages]);
 
   const handleDotClick = (index: number) => {
     const container = scrollRef.current;
@@ -115,11 +77,13 @@ const MainStaff = () => {
   };
 
   return (
-    <section className="bg-white py-10 px-2 sm:px-6 md:px-10 lg:px-16 xl:px-48 w-full">
+    <section className="bg-white py-12 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-10 text-center">
-        <h2 className="text-3xl font-bold text-[#7a1f1f] mb-2">Our Dedicated Staff</h2>
-        <p className="text-gray-600 max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto mb-10 text-center">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#7a1f1f] mb-2">
+          Our Dedicated Staff
+        </h2>
+        <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
           Meet the passionate educators behind our excellence.
         </p>
       </div>
@@ -132,14 +96,14 @@ const MainStaff = () => {
         {staffList.map((staff, index) => (
           <div
             key={index}
-            className="flex-shrink-0 px-4"
+            className="flex-shrink-0 px-2 sm:px-3 md:px-4"
             style={{
               width: `${100 / itemsPerPage}%`,
               boxSizing: "border-box",
             }}
           >
-            <div className="w-full flex justify-center items-center flex-col">
-              <div className="relative w-96 h-96 rounded-full overflow-hidden shadow-lg">
+            <div className="flex flex-col items-center">
+              <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
                 <Image
                   src={staff.image}
                   alt={staff.name}
@@ -148,8 +112,8 @@ const MainStaff = () => {
                 />
               </div>
               <div className="mt-4 text-center">
-                <h3 className="text-xl font-bold text-[#7a1f1f]">{staff.name}</h3>
-                <p className="text-gray-600">{staff.field}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-[#7a1f1f]">{staff.name}</h3>
+                <p className="text-gray-600 text-sm sm:text-base">{staff.field}</p>
               </div>
             </div>
           </div>

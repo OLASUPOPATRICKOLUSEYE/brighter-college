@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from 'react-hot-toast';
-import MainHeader from "@/components/MainHeader"
-import MainFooter from "@/components/MainFooter"
-
+import { Toaster } from "react-hot-toast";
+import MainHeader from "@/components/MainHeader";
+import MainFooter from "@/components/MainFooter";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,27 +18,28 @@ export default function FrontLayout({
 }>) {
   return (
     <html lang="en">
-    <body className={inter.className}>
-      <MainHeader />
-        {children}
-         <Toaster
+      <head />
+      <body className={inter.className}>
+        <MainHeader />
+        <main>{children}</main>
+        <MainFooter />
+        <Toaster
           position="bottom-right"
           toastOptions={{
             success: {
               style: {
-                background: '#4ade80', 
-                color: '#fff',
+                background: "#4ade80",
+                color: "#fff",
               },
             },
             error: {
               style: {
-                background: '#f87171', 
-                color: '#fff',
+                background: "#f87171",
+                color: "#fff",
               },
             },
           }}
         />
-        <MainFooter />
       </body>
     </html>
   );
