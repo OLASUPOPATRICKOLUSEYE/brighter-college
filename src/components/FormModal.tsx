@@ -30,6 +30,12 @@ const FeesPayableForm = dynamic(() => import("./forms/FeesPayableForm"), { loadi
 const RoomForm = dynamic(() => import("./forms/RoomForm"), { loading: () => <h1>Loading.......</h1>, });
 const HostelForm = dynamic(() => import("./forms/HostelForm"), { loading: () => <h1>Loading.......</h1>, });
 
+
+
+// FOR USER PANEL
+const UserGeneralComplaintForm = dynamic(() => import("./forms/UserGeneralComplaintForm"), { loading: () => <h1>Loading.......</h1>, });
+
+
 const forms: {
   [key: string]: (props: { type: "create" | "update"; data?: any; onClose?: () => void; onSuccess?: () => void }) => JSX.Element;
 } = {
@@ -58,6 +64,11 @@ const forms: {
   feespayable: ({ type, data, onClose, onSuccess }) => ( <FeesPayableForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
   room: ({ type, data, onClose, onSuccess }) => ( <RoomForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
   hostel: ({ type, data, onClose, onSuccess }) => ( <HostelForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
+
+
+// FOR USER PANEL
+  usergeneralcomplaint: ({ type, data, onClose, onSuccess }) => ( <UserGeneralComplaintForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
+
 };
 
 
@@ -99,7 +110,8 @@ interface FormModalProps {
     | "transportpickup"
     | "feespayable"
     | "room"
-    | "hostel";
+    | "hostel"
+    | "usergeneralcomplaint"
   type: 
       "create" 
     | "update" 

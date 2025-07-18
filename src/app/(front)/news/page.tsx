@@ -1,11 +1,16 @@
 import React from 'react'
+import CalendarHero from './NewsHero'
+import CalendarListTable from './NewsListTable'
+import NewsHero from './NewsHero'
+import NewsListTable from './NewsListTable'
 
-const News = () => {
+const Events = () => {
   return (
-    <div>
-      Main News Page
-    </div>
+    <>
+      <NewsHero />
+      <NewsListTable />
+    </>
   )
 }
 
-export default News
+export default Events

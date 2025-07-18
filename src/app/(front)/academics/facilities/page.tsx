@@ -1,11 +1,15 @@
 import React from 'react'
+import FacilitiesHero from './FacilitiesHero'
+import Facilities from './Facilities'
 
-const Facilities = () => {
+
+const Facility = () => {
   return (
-    <div>
-      Facilities
-    </div>
+    <>
+      <FacilitiesHero />
+      <Facilities />
+    </>
   )
 }
 
-export default Facilities
+export default Facility

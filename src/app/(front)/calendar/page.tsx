@@ -1,10 +1,13 @@
 import React from 'react'
+import CalendarHero from './CalendarHero'
+import CalendarListTable from './CalendarListTable'
 
 const AnnualCalendar = () => {
   return (
-    <div>
-      Annual Calendar
-    </div>
+    <>
+      <CalendarHero />
+      <CalendarListTable />
+    </>
   )
 }
 

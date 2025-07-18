@@ -178,6 +178,23 @@ export const hostelSchema = z.object({
 
 
 
+
+
+
+
+
+
+// USER PANEL
+export const userGeneralComplaintSchema = z.object({
+  name: z.string().min(5, "Name must be at least 5 characters"),
+  email: z.string().min(5, "Email must be at least 5 characters"),
+  subject: z.string().min(5, "Subject must be at least 5 characters"),
+  description: z.string().min(5, "Description must be at least 5 characters"),
+  date: z.union([z.string(), z.date()]).transform(val => new Date(val)),
+});
+
+
+
 export const userLoginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(5, "Password must be at least 6 characters"),

@@ -154,6 +154,8 @@ const menuItems: MenuGroup[] = [
         { icon: <MdInbox />, label: "Postal Receive", href: "/list/front-office/postal-receive", visible: ["admin", "teacher"] },
         { icon: <MdReportProblem />, label: "Complaint", href: "/list/front-office/complaint", visible: ["admin", "teacher"] },
         { icon: <MdSettings />, label: "Setup Front Office", href: "/list/front-office/setup-front-office", visible: ["admin", "teacher"] },
+        { icon: <MdSettings />, label: "User General Complaint", href: "/list/front-office/usergeneralcomplaint", visible: ["admin", "teacher"] },
+
       ],
     },
   {
