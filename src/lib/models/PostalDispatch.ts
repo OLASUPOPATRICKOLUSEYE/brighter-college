@@ -6,7 +6,7 @@ export interface IPostalDispatch extends Document {
   address: string;
   note: string;
   fromTitle: string;
-  date: string;
+  date: Date;
   attachment: string[]; // Array of uploaded document/image URLs
 }
 
@@ -43,7 +43,7 @@ const PostalDispatchSchema = new Schema<IPostalDispatch>(
       trim: true,
     },
     date: {
-      type: String,
+      type: Date,
       required: [true, "Date is required"],
       trim: true,
     },

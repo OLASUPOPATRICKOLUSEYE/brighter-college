@@ -42,8 +42,8 @@ export default function AdmissionEnquiryForm({
   } = useForm<FormData>({
     resolver: zodResolver(admissionEnquirySchema),
     defaultValues: data || {
-      date: formatDate(new Date()).split(" ")[0],
-      nextfollowupdate: formatDate(new Date()).split(" ")[0],
+      date: new Date(),
+      nextfollowupdate: new Date(),
     },
   });
 

@@ -6,7 +6,7 @@ export interface IPostalReceive extends Document {
   address: string;
   note: string;
   toTitle: string;
-  date: string;
+  date: Date;
   attachment: string[]; // Array of uploaded document/image URLs
 }
 
@@ -43,7 +43,7 @@ const PostalReceiveSchema = new Schema<IPostalReceive>(
       trim: true,
     },
     date: {
-      type: String,
+      type: Date,
       required: [true, "Date is required"],
       trim: true,
     },

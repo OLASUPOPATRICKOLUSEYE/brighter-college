@@ -6,7 +6,7 @@ export interface IComplaint extends Document {
   source: string;
   complainBy: string;
   phone: string;
-  date: string;
+  date: Date
   description: string;
   actionTaken: string;
   assignedStaff: string;
@@ -41,7 +41,7 @@ const ComplaintSchema = new Schema<IComplaint>(
       trim: true,
     },
     date: {
-      type: String,
+      type: Date,
       required: [true, "Date is required"],
       trim: true,
     },

@@ -34,8 +34,8 @@ export default function PhoneCallLogForm({
   } = useForm<FormData>({
     resolver: zodResolver(phoneCallLogSchema),
     defaultValues: {
-      date: formatDate(new Date()).split(" ")[0],
-      nextfollowupdate: formatDate(new Date()).split(" ")[0],
+      date: new Date(),
+      nextfollowupdate: new Date(),
       calltype: "incoming",
     },
   });

@@ -7,8 +7,8 @@ export interface IAdmissionEnquiry extends Document {
   address: string;
   description: string;
   note: string;
-  date: string; 
-  nextfollowupdate: string; 
+  date: Date; 
+  nextfollowupdate: Date; 
   assignedstaff: string;
   reference: string;
   source: string;
@@ -24,8 +24,8 @@ const AdmissionEnquirySchema = new Schema<IAdmissionEnquiry>(
     address: { type: String, required: true, minlength: 5 },
     description: { type: String, required: true, minlength: 5 },
     note: { type: String, required: true, minlength: 5 },
-    date: { type: String, required: true, minlength: 5 },
-    nextfollowupdate: { type: String, required: true, minlength: 5 },
+    date: { type: Date, required: true, minlength: 5 },
+    nextfollowupdate: { type: Date, required: true, minlength: 5 },
     assignedstaff: { type: String, required: true, minlength: 5 },
     reference: { type: String, required: true, minlength: 1 },
     source: { type: String, required: true, minlength: 1 },

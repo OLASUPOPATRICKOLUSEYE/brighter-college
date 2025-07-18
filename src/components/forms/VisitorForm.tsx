@@ -46,7 +46,7 @@ const VisitorForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(visitorSchema),
     defaultValues: data || {
-      date: formatDate(new Date()).split(" ")[0],
+      date: new Date(),
       inTime: new Date().toTimeString().slice(0, 5),
       outTime: new Date().toTimeString().slice(0, 5),
     },

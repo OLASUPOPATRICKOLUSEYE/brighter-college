@@ -7,7 +7,7 @@ export interface IVisitor extends Document {
   phone: string;
   idCard: string;
   numberOfPerson: number;
-  date: string;
+  date: Date;
   inTime: string;
   outTime: string;
   attachment: string[];
@@ -51,7 +51,7 @@ const VisitorSchema = new Schema<IVisitor>(
       min: 1,      
     },
     date: {
-      type: String,
+      type: Date,
       required: [true, "Date is required"],
       trim: true,
       minlength: 5,

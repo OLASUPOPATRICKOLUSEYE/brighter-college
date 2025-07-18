@@ -47,7 +47,7 @@ const ComplaintForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(complaintSchema),
     defaultValues: data || {
-      date: formatDate(new Date()).split(" ")[0],
+      date: new Date(),
     },
   });
 

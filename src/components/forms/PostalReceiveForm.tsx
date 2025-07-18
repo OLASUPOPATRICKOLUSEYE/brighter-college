@@ -38,7 +38,7 @@ const PostalReceiveForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(postalReceiveSchema),
     defaultValues: data || {
-      date: formatDate(new Date()).split(" ")[0],
+      date: new Date(),
     },
   });
 

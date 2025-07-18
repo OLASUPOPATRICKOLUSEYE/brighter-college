@@ -38,7 +38,7 @@ const PostalDispatchForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(postalDispatchSchema),
     defaultValues: data || {
-      date: formatDate(new Date()).split(" ")[0],
+      date: new Date(),
     },
   });
 
