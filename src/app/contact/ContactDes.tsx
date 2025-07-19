@@ -1,4 +1,5 @@
 "use client";
+import UserGeneralComplaintForm from "@/components/forms/UserGeneralComplaintForm";
 import React from "react";
 import {
   FaMapMarkerAlt,
@@ -36,17 +37,8 @@ const contactDetails = [
 
 const ContactDes = () => {
   return (
-    <section className="bg-white pt-5 pb-12 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
-      {/* Header */}
-      <div className="max-w-6xl mx-auto mb-12 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-[#7a1f1f] mb-4">
-          Get In Touch Via The Details Below?
-        </h2>
-        <div className="text-gray-600 max-w-3xl mx-auto text-sm sm:text-base leading-relaxed">
-          Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took.
-        </div>
-      </div>
-
+    <section className="bg-white py-10 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
+      {/* <UserGeneralComplaintForm type="create" /> */}
       {/* Contact Info Grid */}
       <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-center mb-12">
         {contactDetails.map((detail, idx) => (

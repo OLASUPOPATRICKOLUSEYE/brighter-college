@@ -10,7 +10,7 @@ const NewsList = [
     endDate: "05/20/2025",
     title: "School Vacation Notice",
     description:
-      "Dear Parents, it's vacation time! Time to refresh yourself and visit new places. At the same time, we want our students to learn and explore more. So here we have fun-filled holiday homework. Please take a printout of the homework sheets and follow the instructions. Please take care of the neatness of work.",
+      "Dear Parents, its vacation time! Time to refresh yourself and visit new places. At the same time, we want our students to learn and explore more. So here we have fun-filled holiday homework. Please take a printout of the homework sheets and follow the instructions. Please take care of the neatness of work.",
   },
   {
     type: "Activity",
@@ -18,7 +18,7 @@ const NewsList = [
     endDate: "04/18/2025",
     title: "Summer Learning Activities",
     description:
-      "Summer vacation presents an excellent opportunity for children to learn and grow outside the traditional classroom setting. Wondering how to keep those little minds active during the summer break? We all know that familiar scene – kids glued to screens while their books gather dust.",
+      "Summer vacation presents an excellent opportunity for children to learn and grow outside the traditional classroom setting. Wondering how to keep those little minds active during the summer break? We all know that familiar scene kids glued to screens while their books gather dust.",
   },
   {
     type: "Activity",

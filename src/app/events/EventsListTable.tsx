@@ -18,7 +18,7 @@ const EventsList = [
     endDate: "04/18/2025",
     title: "Summer Learning Activities",
     description:
-      "Summer vacation presents an excellent opportunity for children to learn and grow outside the traditional classroom setting. Wondering how to keep those little minds active during the summer break? We all know that familiar scene – kids glued to screens while their books gather dust.",
+      "Summer vacation presents an excellent opportunity for children to learn and grow outside the traditional classroom setting. Wondering how to keep those little minds active during the summer break? We all know that familiar scene kids glued to screens while their books gather dust.",
   },
   {
     type: "Activity",

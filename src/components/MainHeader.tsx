@@ -140,7 +140,7 @@ const MainHeader = () => {
 
       {/* Nav Bar - Desktop */}
       <nav className="bg-white shadow relative z-20">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+        <div className="max-w-screen-2xl mx-auto px-2">
           <ul className="hidden xl:flex justify-center text-sm font-medium text-gray-700">
             {navItems.map((item) => (
               <li key={item.name} className="relative">
@@ -221,7 +221,7 @@ const MainHeader = () => {
                 <li>
                   <button
                     onClick={handleLoginClick}
-                    className="block w-full mt-2 bg-black text-white px-4 py-2 rounded-full text-center shadow"
+                    className="block w-full mt-10 mb-20 bg-pascalRed hover:bg-pascalBlue text-white px-4 py-2 rounded-md text-center shadow"
                   >
                     Login
                   </button>

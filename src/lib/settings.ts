@@ -2,10 +2,10 @@ export const ITEM_PER_PAGE = 10;
 
 export const role = {
   ADMIN: "admin",
+  TEACHER: "teacher",
+  ACCOUNTANT: "accountant",
   RECEPTIONIST: "receptionist",
   LIBRARIAN: "librarian",
-  ACCOUNTANT: "accountant",
-  TEACHER: "teacher",
   PARENT: "parent",
   STUDENT: "student",
 };

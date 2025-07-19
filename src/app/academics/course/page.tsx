@@ -1,7 +1,7 @@
 import React from 'react'
 import CourseHero from './CourseHero'
-import MainCourse from '@/app/front/MainCourse'
 import MainHeader from '@/components/MainHeader'
+import MainCourse from '@/components/MainCourse'
 import MainFooter from '@/components/MainFooter'
 
 const Course = () => {

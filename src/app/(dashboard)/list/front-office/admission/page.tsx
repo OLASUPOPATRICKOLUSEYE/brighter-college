@@ -6,9 +6,16 @@ import TableSearch from "@/components/TableSearch";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import FormModal from "@/components/FormModal";
+import { useUser } from "@clerk/nextjs";
+
 
 
 const AdmissionEnquiry = () => {
+
+  const { user } = useUser();
+  const role = user?.publicMetadata?.role;
+
+
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,34 +59,38 @@ const AdmissionEnquiry = () => {
     router.refresh();
   };
 
-  const renderRow = (item: any) => (
-    <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
-      <td className="p-4">
-        <div className="flex flex-col gap-1">
-          <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-700">Phone: {item.phone}</p>
-          <p className="text-xs text-gray-800">Email: {item.email}</p>
-          {item.numberofchild && <p className="text-xs italic text-red-500">No. of Child: {item.numberofchild}</p>}
-        </div>
-      </td>
-      <td className="p-4">{item.address}</td>
-      <td className="p-4">{item.description}</td>
-      <td className="p-4">{item.note}</td>
-      <td className="p-4">{item.date}</td>
-      <td className="p-4">{item.nextfollowupdate}</td>
-      <td className="p-4">{item.assignedstaff}</td>
-      <td className="p-4">{item.reference}</td>
-      <td className="p-4">{item.source}</td>
-      <td className="p-4">{item.class}</td>
-      <td className="p-4 whitespace-nowrap">
-        <div className="flex gap-4">
-          <FormModal table="admissionenquiry" type="view" data={item} onSuccess={handleSuccess} />
-          <FormModal table="admissionenquiry" type="update" data={item} onSuccess={handleSuccess} />
-          <FormModal table="admissionenquiry" type="delete" id={item._id} onSuccess={handleSuccess} />
-        </div>
-      </td>
-    </tr>
-  );
+    const renderRow = (item: any) => (
+      <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+        <td className="p-4">
+          <div className="flex flex-col gap-1">
+            <h3 className="font-semibold">{item.name}</h3>
+            <p className="text-xs text-gray-700">Phone: {item.phone}</p>
+            <p className="text-xs text-gray-800">Email: {item.email}</p>
+            {item.numberofchild && <p className="text-xs italic text-red-500">No. of Child: {item.numberofchild}</p>}
+          </div>
+        </td>
+        <td className="p-4">{item.address}</td>
+        <td className="p-4">{item.description}</td>
+        <td className="p-4">{item.note}</td>
+        <td className="p-4">{item.date}</td>
+        <td className="p-4">{item.nextfollowupdate}</td>
+        <td className="p-4">{item.assignedstaff}</td>
+        <td className="p-4">{item.reference}</td>
+        <td className="p-4">{item.source}</td>
+        <td className="p-4">{item.class}</td>
+        <td className="p-4 whitespace-nowrap">
+          <div className="flex gap-4">
+            {role === "admin" && (
+              <>
+                <FormModal table="admissionenquiry" type="view" data={item} onSuccess={handleSuccess} />
+                <FormModal table="admissionenquiry" type="update" data={item} onSuccess={handleSuccess} />
+                <FormModal table="admissionenquiry" type="delete" id={item._id} onSuccess={handleSuccess} />
+              </>
+            )}
+          </div>
+        </td>
+      </tr>
+    );
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -113,7 +124,7 @@ const AdmissionEnquiry = () => {
                 <th className="p-4">Reference</th>
                 <th className="p-4">Source</th>
                 <th className="p-4">Class</th>
-                <th className="p-4">Action</th>
+                {role === "admin" && <th className="p-4">Action</th>}
               </tr>
             </thead>
             <tbody>{enquiries.map((item) => renderRow(item))}</tbody>

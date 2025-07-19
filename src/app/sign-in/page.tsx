@@ -15,12 +15,12 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isSignedIn && user) {
-      setIsRedirecting(true); // show loader
+      setIsRedirecting(true); 
       const role = user.publicMetadata.role;
       if (role) {
         setTimeout(() => {
           router.push(`/${role}`);
-        }, 1500); // simulate loading delay (optional)
+        }, 1500);
       }
     }
   }, [isSignedIn, user, router]);

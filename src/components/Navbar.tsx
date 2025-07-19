@@ -1,16 +1,11 @@
+"use client";
+
 import React from "react";
 import {
-  FiSearch,
-  FiMessageCircle,
-  FiBell,
-  FiUser,
-  FiCalendar,
-  FiMessageSquare,
-  FiMenu,
+  FiMenu
 } from "react-icons/fi";
-import { FaWhatsapp, FaTasks, FaDollarSign } from "react-icons/fa";
-import { MdLanguage } from "react-icons/md";
 import { UserButton, useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 interface NavbarProps {
   onMenuClick?: () => void;
@@ -19,15 +14,11 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const { user } = useUser();
 
-  const iconClass =
-    "rounded-full w-7 h-7 flex items-center justify-center cursor-pointer";
-
   return (
-    <div className="w-full p-4 bg-white shadow-sm">
-      <div className="flex justify-between items-center">
+    <div className="bg-white px-4 py-3 overflow-x-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         {/* LEFT: Hamburger + Search */}
-        <div className="flex items-center gap-4">
-          {/* Hamburger - visible on small screens only */}
+        <div className="flex items-center gap-4 flex-shrink-0">
           <button
             onClick={onMenuClick}
             className="block lg:hidden text-2xl text-gray-700"
@@ -35,9 +26,9 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             <FiMenu />
           </button>
 
-          {/* SEARCH BAR - hidden on small screens */}
+          {/* SEARCH BAR */}
           <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
-            <FiSearch size={14} />
+            <Image src="/search.png" alt="" width={14} height={14} />
             <input
               type="text"
               placeholder="Search..."
@@ -46,68 +37,32 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
           </div>
         </div>
 
-        {/* RIGHT: Icons and Profile */}
-        <div className="w-full flex justify-center md:justify-end mt-1 md:mt-0">
-          {/* PHONE VIEW: GRID FOR ICONS */}
-          <div className="flex flex-col items-center  md:hidden">
-            <div className="grid grid-cols-8 gap-2">
-              <div className={iconClass}><FiMessageCircle size={20} /></div>
-              <div className={iconClass}><FaWhatsapp size={20} color="#25D366" /></div>
-              <div className={iconClass}><FaTasks size={20} /></div>
-              <div className={iconClass}><FiCalendar size={20} /></div>
-              <div className={iconClass}><MdLanguage size={20} /></div>
-              <div className={iconClass}><FaDollarSign size={20} /></div>
-              <div className={iconClass}><FiMessageSquare size={20} /></div>
-              <div className="relative rounded-full w-7 h-7 flex items-center justify-center cursor-pointer">
-                <FiBell size={20} />
-                <div className="absolute -top-2 -right-2 w-4 h-4 bg-purple-500 rounded-full text-[10px] text-white flex items-center justify-center">
-                  1
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-              <div className="flex flex-col">
-                <span className="text-xs font-medium leading-tight">
-                  {user?.fullName || user?.username || "User"}
-                </span>
-                <span className="text-[10px] text-gray-500">
-                  {user?.publicMetadata?.role?.toString().toUpperCase() || "ROLE"}
-                </span>
-              </div>
-              <div className="mt-1">
-                <UserButton />
-              </div>
+        {/* RIGHT: Icons + User */}
+        <div className="flex items-center gap-4 flex-wrap justify-end ml-auto">
+          <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer">
+            <Image src="/message.png" alt="" width={20} height={20} />
+          </div>
+
+          <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative">
+            <Image src="/announcement.png" alt="" width={20} height={20} />
+            <div className="absolute -top-2 -right-2 w-4 h-4 flex items-center justify-center bg-purple-500 text-white rounded-full text-[10px]">
+              1
             </div>
           </div>
 
-          {/* TABLET AND UP: FLEX ROW */}
-          <div className="hidden md:flex items-center gap-4">
-            <div className={iconClass}><FiMessageCircle size={20} /></div>
-            <div className={iconClass}><FaWhatsapp size={20} color="#25D366" /></div>
-            <div className={iconClass}><FaTasks size={20} /></div>
-            <div className={iconClass}><FiCalendar size={20} /></div>
-            <div className={iconClass}><MdLanguage size={20} /></div>
-            <div className={iconClass}><FaDollarSign size={20} /></div>
-            <div className={iconClass}><FiMessageSquare size={20} /></div>
-            <div className="relative rounded-full w-7 h-7 flex items-center justify-center cursor-pointer">
-              <FiBell size={20} />
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-purple-500 rounded-full text-[10px] text-white flex items-center justify-center">
-                1
-              </div>
-            </div>
+          {/* User Info */}
+          <div className="hidden sm:flex flex-col text-right leading-tight max-w-[100px] truncate">
+            <span className="text-sm font-medium truncate">
+              {user?.fullName || user?.username || "User"}
+            </span>
+            <span className="text-xs text-gray-500 truncate">
+              {user?.publicMetadata?.role as string}
+            </span>
+          </div>
 
-            <div className="hidden sm:flex flex-col pl-3">
-              <span className="leading-3 text-xs font-medium">
-                {user?.fullName || user?.username || "User"}
-              </span>
-              <span className="text-[10px] text-gray-500 text-right">
-                {user?.publicMetadata?.role?.toString().toUpperCase() || "ROLE"}
-              </span>
-            </div>
-
-            <div className="bg-gray-300 rounded-full w-9 h-9 flex items-center justify-center">
-              <UserButton />
-            </div>
+          {/* Clerk Profile */}
+          <div className="min-w-[36px]">
+            <UserButton />
           </div>
         </div>
       </div>
