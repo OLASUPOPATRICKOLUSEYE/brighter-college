@@ -7,7 +7,7 @@ import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import LoginModal from "./Login";
+import Redirect from "@/components/Redirect";
 
 // Lazy load social icons
 const FaFacebookF = dynamic(() => import("react-icons/fa").then(mod => mod.FaFacebookF));
@@ -53,13 +53,9 @@ const MainHeader = () => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showAcademicDropdown, setShowAcademicDropdown] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [scrollUp, setScrollUp] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    document.body.style.overflow = isLoginOpen ? "hidden" : "auto";
-  }, [isLoginOpen]);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,6 +66,14 @@ const MainHeader = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+
+  const handleLoginClick = () => {
+    setIsLoggingIn(true);
+  };
+
+  if (isLoggingIn) {
+    return <Redirect to="/sign-in" message="Redirecting to Login..." delay={1500} />;
+  }
 
   return (
     <header className={`fixed top-0 left-0 w-full z-50 font-sans transition-transform duration-300 ${scrollUp ? "translate-y-0" : "-translate-y-full"}`}>
@@ -119,7 +123,7 @@ const MainHeader = () => {
               </div>
             </div>
             <button
-              onClick={() => setIsLoginOpen(true)}
+              onClick={handleLoginClick}
               className="bg-pascalRed hover:bg-pascalBlue text-white px-6 py-2 rounded-full shadow-md hover:scale-105 transition"
             >
               Login
@@ -134,7 +138,7 @@ const MainHeader = () => {
         </div>
       </div>
 
-      {/* Nav Bar - Desktop (only on xl and above) */}
+      {/* Nav Bar - Desktop */}
       <nav className="bg-white shadow relative z-20">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
           <ul className="hidden xl:flex justify-center text-sm font-medium text-gray-700">
@@ -175,7 +179,7 @@ const MainHeader = () => {
             ))}
           </ul>
 
-          {/* Mobile Nav - shown on screen smaller than xl */}
+          {/* Mobile Nav */}
           {menuOpen && (
             <div className="block xl:hidden bg-white h-[calc(100dvh-120px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-white">
               <ul className="flex flex-col py-4 space-y-2">
@@ -216,8 +220,8 @@ const MainHeader = () => {
                 ))}
                 <li>
                   <button
-                    onClick={() => setIsLoginOpen(true)}
-                    className="w-full mt-2 bg-black text-white px-4 py-2 rounded-full shadow"
+                    onClick={handleLoginClick}
+                    className="block w-full mt-2 bg-black text-white px-4 py-2 rounded-full text-center shadow"
                   >
                     Login
                   </button>
@@ -227,9 +231,6 @@ const MainHeader = () => {
           )}
         </div>
       </nav>
-
-      {/* Login Modal */}
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </header>
   );
 };
