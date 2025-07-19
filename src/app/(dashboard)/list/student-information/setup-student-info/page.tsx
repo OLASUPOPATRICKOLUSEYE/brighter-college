@@ -1,15 +1,15 @@
 "use client";
 import { useState } from "react";
-import DisableReason from "./disablereason/page";
-import StudentCategory from "./studentcategory/page";
-import StudentHouse from "./studenthouse/page";
+import DisableReason from "./disable-reason/page";
+import StudentCategory from "./student-category/page";
+import StudentHouse from "./student-house/page";
 import Class from "./class/page";
 import Session from "./session/page";
-import BloodGroup from "./bloodgroup/page";
+import BloodGroup from "./blood-group/page";
 import Genotype from "./genotype/page";
-import TransportRoute from "./transportroute/page";
-import TransportPickup from "./transportpickup/page";
-import FeesPayable from "./feespayable/page";
+import TransportRoute from "./transport-route/page";
+import TransportPickup from "./transport-pickup/page";
+import FeesPayable from "./fees-payable/page";
 import Room from "./room/page";
 import Hostel from "./hostel/page";
 
