@@ -4,50 +4,80 @@ import AttendanceChart from "@/components/AttendanceChart";
 import FinanceChart from "@/components/FinanceChart";
 import EventCalendar from "@/components/EventCalendar";
 import Announcements from "@/components/Announcements";
+import AttendanceBar from "@/components/AttendanceCard";
+import AttendanceCard from "@/components/AttendanceCard";
+import FinanceChartSession from "@/components/FinanceChartSession";
+import BigCalender from "@/components/BigCalender";
+import IncomeChart from "@/components/IncomeChart";
+import ExpensesChart from "@/components/ExpensesChart";
 
-const AdminPage = () => {
-    return (
-        <div className="flex gap-4 flex-col md:flex-row">
-            {/* LEFT */}
-        <div className="w-full lg:w-2/3 flex flex-col gap-8">
-            {/* USER CARDS */}
-            <div className="flex gap-4 justify-between flex-wrap">
-                <UserCard type="Visitors" />
-                <UserCard type="students" />
-                <UserCard type="Total Fees" />
-                <UserCard type="Online Courses" />
-            </div>
-                <div className="flex gap-4 justify-between flex-wrap">
-                <UserCard type="Income" />
-                <UserCard type="Expenses" />
-                <UserCard type="Reports" />
-                <UserCard type="Alumni" />
-            </div>
-
-            {/* MIDDLE CHARTS */}
-            <div className='flex gap-4 flex-col lg:flex-row'>
-            {/* COUNT CHART */}
-                <div className='w-full lg:w-1/3 h-[450px]'>
-                    <CountChart />
-                </div>
-            {/* ATTENDANCE CHART */}
-                <div className='w-full lg:w-2/3 h-[450px]'>
-                    <AttendanceChart />
-                </div>
-            </div>
-            {/* BOTTOM CHART */}
-                <div className="w-full h-[450px]">
-                    <FinanceChart />
-                </div>
-            </div> 
-            {/* RIGHT */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-8 ">
-            <EventCalendar />
-            <Announcements />
+const Admin = () => {
+  return (
+    <div className="flex flex-col lg:flex-row gap-6 py-6">
+      {/* LEFT (Main Content) */}
+      <div className="w-full lg:w-2/3 flex flex-col gap-6">
+        {/* USER CARDS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <UserCard type="Admin" />
+          <UserCard type="Teachers" />
+          <UserCard type="Librarians" />
+          <UserCard type="Accountant" />
+          <UserCard type="Parents" />
+          <UserCard type="Receptionist" />
+          <UserCard type="Students" />
+          <UserCard type="Visitors" />
+          <UserCard type="Alumni" />
+          <UserCard type="Total Fees" />
+          <UserCard type="Income" />
+          <UserCard type="Monthly Fees" />
+          <UserCard type="Expenses" />
+          <UserCard type="Monthly Expenses" />
+          <UserCard type="Online Courses" />
+          <UserCard type="Reports" />
         </div>
 
+        {/* MIDDLE CHARTS */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="w-full lg:w-1/3 min-h-[300px]">
+            <CountChart />
+          </div>
+          <div className="w-full lg:w-2/3 min-h-[300px]">
+            <AttendanceChart />
+          </div>
         </div>
-    )
-}
 
-export default AdminPage;
+        {/* BOTTOM CHARTS */}
+        <div className="flex flex-col gap-4">
+          <div className="min-h-[300px]">
+            <FinanceChart />
+          </div>
+          <div className="min-h-[300px]">
+            <FinanceChartSession />
+          </div>
+        </div>
+          <BigCalender />
+      </div>
+
+      {/* RIGHT (Sidebar Widgets) */}
+      <div className="w-full lg:w-1/3 flex flex-col gap-4">
+        <EventCalendar />
+        <Announcements />
+        <AttendanceCard type="fees-awaiting-payment" />
+        <AttendanceCard type="staff-approved-leave" />
+        <AttendanceCard type="student-approved-leave" />          
+        <AttendanceCard type="converted-leads" />
+        <AttendanceCard type="staff-present-today" />
+        <AttendanceCard type="student-present-today" />
+        <AttendanceCard type="library-overview" />
+        <AttendanceCard type="student-today-attendance" />
+        <AttendanceCard type="fees-overview" />
+        <AttendanceCard type="enquiry-overview" />
+        <IncomeChart />
+        <ExpensesChart />
+      </div>
+
+    </div>
+  );
+};
+
+export default Admin;

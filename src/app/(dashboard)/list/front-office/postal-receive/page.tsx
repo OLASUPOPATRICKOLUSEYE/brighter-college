@@ -7,8 +7,12 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
+import TableNotFound from "@/components/TableNotFound";
+import TableLoading from "@/components/TableLoading";
 
 const PostalReceivePage = () => {
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [postalReceives, setPostalReceives] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +30,8 @@ const PostalReceivePage = () => {
       const queryParams = new URLSearchParams();
       if (searchTerm) queryParams.append("search", searchTerm);
       queryParams.append("page", page.toString());
+      queryParams.append("sortBy", sortBy);
+      queryParams.append("sortOrder", sortOrder);
 
       const res = await fetch(`/api/postalreceive?${queryParams.toString()}`);
       if (!res.ok) throw new Error("Postal Receive Not Found");
@@ -41,7 +47,7 @@ const PostalReceivePage = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, page]);
+  }, [searchTerm, page, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchPostalReceives();
@@ -52,42 +58,14 @@ const PostalReceivePage = () => {
     router.refresh();
   };
 
-  const renderRow = (item: any) => (
-    <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
-      <td className="p-4">{item.fromTitle}</td>
-      <td className="p-4">{item.referenceNo}</td>
-      <td className="p-4">{item.address}</td>
-      <td className="p-4">{item.note}</td>
-      <td className="p-4">{item.toTitle}</td>
-      <td className="p-4">{new Date(item.date).toLocaleDateString()}</td>
-<td className="p-4">
-  {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
-    <div className="flex flex-wrap gap-2">
-      {item.attachment.map((file: string, i: number) => (
-        <Image
-          key={i}
-          src={file}
-          alt={`Attachment ${i + 1}`}
-          height={64}
-          width={64}
-          className="w-16 h-16 object-cover rounded border"
-        />
-      ))}
-    </div>
-  ) : (
-    "-"
-  )}
-</td>
-
-      <td className="p-4">
-        <div className="flex gap-2">
-          <FormModal table="postalreceive" type="view" data={item} onSuccess={handleSuccess} />
-          <FormModal table="postalreceive" type="update" data={item} onSuccess={handleSuccess} />
-          <FormModal table="postalreceive" type="delete" id={item._id} onSuccess={handleSuccess} />
-        </div>
-      </td>
-    </tr>
-  );
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -101,30 +79,142 @@ const PostalReceivePage = () => {
         </div>
       </div>
 
-      {/* Loading or Error */}
-      {loading && <p className="px-4">Loading...</p>}
-      {error && <p className="text-red-500 px-4">{error}</p>}
-
       {/* Table */}
-      {!loading && !error && (
-        <div className="w-full overflow-x-auto">
-          <table className="w-full border-collapse mt-4 text-sm">
+        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
-                <th className="p-4">From Title</th>
-                <th className="p-4">Reference No</th>
-                <th className="p-4">Address</th>
-                <th className="p-4">Note</th>
-                <th className="p-4">To Title</th>
-                <th className="p-4">Date</th>
-                <th className="p-4">Attachment</th>
-                <th className="p-4">Action</th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("fromTitle")}
+                >
+                  From Title{" "}
+                  <span className={sortBy === "fromTitle" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("referenceNo")}
+                >
+                  Reference No{" "}
+                  <span className={sortBy === "referenceNo" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("address")}
+                >
+                  Address{" "}
+                  <span className={sortBy === "address" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("note")}
+                >
+                  Note{" "}
+                  <span className={sortBy === "note" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("toTitle")}
+                >
+                  To Title{" "}
+                  <span className={sortBy === "toTitle" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("date")}
+                >
+                  Date{" "}
+                  <span className={sortBy === "date" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("attachment")}
+                >
+                  Attachment{" "}
+                  <span className={sortBy === "attachment" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th className="p-4 whitespace-nowrap text-right">Action</th>
               </tr>
             </thead>
-            <tbody>{postalReceives.map((item) => renderRow(item))}</tbody>
+            <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={8} className="p-6 text-center">
+                  <TableLoading message="Fetching Postal Received..." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={8} className="p-6 text-center">
+                  <TableNotFound message={error} />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && postalReceives.length === 0 && (
+              <tr>
+                <td colSpan={8} className="p-6 text-center">
+                  <TableNotFound message="No Postal Received Available." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error &&
+              postalReceives.map((item) => (
+                <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                  <td className="p-4 break-words">{item.fromTitle}</td>
+                  <td className="p-4 break-words">{item.referenceNo}</td>
+                  <td className="p-4 break-words">{item.address}</td>
+                  <td className="p-4 break-words">{item.note}</td>
+                  <td className="p-4 break-words">{item.toTitle}</td>
+                  <td className="p-4 break-words">{new Date(item.date).toLocaleDateString()}</td>
+                  <td className="p-4 break-words">
+                    {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {item.attachment.map((file: string, i: number) => (
+                            <Image
+                            key={i}
+                            src={file}
+                            alt={`Attachment ${i + 1}`}
+                            height={64}
+                            width={64}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex gap-2">
+                      <FormModal table="postalreceive" type="view" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="postalreceive" type="update" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="postalreceive" type="delete" id={item._id} onSuccess={handleSuccess} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
           </table>
         </div>
-      )}
 
       {/* Pagination */}
       {!loading && total > ITEM_PER_PAGE && (

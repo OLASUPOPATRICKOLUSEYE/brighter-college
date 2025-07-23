@@ -10,6 +10,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     const query: any = {};
     if (search) {
@@ -18,9 +20,10 @@ export async function GET(req: Request) {
 
     const total = await StudentHouse.countDocuments(query);
     const data = await StudentHouse.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
+
 
     return NextResponse.json({ data, total }, { status: 200 });
   } catch (err) {
@@ -29,24 +32,37 @@ export async function GET(req: Request) {
   }
 }
 
+
 export async function POST(req: Request) {
   try {
     await connectDB();
     const body = await req.json();
 
-    if (!body.studenthouse || !body.houseId) {
-      return NextResponse.json({ error: "Student house and house ID are required" }, { status: 400 });
+    const { studenthouse, description } = body;
+
+    if (!studenthouse || !description) {
+      return NextResponse.json({ error: "All Fields Required" }, { status: 400 });
     }
 
-    const newEntry = await StudentHouse.create({
-      studenthouse: body.studenthouse,
-      description: body.description,
-      houseId: body.houseId,
+    const exists = await StudentHouse.findOne({ studenthouse, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Student House Already Exists" }, { status: 400 });
+    }
+
+    const count = await StudentHouse.countDocuments();
+    const nextId = `SHS-${String(count + 1).padStart(4, "0")}`;
+
+    const newStudentHouse = new StudentHouse({
+      studenthouse,
+      description,
+      houseId: nextId,
     });
 
-    return NextResponse.json({ message: "Student house created", data: newEntry }, { status: 201 });
+    await newStudentHouse.save();
+
+    return NextResponse.json({ message: "Student House Created", data: newStudentHouse }, { status: 201 });
   } catch (error: any) {
     console.error("POST /api/studenthouse error:", error);
-    return NextResponse.json({ error: error.message || "Failed to create" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

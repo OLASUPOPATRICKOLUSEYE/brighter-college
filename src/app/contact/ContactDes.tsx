@@ -1,5 +1,4 @@
 "use client";
-import UserGeneralComplaintForm from "@/components/forms/UserGeneralComplaintForm";
 import React from "react";
 import {
   FaMapMarkerAlt,
@@ -38,7 +37,6 @@ const contactDetails = [
 const ContactDes = () => {
   return (
     <section className="bg-white py-10 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
-      {/* <UserGeneralComplaintForm type="create" /> */}
       {/* Contact Info Grid */}
       <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-center mb-12">
         {contactDetails.map((detail, idx) => (

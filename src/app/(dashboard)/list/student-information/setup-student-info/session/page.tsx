@@ -6,8 +6,12 @@ import TableSearch from "@/components/TableSearch";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import TableNotFound from "@/components/TableNotFound";
+import TableLoading from "@/components/TableLoading";
 
 const Session = () => {
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +29,8 @@ const Session = () => {
       const queryParams = new URLSearchParams();
       if (searchTerm) queryParams.append("search", searchTerm);
       queryParams.append("page", page.toString());
+      queryParams.append("sortBy", sortBy);
+      queryParams.append("sortOrder", sortOrder);
 
       const res = await fetch(`/api/session?${queryParams.toString()}`);
       if (!res.ok) throw new Error("Session Not Found");
@@ -38,7 +44,7 @@ const Session = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, page]);
+  }, [searchTerm, page, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchSessions();
@@ -47,6 +53,15 @@ const Session = () => {
   const handleSuccess = () => {
     fetchSessions();
     router.refresh();
+  };
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
   };
 
   return (
@@ -59,22 +74,75 @@ const Session = () => {
         </div>
       </div>
 
-      {loading && <p className="px-4">Loading...</p>}
-      {error && <p className="text-red-500 px-4">{error}</p>}
-
-      {!loading && !error && (
-        <div className="w-full overflow-x-auto">
-          <table className="w-full border-collapse mt-4 text-sm table-fixed">
+        {/* Table */}
+        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
-              <tr className="text-left text-gray-500">
-                <th className="p-4 w-1/2">Session</th>
-                <th className="p-4 w-1/2 text-right">Action</th>
-              </tr>
+                  <tr className="text-left text-gray-500">
+                    <th
+                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      onClick={() => handleSort("sessionId")}
+                    >
+                      Session ID{" "}
+                      <span className={sortBy === "sessionId" ? "text-black" : "text-gray-300"}>
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    </th>
+                    <th
+                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      onClick={() => handleSort("session")}
+                    >
+                      Session{" "}
+                      <span className={sortBy === "session" ? "text-black" : "text-gray-300"}>
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    </th>
+                    <th
+                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      onClick={() => handleSort("description")}
+                    >
+                      Description{" "}
+                      <span className={sortBy === "description" ? "text-black" : "text-gray-300"}>
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    </th>
+                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                  </tr>
             </thead>
             <tbody>
-              {sessions.map((item) => (
-                <tr key={item._id} className="border-b border-gray-200 hover:bg-slate-100">
-                  <td className="p-4">{item.session}</td>
+            {loading && (
+              <tr>
+                <td colSpan={4} className="p-6 text-center">
+                  <TableLoading message="Fetching Session..." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={4} className="p-6 text-center">
+                  <TableNotFound message={error} />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && sessions.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-6 text-center">
+                  <TableNotFound message="No Session Available." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error &&
+              sessions.map((item) => (
+                <tr
+                  key={item._id}
+                  className="border-b border-gray-200 hover:bg-slate-100"
+                >
+                  <td className="p-4 break-words">{item.sessionId}</td>
+                  <td className="p-4 break-words">{item.session}</td>
+                  <td className="p-4 break-words">{item.description}</td>
                   <td className="p-4">
                     <div className="flex justify-end gap-2">
                       <FormModal table="session" type="view" data={item} onSuccess={handleSuccess} />
@@ -87,7 +155,6 @@ const Session = () => {
             </tbody>
           </table>
         </div>
-      )}
 
       {!loading && total > ITEM_PER_PAGE && (
         <Pagination page={page} count={total} />

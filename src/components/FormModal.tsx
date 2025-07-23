@@ -3,37 +3,38 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiEye } from "react-icons/fi";
 import toast from "react-hot-toast";
+import FormLoader from "./FormLoader";
+import Image from "next/image";
+
 
 // FOR FRONT OFFICE
-const AdmissionEnquiryForm = dynamic(() => import("./forms/AdmissionEnquiryForm"), { loading: () => <h1>Loading.......</h1> });
-const PhoneCallLogForm = dynamic(() => import("./forms/PhoneCallLogForm"), { loading: () => <h1>Loading.......</h1> });
-const VisitorForm = dynamic(() => import("./forms/VisitorForm"), { loading: () => <h1>Loading.......</h1> });
-const PostalDispatchForm = dynamic(() => import("./forms/PostalDispatchForm"), { loading: () => <h1>Loading.......</h1> });
-const PostalReceiveForm = dynamic(() => import("./forms/PostalReceiveForm"), { loading: () => <h1>Loading.......</h1> });
-const ComplaintForm = dynamic(() => import("./forms/ComplaintForm"), { loading: () => <h1>Loading.......</h1> });
-const PurposeForm = dynamic(() => import("./forms/PurposeForm"), { loading: () => <h1>Loading.......</h1> });
-const ComplaintTypeForm = dynamic(() => import("./forms/ComplaintTypeForm"), { loading: () => <h1>Loading.......</h1> });
-const SourceForm = dynamic(() => import("./forms/SourceForm"), { loading: () => <h1>Loading.......</h1> });
-const ReferenceForm = dynamic(() => import("./forms/ReferenceForm"), { loading: () => <h1>Loading.......</h1> });
+const AdmissionEnquiryForm = dynamic(() => import("./forms/Admission-Enquiry-Form"), { loading: FormLoader });
+const PhoneCallLogForm = dynamic(() => import("./forms/Phone-Call-Log-Form"), { loading: FormLoader });
+const VisitorForm = dynamic(() => import("./forms/Visitor-Form"), { loading: FormLoader });
+const PostalDispatchForm = dynamic(() => import("./forms/Postal-Dispatch-Form"), { loading: FormLoader });
+const PostalReceiveForm = dynamic(() => import("./forms/Postal-Receive-Form"), { loading: FormLoader });
+const ComplaintForm = dynamic(() => import("./forms/Complaint-Form"), { loading: FormLoader });
+const PurposeForm = dynamic(() => import("./forms/Purpose-Form"), { loading: FormLoader });
+const ComplaintTypeForm = dynamic(() => import("./forms/Complaint-Type-Form"), { loading: FormLoader });
+const SourceForm = dynamic(() => import("./forms/Source-Form"), { loading: FormLoader });
+const ReferenceForm = dynamic(() => import("./forms/Reference-Form"), { loading: FormLoader });
 
 // FOR STUDENT INFORMATION
-const DisableReason = dynamic(() => import("./forms/DisableReasonForm"), { loading: () => <h1>Loading.......</h1>, });
-const StudentCategoryForm = dynamic(() => import("./forms/StudentCategoryForm"), { loading: () => <h1>Loading.......</h1>, });
-const StudentHouseForm = dynamic(() => import("./forms/StudentHouseForm"), { loading: () => <h1>Loading.......</h1>, });
-const ClassForm = dynamic(() => import("./forms/ClassForm"), { loading: () => <h1>Loading.......</h1>, });
-const SessionForm = dynamic(() => import("./forms/SessionForm"), { loading: () => <h1>Loading.......</h1>, });
-const BloodGroupForm = dynamic(() => import("./forms/BloodGroupForm"), { loading: () => <h1>Loading.......</h1>, });
-const GenotypeForm = dynamic(() => import("./forms/GenotypeForm"), { loading: () => <h1>Loading.......</h1>, });
-const TransportRouteForm = dynamic(() => import("./forms/TransportRouteForm"), { loading: () => <h1>Loading.......</h1>, });
-const TransportPickupForm = dynamic(() => import("./forms/TransportPickUpForm"), { loading: () => <h1>Loading.......</h1>, });
-const FeesPayableForm = dynamic(() => import("./forms/FeesPayableForm"), { loading: () => <h1>Loading.......</h1>, });
-const RoomForm = dynamic(() => import("./forms/RoomForm"), { loading: () => <h1>Loading.......</h1>, });
-const HostelForm = dynamic(() => import("./forms/HostelForm"), { loading: () => <h1>Loading.......</h1>, });
-
-
+const DisableReason = dynamic(() => import("./forms/Disable-Reason-Form"), { loading: FormLoader });
+const StudentCategoryForm = dynamic(() => import("./forms/Student-Category-Form"), { loading: FormLoader });
+const StudentHouseForm = dynamic(() => import("./forms/Student-House-Form"), { loading: FormLoader });
+const ClassForm = dynamic(() => import("./forms/Class-Form"), { loading: FormLoader });
+const SessionForm = dynamic(() => import("./forms/Session-Form"), { loading: FormLoader });
+const BloodGroupForm = dynamic(() => import("./forms/Blood-Group-Form"), { loading: FormLoader });
+const GenotypeForm = dynamic(() => import("./forms/Genotype-Form"), { loading: FormLoader });
+const TransportRouteForm = dynamic(() => import("./forms/Transport-Route-Form"), { loading: FormLoader });
+const TransportPickupForm = dynamic(() => import("./forms/Transport-PickUp-Form"), { loading: FormLoader });
+const FeesPayableForm = dynamic(() => import("./forms/Fees-Payable-Form"), { loading: FormLoader });
+const RoomForm = dynamic(() => import("./forms/Room-Form"), { loading: FormLoader });
+const HostelForm = dynamic(() => import("./forms/Hostel-Form"), { loading: FormLoader });
 
 // FOR USER PANEL
-const UserGeneralComplaintForm = dynamic(() => import("./forms/UserGeneralComplaintForm"), { loading: () => <h1>Loading.......</h1>, });
+const UserGeneralComplaintForm = dynamic(() => import("./forms/User-General-Complaint-Form"), { loading: FormLoader });
 
 
 const forms: {
@@ -71,47 +72,72 @@ const forms: {
 
 };
 
-
-const ViewModalContent = ({ data }: { data: any }) => {
-  if (!data) return <div>No data available to view.</div>;
-
-  return (
-    <div className="space-y-2">
-      {Object.entries(data).map(([key, value]) => (
-        <div key={key} className="flex gap-2">
-          <span className="font-semibold capitalize">{key}:</span>
-          <span>{typeof value === "string" || typeof value === "number" ? value : JSON.stringify(value)}</span>
+  const ViewModalContent = ({ data }: { data: any }) => {
+    if (!data) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[300px] text-center space-y-4 p-4">
+          <div className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px]">
+            <Image
+              src="/nodata.jpg"
+              alt="No data"
+              width={600}
+              height={400}
+              className="w-full h-auto rounded-md"
+            />
+          </div>
+          <p className="text-gray-500 text-lg">
+            No data available to view. <br /> Kindly add to view.
+          </p>
         </div>
-      ))}
-    </div>
-  );
-};
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        {Object.entries(data).map(([key, value]) => (
+          <div key={key} className="p-4 rounded border border-gray-200 bg-white shadow-sm">
+            <span className="block font-semibold capitalize text-pascalRed mb-1">
+              {key}:
+            </span>
+            <span className="text-pascalBlue break-words">
+              {typeof value === "string" || typeof value === "number"
+                ? value
+                : JSON.stringify(value)}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
 
 interface FormModalProps {
   table: 
-      "admissionenquiry" 
-    | "visitor" 
-    | "phonecalllog" 
-    | "postaldispatch" 
-    | "postalreceive" 
-    | "complaint" 
-    | "purpose" 
-    | "complainttype" 
-    | "source" 
-    | "reference" 
-    | "disablereason" 
-    | "studenthouse" 
-    | "studentcategory"
-    | "class"
-    | "session"
-    | "bloodgroup"
-    | "genotype"
-    | "transportroute"
-    | "transportpickup"
-    | "feespayable"
-    | "room"
-    | "hostel"
-    | "usergeneralcomplaint"
+  // FOR FRONT OFFICE
+  "admissionenquiry" 
+  | "visitor" 
+  | "phonecalllog" 
+  | "postaldispatch" 
+  | "postalreceive" 
+  | "complaint" 
+  | "purpose" 
+  | "complainttype" 
+  | "source" 
+  | "reference" 
+  | "usergeneralcomplaint"
+  // FOR STUDENT INFORMATION
+  | "disablereason" 
+  | "studenthouse" 
+  | "studentcategory"
+  | "class"
+  | "session"
+  | "bloodgroup"
+  | "genotype"
+  | "transportroute"
+  | "transportpickup"
+  | "feespayable"
+  | "room"
+  | "hostel"
   type: 
       "create" 
     | "update" 
@@ -132,12 +158,12 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
     const toastId = toast.loading("Deleting...");
     try {
       const res = await fetch(`/api/${table}/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
-      toast.success("Deleted successfully", { id: toastId });
+      if (!res.ok) throw new Error("Failed To Delete");
+      toast.success("Deleted Successfully", { id: toastId });
       if (onSuccess) onSuccess();
       setOpen(false);
     } catch (error: any) {
-      toast.error(error.message || "Failed to delete", { id: toastId });
+      toast.error(error.message || "Failed To Delete", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -155,7 +181,7 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
             disabled={loading}
             className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center"
           >
-            {loading ? "Deleting..." : "Yes, Delete"}
+            {loading ? "Deleting..." : "Yes, Confirm Delete"}
           </button>
         </div>
       );
@@ -164,7 +190,7 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
     if (type === "view") {
       return (
         <div className="p-4">
-          <h2 className="text-lg font-bold mb-4 capitalize">View {table} Details</h2>
+          <h2 className="text-lg font-bold mb-4 capitalize ">View {table} Details</h2>
           <ViewModalContent data={data} />
         </div>
       );
@@ -174,7 +200,21 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
       return forms[table]({ type, data, onClose: () => setOpen(false), onSuccess });
     }
 
-    return <div className="text-center text-red-500">Form Not Found for {table}</div>;
+    return <div className="flex flex-col items-center justify-center min-h-[300px] text-center space-y-4 p-4">
+          <div className="w-full max-w-[400px] sm:max-w-[500px] md:max-w-[600px]">
+            <Image
+              src="/notfound.jpg"
+              alt="Form not found"
+              width={600}
+              height={400}
+              className="w-full h-auto rounded-md"
+            />
+          </div>
+          <p className="text-red-500 text-lg">
+            Form Not Found for <b>{table}</b>
+          </p>
+        </div>
+      ;
   };
 
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";

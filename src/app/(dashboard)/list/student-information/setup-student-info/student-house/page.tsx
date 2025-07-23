@@ -6,8 +6,12 @@ import TableSearch from "@/components/TableSearch";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import TableNotFound from "@/components/TableNotFound";
+import TableLoading from "@/components/TableLoading";
 
 const StudentHouse = () => {
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [studentHouses, setStudentHouses] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +29,8 @@ const StudentHouse = () => {
       const queryParams = new URLSearchParams();
       if (searchTerm) queryParams.append("search", searchTerm);
       queryParams.append("page", page.toString());
+      queryParams.append("sortBy", sortBy);
+      queryParams.append("sortOrder", sortOrder);
 
       const res = await fetch(`/api/studenthouse?${queryParams.toString()}`);
       if (!res.ok) throw new Error("Student House Not Found");
@@ -40,7 +46,7 @@ const StudentHouse = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, page]);
+  }, [searchTerm, page, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchStudentHouses();
@@ -51,20 +57,14 @@ const StudentHouse = () => {
     router.refresh();
   };
 
-  const renderRow = (item: any) => (
-    <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
-      <td className="p-4">{item.houseId}</td>
-      <td className="p-4">{item.studenthouse}</td>
-      <td className="p-4">{item.description}</td>
-      <td className="p-4">
-        <div className="flex gap-2">
-          <FormModal table="studenthouse" type="view" data={item} onSuccess={handleSuccess} />
-          <FormModal table="studenthouse" type="update" data={item} onSuccess={handleSuccess} />
-          <FormModal table="studenthouse" type="delete" id={item._id} onSuccess={handleSuccess} />
-        </div>
-      </td>
-    </tr>
-  );
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -78,32 +78,76 @@ const StudentHouse = () => {
         </div>
       </div>
 
-      {/* Loading or Error */}
-      {loading && <p className="px-4">Loading...</p>}
-      {error && <p className="text-red-500 px-4">{error}</p>}
-
-      {/* Table */}
-      {!loading && !error && (
-        <div className="w-full overflow-x-auto">
-          <table className="w-full border-collapse mt-4 text-sm table-fixed">
+        {/* Table */}
+        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
-              <tr className="text-left text-gray-500">
-                <th className="p-4 w-1/4">House ID</th>
-                <th className="p-4 w-1/4">Student House</th>
-                <th className="p-4 w-1/4">Description</th>
-                <th className="p-4 w-1/4 text-right">Action</th>
-              </tr>
+                  <tr className="text-left text-gray-500">
+                    <th
+                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      onClick={() => handleSort("studentId")}
+                    >
+                      Student House ID{" "}
+                      <span className={sortBy === "houseId" ? "text-black" : "text-gray-300"}>
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    </th>
+                    <th
+                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      onClick={() => handleSort("studenthouse")}
+                    >
+                      House{" "}
+                      <span className={sortBy === "studenthouse" ? "text-black" : "text-gray-300"}>
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    </th>
+                    <th
+                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      onClick={() => handleSort("description")}
+                    >
+                      Description{" "}
+                      <span className={sortBy === "description" ? "text-black" : "text-gray-300"}>
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    </th>
+                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                  </tr>
             </thead>
             <tbody>
-              {studentHouses.map((item) => (
+            {loading && (
+              <tr>
+                <td colSpan={4} className="p-6 text-center">
+                  <TableLoading message="Fetching Student House..." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={4} className="p-6 text-center">
+                  <TableNotFound message={error} />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && studentHouses.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-6 text-center">
+                  <TableNotFound message="No Student House Available." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error &&
+              studentHouses.map((item) => (
                 <tr
                   key={item._id}
                   className="border-b border-gray-200 hover:bg-slate-100"
                 >
-                  <td className="p-4">{item.houseId}</td>
-                  <td className="p-4">{item.studenthouse}</td>
-                  <td className="p-4">{item.description}</td>
-                  <td className="p-4">
+                  <td className="p-4 break-words">{item.houseId}</td>
+                  <td className="p-4 break-words">{item.studenthouse}</td>
+                  <td className="p-4 break-words">{item.description}</td>
+                  <td className="p-4 break-words">
                     <div className="flex justify-end gap-2">
                       <FormModal table="studenthouse" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studenthouse" type="update" data={item} onSuccess={handleSuccess} />
@@ -115,7 +159,6 @@ const StudentHouse = () => {
             </tbody>
           </table>
         </div>
-      )}
 
       {/* Pagination */}
       {!loading && total > ITEM_PER_PAGE && (

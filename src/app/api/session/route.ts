@@ -11,6 +11,9 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+
 
     let query: any = {};
 
@@ -22,9 +25,10 @@ export async function GET(req: Request) {
 
     const total = await Session.countDocuments(query);
     const results = await Session.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
+
 
     return NextResponse.json({ data: results, total }, { status: 200 });
   } catch (error) {
@@ -38,23 +42,31 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.session || body.session.trim().length < 9) {
-      return NextResponse.json(
-        { error: "Session is required and must be in the format e.g., 2012/2013" },
-        { status: 400 }
-      );
+    const { session, description } = body;
+
+    if (!session || !description) {
+      return NextResponse.json({ error: "All Fields Required" }, { status: 400 });
     }
 
-    const newSession = await Session.create({
-      session: body.session.trim(),
+    const exists = await Session.findOne({ session, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Session Already Exists" }, { status: 400 });
+    }
+
+    const count = await Session.countDocuments();
+    const nextId = `SES-${String(count + 1).padStart(4, "0")}`;
+
+    const newSession = new Session({
+      session,
+      description,
+      sessionId: nextId,
     });
 
-    return NextResponse.json(
-      { message: "Session created successfully", data: newSession },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newSession.save();
+
+    return NextResponse.json({ message: "Session Created", data: newSession }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/session error:", error);
-    return NextResponse.json({ error: "Failed to create Session" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to create" }, { status: 500 });
   }
 }

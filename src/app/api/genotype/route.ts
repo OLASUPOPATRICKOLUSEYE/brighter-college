@@ -10,6 +10,9 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+
 
     let query: any = {};
     if (startsWith) {
@@ -20,9 +23,9 @@ export async function GET(req: Request) {
 
     const total = await Genotype.countDocuments(query);
     const results = await Genotype.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
 
     return NextResponse.json({ data: results, total }, { status: 200 });
   } catch (error) {
@@ -36,24 +39,32 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.genotype || body.genotype.trim().length < 2) {
-      return NextResponse.json(
-        { error: "Genotype is required and must be at least 2 characters" },
-        { status: 400 }
-      );
+    const { genotype, description } = body;
+
+    if (!genotype || !description) {
+      return NextResponse.json({ error: "All Field Required" }, { status: 400 });
     }
 
-    const newGenotype = await Genotype.create({
-      genotype: body.genotype.trim(),
-      description: body.description || "",
+    const exists = await Genotype.findOne({ genotype, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Genotype Already Exists" }, { status: 400 });
+    }
+
+    const count = await Genotype.countDocuments();
+    const nextId = `GNT-${String(count + 1).padStart(4, "0")}`;
+
+    const newGenotype = new Genotype({
+      genotype,
+      description,
+      genotypeId: nextId,
     });
 
-    return NextResponse.json(
-      { message: "Genotype created successfully", data: newGenotype },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newGenotype.save();
+
+    return NextResponse.json({ message: "Genotype Created", data: newGenotype }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/genotype error:", error);
-    return NextResponse.json({ error: "Failed to create Genotype" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }
+

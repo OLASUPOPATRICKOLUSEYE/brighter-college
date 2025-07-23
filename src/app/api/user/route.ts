@@ -11,6 +11,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     const query = search
       ? { email: { $regex: search, $options: "i" } }
@@ -18,9 +20,9 @@ export async function GET(req: Request) {
 
     const total = await User.countDocuments(query);
     const users = await User.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
 
     return NextResponse.json({ data: users, total }, { status: 200 });
   } catch (error) {

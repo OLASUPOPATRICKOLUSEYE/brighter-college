@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model, models } from "mongoose";
 
 export interface IUserGeneralComplaint extends Document {
+  userId: string;
   name: string;
   email: string;
   subject: string;
@@ -10,6 +11,7 @@ export interface IUserGeneralComplaint extends Document {
 
 const UserGeneralComplaintSchema = new Schema<IUserGeneralComplaint>(
   {
+    userId: { type: String, required: true, unique: true },
     name: { type: String, required: true, minlength: 5 },
     email: { type: String, required: true, minlength: 5 },
     subject: { type: String, required: true, minlength: 5 },

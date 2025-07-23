@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Girls', count: 45, fill: '#FAE27C' },
-  { name: 'Boys', count: 55, fill: '#C3EBFA' },
+  { name: 'Girls', count: 45, fill: '#f59e0b' }, 
+  { name: 'Boys', count: 55, fill: '#1e2a45' },  
   { name: 'Total', count: 100, fill: 'white' },
 ];
 
@@ -14,7 +14,7 @@ const CountChart = () => {
       {/* TITLE */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-lg font-semibold">Students</h1>
-        <Image src="/moreDark.png" alt="More" width={20} height={20} className='cursor-pointer'/>
+        <Image src="/moreDark.png" alt="More" width={20} height={20} className='cursor-pointer' />
       </div>
 
       {/* CHART */}
@@ -43,12 +43,12 @@ const CountChart = () => {
       {/* BOTTOM */}
       <div className="mt-6 flex justify-around items-center w-full">
         <div className="flex flex-col items-center gap-1">
-          <div className="w-5 h-5 bg-[#C3EBFA] rounded-full" />
+          <div className="w-5 h-5 bg-[#1e2a45] rounded-full" /> {/* Boys */}
           <h1 className="font-bold">1,234</h1>
           <h2 className="text-xs text-gray-500">Boys (55%)</h2>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <div className="w-5 h-5 bg-[#FAE27C] rounded-full" />
+          <div className="w-5 h-5 bg-[#f59e0b] rounded-full" /> {/* Girls */}
           <h1 className="font-bold">1,011</h1>
           <h2 className="text-xs text-gray-500">Girls (45%)</h2>
         </div>

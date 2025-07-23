@@ -11,7 +11,7 @@ const CategorySchema = new Schema<ICategory>(
   {
     category: { type: String, required: true, minlength: 3 },
     description: { type: String },
-    categoryId: { type: String, required: true },
+    categoryId: { type: String, required: true, unique: true },
   },
   { timestamps: true }
 );

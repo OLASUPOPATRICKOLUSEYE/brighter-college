@@ -7,8 +7,12 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
+import TableNotFound from "@/components/TableNotFound";
+import TableLoading from "@/components/TableLoading";
 
 const ComplaintPage = () => {
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [complaints, setComplaints] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +30,8 @@ const ComplaintPage = () => {
       const queryParams = new URLSearchParams();
       if (searchTerm) queryParams.append("search", searchTerm);
       queryParams.append("page", page.toString());
+      queryParams.append("sortBy", sortBy);
+      queryParams.append("sortOrder", sortOrder);
 
       const res = await fetch(`/api/complaint?${queryParams.toString()}`);
       if (!res.ok) throw new Error("Complaints Not Found");
@@ -41,7 +47,7 @@ const ComplaintPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, page]);
+  }, [searchTerm, page, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchComplaints();
@@ -52,44 +58,14 @@ const ComplaintPage = () => {
     router.refresh();
   };
 
-  const renderRow = (item: any) => (
-    <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
-      <td className="p-4">{item.complaintType}</td>
-      <td className="p-4">{item.source}</td>
-      <td className="p-4">{item.complainBy}</td>
-      <td className="p-4">{item.phone}</td>
-      <td className="p-4">{item.date ? new Date(item.date).toLocaleDateString() : "-"}</td>
-      <td className="p-4">{item.description}</td>
-      <td className="p-4">{item.actionTaken}</td>
-      <td className="p-4">{item.assignedStaff}</td>
-      <td className="p-4">{item.note}</td>
-      <td className="p-4">
-        {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {item.attachment.map((file: string, i: number) => (
-              <Image
-                key={i}
-                src={file}
-                alt={`Attachment ${i + 1}`}
-                height={64}
-                width={64}
-                className="w-16 h-16 object-cover rounded border"
-              />
-            ))}
-          </div>
-        ) : (
-          "-"
-        )}
-      </td>
-      <td className="p-4">
-        <div className="flex gap-2">
-          <FormModal table="complaint" type="view" data={item} onSuccess={handleSuccess} />
-          <FormModal table="complaint" type="update" data={item} onSuccess={handleSuccess} />
-          <FormModal table="complaint" type="delete" id={item._id} onSuccess={handleSuccess} />
-        </div>
-      </td>
-    </tr>
-  );
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -102,31 +78,171 @@ const ComplaintPage = () => {
         </div>
       </div>
 
-      {loading && <p className="px-4">Loading...</p>}
-      {error && <p className="text-red-500 px-4">{error}</p>}
-
-      {!loading && !error && (
-        <div className="w-full overflow-x-auto">
-          <table className="w-full border-collapse mt-4 text-sm">
+        {/* Table */}
+        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
-                <th className="p-4">Complaint Type</th>
-                <th className="p-4">Source</th>
-                <th className="p-4">Complain By</th>
-                <th className="p-4">Phone</th>
-                <th className="p-4">Date</th>
-                <th className="p-4">Description</th>
-                <th className="p-4">Action Taken</th>
-                <th className="p-4">Assigned Staff</th>
-                <th className="p-4">Note</th>
-                <th className="p-4">Attachment</th>
-                <th className="p-4">Action</th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("complaintType")}
+                >
+                  Complaint Type{" "}
+                  <span className={sortBy === "complaintType" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("source")}
+                >
+                  Source{" "}
+                  <span className={sortBy === "source" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("complainBy")}
+                >
+                  Complain By{" "}
+                  <span className={sortBy === "complainBy" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("phone")}
+                >
+                  Phone{" "}
+                  <span className={sortBy === "phone" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("date")}
+                >
+                  Date{" "}
+                  <span className={sortBy === "date" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("description")}
+                >
+                  Description{" "}
+                  <span className={sortBy === "description" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("actionTaken")}
+                >
+                  Action Taken{" "}
+                  <span className={sortBy === "actionTaken" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("assignedStaff")}
+                >
+                  Assigned Staff{" "}
+                  <span className={sortBy === "assignedStaff" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("note")}
+                >
+                  Note{" "}
+                  <span className={sortBy === "note" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("attachment")}
+                >
+                  Attachment{" "}
+                  <span className={sortBy === "attachment" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th className="p-4 whitespace-nowrap text-right">Action</th>
               </tr>
             </thead>
-            <tbody>{complaints.map((item) => renderRow(item))}</tbody>
+
+            <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={10} className="p-6 text-center">
+                  <TableLoading message="Fetching Complaints..." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={10} className="p-6 text-center">
+                  <TableNotFound message={error} />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && complaints.length === 0 && (
+              <tr>
+                <td colSpan={10} className="p-6 text-center">
+                  <TableNotFound message="No Complaints Available." />
+                </td>
+              </tr>
+            )}
+            {!loading && !error &&
+              complaints.map((item) => ( 
+                <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                  <td className="p-4 break-words">{item.complaintType}</td>
+                  <td className="p-4 break-words">{item.source}</td>
+                  <td className="p-4 break-words">{item.complainBy}</td>
+                  <td className="p-4 break-words">{item.phone}</td>
+                  <td className="p-4 break-words">{item.date ? new Date(item.date).toLocaleDateString() : "-"}</td>
+                  <td className="p-4 break-words">{item.description}</td>
+                  <td className="p-4 break-words">{item.actionTaken}</td>
+                  <td className="p-4 break-words">{item.assignedStaff}</td>
+                  <td className="p-4 break-words">{item.note}</td>
+                  <td className="p-4 break-words">
+                    {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {item.attachment.map((file: string, i: number) => (
+                            <Image
+                            key={i}
+                            src={file}
+                            alt={`Attachment ${i + 1}`}
+                            height={64}
+                            width={64}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex gap-2">
+                      <FormModal table="complaint" type="view" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="complaint" type="update" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="complaint" type="delete" id={item._id} onSuccess={handleSuccess} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
-      )}
 
       {!loading && total > ITEM_PER_PAGE && (
         <Pagination page={page} count={total} />

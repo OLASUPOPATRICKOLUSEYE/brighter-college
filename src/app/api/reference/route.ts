@@ -11,6 +11,8 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     let query: any = {};
 
@@ -22,9 +24,9 @@ export async function GET(req: Request) {
 
     const total = await Reference.countDocuments(query);
     const references = await Reference.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
 
     return NextResponse.json({ data: references, total }, { status: 200 });
   } catch (error) {
@@ -38,21 +40,31 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.reference || body.reference.trim() === "") {
-      return NextResponse.json({ error: "Reference is required" }, { status: 400 });
+    const { reference, description } = body;
+
+    if (!reference || !description) {
+      return NextResponse.json({ error: "All field are required" }, { status: 400 });
     }
 
-    const newReference = await Reference.create({
-      reference: body.reference,
-      description: body.description || "",
+    const exists = await Reference.findOne({ reference, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Reference Already Exists" }, { status: 400 });
+    }
+
+    const count = await Reference.countDocuments();
+    const nextId = `REF-${String(count + 1).padStart(4, "0")}`;
+
+    const newReference = new Reference({
+      reference,
+      description,
+      referenceId: nextId,
     });
 
-    return NextResponse.json(
-      { message: "Reference created successfully", data: newReference },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newReference.save();
+
+    return NextResponse.json({ message: "Reference Created", data: newReference }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/reference error:", error);
-    return NextResponse.json({ error: "Failed to create reference" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

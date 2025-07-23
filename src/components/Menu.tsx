@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs"; // ✅ Use Clerk to get current user
+import { useUser } from "@clerk/nextjs";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import Link from "next/link";
 import {
@@ -141,6 +141,7 @@ const menuItems: MenuGroup[] = [
       { icon: <MdCall />, label: "Receptionist Dashboard", href: "/receptionist", visible: "receptionist" },
       { icon: <MdSend />, label: "Librarian Dashboard", href: "/librarian", visible: "librarian" },
       { icon: <MdSend />, label: "Parent Dashboard", href: "/parent", visible: "parent" },
+      { icon: <MdSend />, label: "Student Dashboard", href: "/student", visible: "student" },
     ],
   },
   {
@@ -148,7 +149,7 @@ const menuItems: MenuGroup[] = [
     icon: <MdQuestionAnswer className="text-lg" />,
     items: [
       { icon: <MdQuestionAnswer />, label: "Admission Enquiry", href: "/list/front-office/admission", visible: ["admin", "receptionist"] },
-      { icon: <MdBookOnline />, label: "Visitor Book", href: "/list/front-office/visitor", visible: ["admin", "receptionist"] },
+      { icon: <MdBookOnline />, label: "Visitor Book", href: "/list/front-office/visitor", visible: ["admin", "receptionist", "parent", "student"] },
       { icon: <MdCall />, label: "Phone Call Log", href: "/list/front-office/phone-call-log", visible: ["admin", "receptionist"] },
       { icon: <MdSend />, label: "Postal Dispatch", href: "/list/front-office/postal-dispatch", visible: ["admin", "receptionist"] },
       { icon: <MdInbox />, label: "Postal Receive", href: "/list/front-office/postal-receive", visible: ["admin", "receptionist"] },
@@ -161,7 +162,7 @@ const menuItems: MenuGroup[] = [
     title: "Student Info",
     icon: <MdSchool className="text-lg" />,
     items: [
-      { icon: <MdPerson />, label: "Student Details", href: "/list/student-information/student-detail", visible: ["admin", "teacher", "receptionist"] },
+      { icon: <MdPerson />, label: "Student Details", href: "/list/student-information/student-detail", visible: ["admin", "teacher", "receptionist", "parent", "student"] },
       { icon: <MdPersonAdd />, label: "Student Admission", href: "/list/student-information/student-admission", visible: ["admin", "teacher"] },
       { icon: <MdOnlinePrediction />, label: "Online Admission", href: "/list/student-information/online-admission", visible: ["admin"] },
       { icon: <MdAccessibility />, label: "Disabled Students", href: "/list/student-information/disable-student", visible: ["admin", "teacher"] },
@@ -174,7 +175,7 @@ const menuItems: MenuGroup[] = [
     title: "Fees Collection",
     icon: <MdAttachMoney className="text-lg" />,
     items: [
-      { icon: <MdPayment />, label: "Collect Fees", href: "/list/fees-collection/collect-fees", visible: ["admin", "accountant"] },
+      { icon: <MdPayment />, label: "Collect Fees", href: "/list/fees-collection/collect-fees", visible: ["admin", "accountant", "parent", "student"] },
       { icon: <MdAccountBalance />, label: "Offline Bank Payment", href: "/list/fees-collection/offline-bank-payment", visible: ["admin"] },
       { icon: <MdSearch />, label: "Search Fees Payment", href: "/list/fees-collection/search-fees-payment", visible: ["admin", "accountant"] },
       { icon: <MdSearch />, label: "Search Due Fees", href: "/list/fees-collection/search-fees-due", visible: ["admin", "accountant"] },
@@ -191,7 +192,7 @@ const menuItems: MenuGroup[] = [
     title: "Online Courses",
     icon: <MdCastForEducation className="text-lg" />,
     items: [
-      { icon: <MdCastForEducation />, label: "Online Course", href: "/list/online-courses/online-course", visible: ["admin", "teacher", "accountant"] },
+      { icon: <MdCastForEducation />, label: "Online Course", href: "/list/online-courses/online-course", visible: ["admin", "teacher", "accountant", "parent", "student"] },
       { icon: <MdAccountBalanceWallet />, label: "Offline Payment", href: "/list/online-courses/offline-payment", visible: ["admin", "accountant"] },
       { icon: <MdCategory />, label: "Course Category", href: "/list/online-courses/category", visible: ["admin", "teacher", "receptionist", "librarian"] },
       { icon: <MdQuiz />, label: "Question Bank", href: "/list/online-courses/question-bank", visible: ["admin"] },
@@ -212,7 +213,7 @@ const menuItems: MenuGroup[] = [
     title: "Gmeet Live Classes",
     icon: <MdLiveTv className="text-lg" />,
     items: [
-      { icon: <MdLiveTv />, label: "Live Classes", href: "/list/gmeet/live-classes", visible: ["admin", "teacher"] },
+      { icon: <MdLiveTv />, label: "Live Classes", href: "/list/gmeet/live-classes", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdVideoCall />, label: "Live Meeting", href: "/list/gmeet/live-meeting", visible: ["admin", "teacher", "accountant", "receptionist", "librarian"] },
       { icon: <MdAssessment />, label: "Live Class Report", href: "/list/gmeet/class-report", visible: ["admin", "teacher", "accountant", "receptionist", "librarian"] },
       { icon: <MdAssessment />, label: "Live Meeting Report", href: "/list/gmeet/meeting-report", visible: ["admin", "teacher", "accountant", "receptionist", "librarian"] },
@@ -223,7 +224,7 @@ const menuItems: MenuGroup[] = [
     title: "Zoom Live Classes",
     icon: <MdVideoCall className="text-lg" />,
     items: [
-      { icon: <MdLiveTv />, label: "Live Classes", href: "/list/zoom/live-classes", visible: ["admin", "teacher"] },
+      { icon: <MdLiveTv />, label: "Live Classes", href: "/list/zoom/live-classes", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdVideoCall />, label: "Live Meeting", href: "/list/zoom/live-meeting", visible: ["admin", "teacher", "accountant", "receptionist", "librarian"] },
       { icon: <MdAssessment />, label: "Live Class Report", href: "/list/zoom/class-report", visible: ["admin", "teacher", "accountant", "receptionist", "librarian"] },
       { icon: <MdAssessment />, label: "Live Meeting Report", href: "/list/zoom/meeting-report", visible: ["admin", "teacher", "accountant", "receptionist", "librarian"] },
@@ -263,9 +264,9 @@ const menuItems: MenuGroup[] = [
     icon: <MdSchool className="text-lg" />,
     items: [
       { icon: <MdSchool />, label: "Exam", href: "/list/cbse/exam", visible: ["admin", "teacher", "accountant", "librarian"] },
-      { icon: <MdEventNote />, label: "Exam Schedule", href: "/list/cbse/exam-schedule", visible: ["admin", "teacher", "accountant"] },
+      { icon: <MdEventNote />, label: "Exam Schedule", href: "/list/cbse/exam-schedule", visible: ["admin", "teacher", "accountant", "parent", "student"] },
       { icon: <MdPrint />, label: "Print Mark sheet", href: "/list/cbse/print-mark-sheet", visible: ["admin", "teacher"] },
-      { icon: <MdGrade />, label: "Exam Grade", href: "/list/cbse/exam-grade", visible: ["admin", "teacher"] },
+      { icon: <MdGrade />, label: "Exam Grade", href: "/list/cbse/exam-grade", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdSchool />, label: "Assign Observation", href: "/list/cbse/assign-observation", visible: ["admin", "teacher"] },
       { icon: <MdFactCheck />, label: "Observation", href: "/list/cbse/observation", visible: ["admin", "teacher"] },
       { icon: <MdTune />, label: "Observation Parameter", href: "/list/cbse/observation-parameter", visible: ["admin", "teacher", "receptionist"] },
@@ -281,8 +282,8 @@ const menuItems: MenuGroup[] = [
     icon: <MdEventNote className="text-lg" />,
     items: [
       { icon: <MdEventNote />, label: "Exam Group", href: "/list/examination/group-exam", visible: ["admin", "teacher"] },
-      { icon: <MdEventNote />, label: "Exam Schedule", href: "/list/examination/exam-schedule", visible: ["admin", "teacher"] },
-      { icon: <MdScore />, label: "Exam Result", href: "/list/examination/exam-result", visible: ["admin", "teacher"] },
+      { icon: <MdEventNote />, label: "Exam Schedule", href: "/list/examination/exam-schedule", visible: ["admin", "teacher", "parent", "student"] },
+      { icon: <MdScore />, label: "Exam Result", href: "/list/examination/exam-result", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdEditDocument />, label: "Design Admit Card", href: "/list/examination/design-admit-card", visible: ["admin", "teacher"] },
       { icon: <MdPrint />, label: "Print Admit Card", href: "/list/examination/print-admit-card", visible: ["admin", "teacher"] },
       { icon: <MdEditDocument />, label: "Design Marksheet", href: "/list/examination/design-mark-sheet", visible: ["admin", "teacher"] },
@@ -295,7 +296,7 @@ const menuItems: MenuGroup[] = [
     title: "Attendance",
     icon: <MdToday className="text-lg" />,
     items: [
-      { icon: <MdToday />, label: "Student Attendance", href: "/list/attendance/student-attendance", visible: ["admin", "teacher"] },
+      { icon: <MdToday />, label: "Student Attendance", href: "/list/attendance/student-attendance", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdCheckCircle />, label: "Approve Leave", href: "/list/attendance/approve-leave", visible: ["admin", "teacher"] },
       { icon: <MdDateRange />, label: "Attendance by Date", href: "/list/attendance/attendance-by-date", visible: ["admin", "teacher"] },
     ],
@@ -312,7 +313,7 @@ const menuItems: MenuGroup[] = [
     title: "Online Examinatinos",
     icon: <MdQuiz className="text-lg" />,
     items: [
-      { icon: <MdQuiz />, label: "Online Exam", href: "/list/online-exam/online-exam", visible: ["admin", "teacher"] },
+      { icon: <MdQuiz />, label: "Online Exam", href: "/list/online-exam/online-exam", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdLibraryBooks />, label: "Question Bank", href: "/list/online-exam/question-bank", visible: ["admin", "teacher"] },
     ],
   },
@@ -320,7 +321,7 @@ const menuItems: MenuGroup[] = [
     title: "Academics",
     icon: <MdSchedule className="text-lg" />,
     items: [
-      { icon: <MdSchedule />, label: "Class Timetable", href: "/list/academics/class-timetable", visible: ["admin", "teacher", "receptionist"] },
+      { icon: <MdSchedule />, label: "Class Timetable", href: "/list/academics/class-timetable", visible: ["admin", "teacher", "receptionist", "parent", "student"] },
       { icon: <MdSchedule />, label: "Teacher Timetable", href: "/list/academics/teacher-timetable", visible: ["admin", "teacher"] },
       { icon: <MdPersonAdd />, label: "Assign Class Teacher", href: "/list/academics/assign-teacher", visible: ["admin", "teacher", "receptionist"] },
       { icon: <MdUpgrade />, label: "Promote Students", href: "/list/academics/promote-student", visible: ["admin"] },
@@ -346,8 +347,8 @@ const menuItems: MenuGroup[] = [
     items: [
       { icon: <MdContentCopy />, label: "Copy Old Lessons", href: "/list/lesson-plan/copy-old-lesson", visible: ["admin"] },
       { icon: <MdLibraryBooks />, label: "Manage Lesson Plan", href: "/list/lesson-plan/manage-lesson", visible: ["admin", "teacher"] },
-      { icon: <MdRuleFolder />, label: "Manage Syllabus Status", href: "/list/lesson-plan/syllabus-status", visible: ["admin", "teacher"] },
-      { icon: <MdMenuBook />, label: "Lesson", href: "/list/lesson-plan/lesson", visible: ["admin", "teacher"] },
+      { icon: <MdRuleFolder />, label: "Manage Syllabus Status", href: "/list/lesson-plan/syllabus-status", visible: ["admin", "teacher", "parent", "student"] },
+      { icon: <MdMenuBook />, label: "Lesson", href: "/list/lesson-plan/lesson", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdTopic />, label: "Topic", href: "/list/lesson-plan/topic", visible: ["admin", "teacher"] },
     ],
   },
@@ -359,7 +360,7 @@ const menuItems: MenuGroup[] = [
       { icon: <MdChecklist />, label: "Staff Attendance", href: "/list/human-resource/staff-attendance", visible: ["admin", "accountant"] },
       { icon: <MdAttachMoney />, label: "Payroll", href: "/list/human-resource/payroll", visible: ["admin", "accountant"] },
       { icon: <MdCheckCircle />, label: "Approve Leave Request", href: "/list/human-resource/approve-leave", visible: ["admin", "accountant"] },
-      { icon: <MdEditDocument />, label: "Apply Leave", href: "/list/human-resource/apply-leave", visible: ["admin", "teacher", "accountant"] },
+      { icon: <MdEditDocument />, label: "Apply Leave", href: "/list/human-resource/apply-leave", visible: ["admin", "teacher", "accountant", "parent"] },
       { icon: <MdLabel />, label: "Leave Type", href: "/list/human-resource/leave-type", visible: ["admin", "accountant"] },
       { icon: <MdOutlineBarChart />, label: "Teachers Rating", href: "/list/human-resource/teachers-rating", visible: ["admin", "accountant"] },
       { icon: <MdDashboard />, label: "Department", href: "/list/human-resource/department", visible: ["admin", "accountant"] },
@@ -387,9 +388,9 @@ const menuItems: MenuGroup[] = [
     icon: <MdDownload className="text-lg" />,
     items: [
       { icon: <MdCategory />, label: "Content Type", href: "/list/download/content-type", visible: ["admin", "teacher"] },
-      { icon: <MdList />, label: "Content Share List", href: "/list/download/content-share-list", visible: ["admin", "teacher"] },
+      { icon: <MdList />, label: "Content Share List", href: "/list/download/content-share-list", visible: ["admin", "teacher", "parent", "student"] },
       { icon: <MdCloudUpload />, label: "Upload/Share Content", href: "/list/download/upload-share-content", visible: ["admin", "teacher"] },
-      { icon: <MdVideoLibrary />, label: "Video Tutorial", href: "/list/download/video-tutorial", visible: ["admin", "teacher"] },
+      { icon: <MdVideoLibrary />, label: "Video Tutorial", href: "/list/download/video-tutorial", visible: ["admin", "teacher", "parent", "student"] },
     ],
   },
   {
@@ -397,15 +398,15 @@ const menuItems: MenuGroup[] = [
     icon: <MdAssignment className="text-lg" />,
     items: [
       { icon: <MdAddTask />, label: "Add Homework", href: "/list/homework/add-homework", visible: ["admin", "teacher"] },
-      { icon: <MdCalendarToday />, label: "Daily Homework", href: "/list/homework/daily-homework", visible: ["admin", "teacher"] },
+      { icon: <MdCalendarToday />, label: "Daily Homework", href: "/list/homework/daily-homework", visible: ["admin", "teacher", "parent", "student"] },
     ],
   },
   {
     title: "Library",
     icon: <MdMenuBook className="text-lg" />,
     items: [
-      { icon: <MdList />, label: "Book List", href: "/list/library/book-list", visible: ["admin", "librarian"] },
-      { icon: <MdSwapHoriz />, label: "Issue - Return", href: "/list/library/issue-return", visible: ["admin", "librarian"] },
+      { icon: <MdList />, label: "Book List", href: "/list/library/book-list", visible: ["admin", "librarian", "parent", "student"] },
+      { icon: <MdSwapHoriz />, label: "Issue - Return", href: "/list/library/issue-return", visible: ["admin", "librarian", "parent", "student"] },
       { icon: <MdPersonAdd />, label: "Add Student", href: "/list/library/add-student", visible: ["admin", "librarian"] },
       { icon: <MdPersonAdd />, label: "Add Staff Member", href: "/list/library/add-staff-member", visible: ["admin", "librarian"] },
     ],
@@ -436,7 +437,7 @@ const menuItems: MenuGroup[] = [
     items: [
       { icon: <MdAttachMoney />, label: "Fees Master", href: "/list/transportation/fees-master", visible: ["admin"] },
       { icon: <MdLocationOn />, label: "Pickup Point", href: "/list/transportation/pickup-point", visible: ["admin"] },
-      { icon: <MdMap />, label: "Routes", href: "/list/transportation/routes", visible: ["admin", "accountant"] },
+      { icon: <MdMap />, label: "Routes", href: "/list/transportation/routes", visible: ["admin", "accountant", "parent", "student"] },
       { icon: <MdDirectionsBus />, label: "Vehicles", href: "/list/transportation/vehicles", visible: ["admin", "accountant"] },
       { icon: <MdAssignmentInd />, label: "Assign Vehicle", href: "/list/transportation/assign-vehicle", visible: ["admin", "accountant"] },
       { icon: <MdMap />, label: "Route Pickup Point", href: "/list/transportation/route-pickup-point", visible: ["admin"] },
@@ -447,7 +448,7 @@ const menuItems: MenuGroup[] = [
     title: "Hostel",
     icon: <MdHotel className="text-lg" />,
     items: [
-      { icon: <MdMeetingRoom />, label: "Hostel Rooms", href: "/list/hostel/rooms", visible: ["admin", "accountant"] },
+      { icon: <MdMeetingRoom />, label: "Hostel Rooms", href: "/list/hostel/rooms", visible: ["admin", "accountant", "parent", "student"] },
       { icon: <MdCategory />, label: "Room Type", href: "/list/hostel/room-type", visible: ["admin", "accountant"] },
       { icon: <MdHome />, label: "Hostel", href: "/list/hostel", visible: ["admin", "accountant"] },
     ],
@@ -538,60 +539,64 @@ const menuItems: MenuGroup[] = [
   },
 ];
 
-const Menu = () => {
-  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const Menu = () => {
+    const [openGroup, setOpenGroup] = useState<string | null>(null);
+    const { user } = useUser(); 
 
-  const { user } = useUser(); 
-  const userRole = user?.publicMetadata?.role as string;
+    if (!user) {
+      return <div className="text-center justify-center items-center text-gray-500 p-4">Loading menu...</div>;
+    }
 
-  const toggleGroup = (title: string) => {
-    setOpenGroup((prev) => (prev === title ? null : title));
+    const userRole = user.publicMetadata?.role as string;
+
+    const toggleGroup = (title: string) => {
+      setOpenGroup((prev) => (prev === title ? null : title));
+    };
+
+    const isVisible = (visible: string | string[]) =>
+      Array.isArray(visible) ? visible.includes(userRole) : visible === userRole;
+
+    return (
+      <div className="mt-2 text-sm">
+        {menuItems.map((group) => {
+          const visibleItems = group.items.filter((item) => isVisible(item.visible));
+          if (visibleItems.length === 0) return null;
+
+          return (
+            <div key={group.title} className="mb-2">
+              <button
+                type="button"
+                onClick={() => toggleGroup(group.title)}
+                className={`w-full flex items-center justify-between px-2 py-2 rounded-md text-gray-700 font-semibold hover:bg-gray-100 ${
+                  openGroup === group.title ? "bg-gray-200" : ""
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {group.icon}
+                  <span>{group.title}</span>
+                </div>
+                <span>{openGroup === group.title ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
+              </button>
+
+              {openGroup === group.title && (
+                <div className="mt-2 flex flex-col gap-1">
+                  {visibleItems.map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="flex items-center gap-2 py-2 px-2 rounded-md text-gray-600 hover:bg-gray-100 text-sm"
+                    >
+                      <div className="text-lg">{item.icon}</div>
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
-
-  const isVisible = (visible: string | string[]) =>
-    Array.isArray(visible) ? visible.includes(userRole) : visible === userRole;
-
-  return (
-    <div className="mt-2 text-sm">
-      {menuItems.map((group) => {
-        const visibleItems = group.items.filter((item) => isVisible(item.visible));
-        if (visibleItems.length === 0) return null; 
-
-        return (
-          <div key={group.title} className="mb-2">
-            <button
-              type="button"
-              onClick={() => toggleGroup(group.title)}
-              className={`w-full flex items-center justify-between px-2 py-2 rounded-md text-gray-700 font-semibold hover:bg-gray-100 ${
-                openGroup === group.title ? "bg-gray-200" : ""
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                {group.icon}
-                <span>{group.title}</span>
-              </div>
-              <span>{openGroup === group.title ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-            </button>
-
-            {openGroup === group.title && (
-              <div className="mt-2 flex flex-col gap-1">
-                {visibleItems.map((item) => (
-                  <Link
-                    href={item.href}
-                    key={item.label}
-                    className="flex items-center gap-2 py-2 px-2 rounded-md text-gray-600 hover:bg-gray-100 text-sm"
-                  >
-                    <div className="text-lg">{item.icon}</div>
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 export default Menu;

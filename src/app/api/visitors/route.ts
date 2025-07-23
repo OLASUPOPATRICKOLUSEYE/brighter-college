@@ -11,6 +11,8 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     let query: any = {};
 
@@ -22,9 +24,9 @@ export async function GET(req: Request) {
 
     const total = await Visitor.countDocuments(query);
     const visitors = await Visitor.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
 
     return NextResponse.json({ data: visitors, total }, { status: 200 });
   } catch (error) {

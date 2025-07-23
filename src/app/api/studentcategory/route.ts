@@ -10,6 +10,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     const query: any = {};
     if (search) {
@@ -18,9 +20,10 @@ export async function GET(req: Request) {
 
     const total = await StudentCategory.countDocuments(query);
     const data = await StudentCategory.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
+
 
     return NextResponse.json({ data, total }, { status: 200 });
   } catch (err) {
@@ -34,19 +37,56 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.category || !body.categoryId) {
-      return NextResponse.json({ error: "Student Category and Category ID are required" }, { status: 400 });
+    const { category, description } = body;
+
+    if (!category || !description) {
+      return NextResponse.json({ error: "All fields Required" }, { status: 400 });
     }
 
-    const newEntry = await StudentCategory.create({
-      category: body.category,
-      description: body.description,
-      categoryId: body.categoryId,
+    const exists = await StudentCategory.findOne({ category, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Student Category Already Exists" }, { status: 400 });
+    }
+
+    const count = await StudentCategory.countDocuments();
+    const nextId = `SCG-${String(count + 1).padStart(4, "0")}`; 
+
+    const newCategory = new StudentCategory({
+      category,
+      description,
+      categoryId: nextId,
     });
 
-    return NextResponse.json({ message: "Student Category created", data: newEntry }, { status: 201 });
+    await newCategory.save();
+
+    return NextResponse.json({ message: "Student Category Created", data: newCategory }, { status: 201 });
   } catch (error: any) {
     console.error("POST /api/studentcategory error:", error);
-    return NextResponse.json({ error: error.message || "Failed to create" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }
+
+
+
+
+// export async function POST(req: Request) {
+//   try {
+//     await connectDB();
+//     const body = await req.json();
+
+//     if (!body.category || !body.categoryId) {
+//       return NextResponse.json({ error: "Student Category and Category ID are required" }, { status: 400 });
+//     }
+
+//     const newEntry = await StudentCategory.create({
+//       category: body.category,
+//       description: body.description,
+//       categoryId: body.categoryId,
+//     });
+
+//     return NextResponse.json({ message: "Student Category created", data: newEntry }, { status: 201 });
+//   } catch (error: any) {
+//     console.error("POST /api/studentcategory error:", error);
+//     return NextResponse.json({ error: error.message || "Failed to create" }, { status: 500 });
+//   }
+// }

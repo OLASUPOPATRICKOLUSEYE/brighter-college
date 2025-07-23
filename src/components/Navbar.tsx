@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  FiMenu
-} from "react-icons/fi";
+import { FiMenu } from "react-icons/fi";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 

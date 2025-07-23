@@ -1,7 +1,7 @@
 import React from 'react'
 import ContactHero from './ContactHero'
 import ContactDes from './ContactDes';
-import UserGeneralComplaintForm from '@/components/forms/UserGeneralComplaintForm';
+import UserGeneralComplaintForm from '@/components/forms/User-General-Complaint-Form';
 import MainHeader from '@/components/MainHeader';
 import MainFooter from '@/components/MainFooter';
 

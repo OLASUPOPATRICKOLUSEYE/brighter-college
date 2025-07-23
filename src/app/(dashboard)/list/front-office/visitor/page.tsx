@@ -7,9 +7,13 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
+import TableNotFound from "@/components/TableNotFound";
+import TableLoading from "@/components/TableLoading";
 
 const VisitorListPage = () => {
-  const [postalVisitors, setVisitors] = useState<any[]>([]);
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [visitors, setVisitors] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,6 +30,8 @@ const VisitorListPage = () => {
       const queryParams = new URLSearchParams();
       if (searchTerm) queryParams.append("search", searchTerm);
       queryParams.append("page", page.toString());
+      queryParams.append("sortBy", sortBy);
+      queryParams.append("sortOrder", sortOrder);
 
       const res = await fetch(`/api/visitors?${queryParams.toString()}`);
       if (!res.ok) throw new Error("Visitors Not Found");
@@ -41,7 +47,7 @@ const VisitorListPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, page]);
+  }, [searchTerm, page, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchVisitors();
@@ -52,48 +58,14 @@ const VisitorListPage = () => {
     router.refresh();
   };
 
-  const renderRow = (item: any) => (
-    <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
-      <td className="p-4 min-w-[180px]">
-        <div className="flex flex-col gap-1">
-          <h3 className="font-semibold">{item.visitorName}</h3>
-          <p className="text-xs text-gray-500">ID Card: {item.idCard}</p>
-          <p className="text-xs text-gray-500">Persons: {item.numberOfPersons}</p>
-          {item.note && <p className="text-xs italic text-gray-400">Note: {item.note}</p>}
-        </div>
-      </td>
-      <td className="p-4 min-w-[120px]">{item.purpose}</td>
-      <td className="p-4 min-w-[140px]">{item.meetingWith} - {item.staffName}</td>
-      <td className="p-4 min-w-[120px]">{item.phone}</td>
-      <td className="p-4">{new Date(item.date).toLocaleDateString()}</td>
-      <td className="p-4 min-w-[140px]">{item.inTime} / {item.outTime}</td>
-      <td className="p-4">
-        {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {item.attachment.map((file: string, i: number) => (
-              <Image
-                key={i}
-                src={file}
-                alt={`Attachment ${i + 1}`}
-                height={64}
-                width={64}
-                className="w-16 h-16 object-cover rounded border"
-              />
-            ))}
-          </div>
-        ) : (
-          "-"
-        )}
-      </td>
-      <td className="p-4">
-        <div className="flex gap-2">
-          <FormModal table="visitor" type="view" data={item} onSuccess={handleSuccess} />
-          <FormModal table="visitor" type="update" data={item} onSuccess={handleSuccess} />
-          <FormModal table="visitor" type="delete" id={item._id} onSuccess={handleSuccess} />
-        </div>
-      </td>
-    </tr>
-  );
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -107,30 +79,149 @@ const VisitorListPage = () => {
         </div>
       </div>
 
-      {/* Loading or Error */}
-      {loading && <p className="px-4">Loading...</p>}
-      {error && <p className="text-red-500 px-4">{error}</p>}
-
       {/* Table */}
-      {!loading && !error && (
-        <div className="w-full overflow-x-auto">
-          <table className="w-full border-collapse mt-4 text-sm">
+        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
-                <th className="p-4">Visitor Details</th>
-                <th className="p-4">Purpose</th>
-                <th className="p-4">Meeting With</th>
-                <th className="p-4">Phone</th>
-                <th className="p-4">Date</th>
-                <th className="p-4">InTime/OutTime</th>
-                <th className="p-4">Attachment</th>
-                <th className="p-4">Action</th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("visitorDetails")}
+                >
+                  Visitor Details{" "}
+                  <span className={sortBy === "visitorDetails" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("purpose")}
+                >
+                  Purpose{" "}
+                  <span className={sortBy === "purpose" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("meetingWith")}
+                >
+                  Meeting With{" "}
+                  <span className={sortBy === "meetingWith" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("phone")}
+                >
+                  Phone{" "}
+                  <span className={sortBy === "phone" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("date")}
+                >
+                  Date{" "}
+                  <span className={sortBy === "date" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("time")}
+                >
+                  InTime/OutTime{" "}
+                  <span className={sortBy === "time" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("attachment")}
+                >
+                  Attachment{" "}
+                  <span className={sortBy === "attachment" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
+                <th className="p-4 whitespace-nowrap text-right">Action</th>
               </tr>
             </thead>
-            <tbody>{postalVisitors.map((item) => renderRow(item))}</tbody>
+
+            <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={8} className="p-6 text-center">
+                  <TableLoading message="Fetching Visitors..." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={8} className="p-6 text-center">
+                  <TableNotFound message={error} />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && visitors.length === 0 && (
+              <tr>
+                <td colSpan={8} className="p-6 text-center">
+                  <TableNotFound message="No Visitors Available." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error &&
+              visitors.map((item) => (
+                <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                  <td className="p-4 break-words">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="font-semibold">{item.visitorName}</h3>
+                      <p className="text-xs text-gray-500">ID Card: {item.idCard}</p>
+                      <p className="text-xs text-gray-500">Persons: {item.numberOfPersons}</p>
+                      {item.note && <p className="text-xs italic text-gray-400">Note: {item.note}</p>}
+                    </div>
+                  </td>
+                  <td className="p-4 break-words">{item.purpose}</td>
+                  <td className="p-4 break-words">{item.meetingWith} - {item.staffName}</td>
+                  <td className="p-4 break-words">{item.phone}</td>
+                  <td className="p-4 break-words">{new Date(item.date).toLocaleDateString()}</td>
+                  <td className="p-4 break-words">{item.inTime} / {item.outTime}</td>
+                  <td className="p- break-words">
+                    {Array.isArray(item.attachment) && item.attachment.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {item.attachment.map((file: string, i: number) => (
+                            <Image
+                            key={i}
+                            src={file}
+                            alt={`Attachment ${i + 1}`}
+                            height={64}
+                            width={64}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex gap-2">
+                      <FormModal table="visitor" type="view" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="visitor" type="update" data={item} onSuccess={handleSuccess} />
+                      <FormModal table="visitor" type="delete" id={item._id} onSuccess={handleSuccess} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
-        </div>
-      )}
+        </div>      
 
       {/* Pagination */}
       {!loading && total > ITEM_PER_PAGE && (

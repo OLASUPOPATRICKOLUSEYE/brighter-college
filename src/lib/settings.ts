@@ -17,12 +17,12 @@ type RouteAccessMap = {
 export const routeAccessMap: RouteAccessMap = {
   // FOR DASHBOARD
   "/admin(.*)": ["admin"],
-  "/student(.*)": ["student"],
   "/teacher(.*)": ["teacher"],
-  "/parent(.*)": ["parent"],
+  "/accountant(.*)": ["accountant"],
   "/receptionist(.*)": ["receptionist"],
   "/librarian(.*)": ["librarian"],
-  "/accountant(.*)": ["accountant"],
+  "/parent(.*)": ["parent"],
+  "/student(.*)": ["student"],
 
   // FOR FRONT OFFICE
   "/list/front-office/admission": ["admin", "teacher"],
@@ -286,10 +286,4 @@ export const routeAccessMap: RouteAccessMap = {
   "/list/system-setting/file-types": ["admin", "teacher"],
   "/list/system-setting/sidebar-menu": ["admin", "teacher"],
   "/list/system-setting/system-update": ["admin", "teacher"],
-
-
-
-  // FOR USER PANEL MANAGEMENT SYSTEM
-  // "/list/system-setting/system-update": ["admin", "teacher"],
-
 };

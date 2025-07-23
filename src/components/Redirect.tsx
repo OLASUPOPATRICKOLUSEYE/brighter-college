@@ -11,9 +11,9 @@ interface RedirectProps {
 }
 
 export default function Redirect({
-  to = '/',
+  to = '/sign-in',
   message = 'Redirecting...',
-  delay = 2000,
+  delay = 1000,
 }: RedirectProps) {
   const router = useRouter();
 

@@ -11,6 +11,8 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     let query: any = {};
 
@@ -22,9 +24,10 @@ export async function GET(req: Request) {
 
     const total = await Source.countDocuments(query);
     const sources = await Source.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
+
 
     return NextResponse.json({ data: sources, total }, { status: 200 });
   } catch (error) {
@@ -38,21 +41,31 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.source || body.source.trim() === "") {
-      return NextResponse.json({ error: "Source is required" }, { status: 400 });
+    const { source, description } = body;
+
+    if (!source || !description) {
+      return NextResponse.json({ error: "All Field Required" }, { status: 400 });
     }
 
-    const newSource = await Source.create({
-      source: body.source,
-      description: body.description || "",
+    const exists = await Source.findOne({ source, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Source Already Exists" }, { status: 400 });
+    }
+
+    const count = await Source.countDocuments();
+    const nextId = `SRC-${String(count + 1).padStart(4, "0")}`;
+
+    const newSource = new Source({
+      source,
+      description,
+      sourceId: nextId,
     });
 
-    return NextResponse.json(
-      { message: "Source created successfully", data: newSource },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newSource.save();
+
+    return NextResponse.json({ message: "Source Created", data: newSource }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/source error:", error);
-    return NextResponse.json({ error: "Failed to create source" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

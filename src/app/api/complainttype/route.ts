@@ -11,6 +11,8 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     let query: any = {};
 
@@ -22,9 +24,9 @@ export async function GET(req: Request) {
 
     const total = await ComplaintType.countDocuments(query);
     const complaintTypes = await ComplaintType.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
 
     return NextResponse.json({ data: complaintTypes, total }, { status: 200 });
   } catch (error) {
@@ -38,21 +40,31 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.complainttype || body.complainttype.trim() === "") {
-      return NextResponse.json({ error: "Complaint type is required" }, { status: 400 });
+    const { complainttype, description } = body;
+
+    if (!complainttype || !description) {
+      return NextResponse.json({ error: "All Field Required" }, { status: 400 });
     }
 
-    const newComplaintType = await ComplaintType.create({
-      complainttype: body.complainttype,
-      description: body.description || "",
+    const exists = await ComplaintType.findOne({ complainttype, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Complaint Type Already Exists" }, { status: 400 });
+    }
+
+    const count = await ComplaintType.countDocuments();
+    const nextId = `CMT-${String(count + 1).padStart(4, "0")}`;
+
+    const newComplaintType = new ComplaintType({
+      complainttype,
+      description,
+      complainttypeId: nextId,
     });
 
-    return NextResponse.json(
-      { message: "Complaint type created successfully", data: newComplaintType },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("POST /api/complainttype error:", error);
-    return NextResponse.json({ error: "Failed to create complaint type" }, { status: 500 });
+    await newComplaintType.save();
+
+    return NextResponse.json({ message: "Complaint Type Created", data: newComplaintType }, { status: 201 });
+  } catch (error: any) {
+    console.error("POST /api/complaintype error:", error);
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

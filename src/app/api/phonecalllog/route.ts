@@ -10,9 +10,11 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+const sortBy = searchParams.get("sortBy") || "createdAt";
+const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
-    let query: any = {};
 
+  let query: any = {};
     if (search) {
       // Search by name, phone or description (optional, add/remove fields)
       query.$or = [
@@ -25,9 +27,9 @@ export async function GET(req: Request) {
 
     const total = await PhoneCallLog.countDocuments(query);
     const phonecalllogs = await PhoneCallLog.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);      
 
     return NextResponse.json({ data: phonecalllogs, total }, { status: 200 });
   } catch (error) {

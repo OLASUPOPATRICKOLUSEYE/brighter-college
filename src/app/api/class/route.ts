@@ -12,6 +12,9 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const startsWith = searchParams.get("startsWith") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+
 
     let query: any = {};
 
@@ -23,9 +26,9 @@ export async function GET(req: Request) {
 
     const total = await Class.countDocuments(query);
     const reasons = await Class.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * ITEM_PER_PAGE)
-      .limit(ITEM_PER_PAGE);
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * ITEM_PER_PAGE)
+    .limit(ITEM_PER_PAGE);
 
     return NextResponse.json({ data: reasons, total }, { status: 200 });
   } catch (error) {
@@ -39,20 +42,31 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    if (!body.className || body.className.trim().length < 2) {
-      return NextResponse.json({ error: "Class name is required" }, { status: 400 });
+    const { className, description } = body;
+
+    if (!className || !description) {
+      return NextResponse.json({ error: "All field required" }, { status: 400 });
     }
 
-    const newClass = await Class.create({
-      className: body.className.trim(),
+    const exists = await Class.findOne({ className, description });
+    if (exists) {
+      return NextResponse.json({ error: "This Class Already Exists" }, { status: 400 });
+    }
+
+    const count = await Class.countDocuments();
+    const nextId = `CLS-${String(count + 1).padStart(4, "0")}`;
+
+    const newClass = new Class({
+      className,
+      description,
+      classId: nextId,
     });
 
-    return NextResponse.json(
-      { message: "Class created successfully", data: newClass },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newClass.save();
+
+    return NextResponse.json({ message: "Class Created", data: newClass }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/class error:", error);
-    return NextResponse.json({ error: "Failed to create Class" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }
