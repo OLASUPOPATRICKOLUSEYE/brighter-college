@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const StudentCategory = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [studentCategorys, setStudentCategorys] = useState<any[]>([]);
@@ -65,6 +67,8 @@ const StudentCategory = () => {
       setSortOrder("asc");
     }
   };
+
+  const colCount = isAdmin ? 4 : 3;
   
   return (
     <div className="bg-white rounded-md flex-1">
@@ -74,13 +78,15 @@ const StudentCategory = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="studentcategory" type="create" onSuccess={handleSuccess} />
+          { isAdmin && (
+            <FormModal table="studentcategory" type="create" onSuccess={handleSuccess} /> 
+          )}
         </div>
       </div>
 
         {/* Table */}
         <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
+          <table className="w-full border-collapse mt-4 text-sm">
             <thead>
                   <tr className="text-left text-gray-500">
                     <th
@@ -110,13 +116,13 @@ const StudentCategory = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    { isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
                   </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Student Category..." />
                 </td>
               </tr>
@@ -124,7 +130,7 @@ const StudentCategory = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -132,7 +138,7 @@ const StudentCategory = () => {
 
             {!loading && !error && studentCategorys.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Student Category Available." />
                 </td>
               </tr>
@@ -147,13 +153,15 @@ const StudentCategory = () => {
                   <td className="p-4 break-words">{item.categoryId}</td>
                   <td className="p-4 break-words">{item.category}</td>
                   <td className="p-4 break-words">{item.description}</td>
-                  <td className="p-4">
+                  { isAdmin && (
+                    <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <FormModal table="studentcategory" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studentcategory" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studentcategory" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

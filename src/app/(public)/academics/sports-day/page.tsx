@@ -7,12 +7,12 @@ import MainHeader from '@/components/MainHeader'
 const SportsDay = () => {
   return (
     <>
-      <MainHeader />
+      {/* <MainHeader /> */}
         <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
           <SportHero />
         </div>
       <Sport />
-      <MainFooter />
+      {/* <MainFooter /> */}
     </>
   )
 }

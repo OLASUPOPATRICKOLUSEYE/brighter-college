@@ -11,7 +11,7 @@ interface RedirectProps {
 }
 
 export default function Redirect({
-  to = '/sign-in',
+  to = '/',
   message = 'Redirecting...',
   delay = 1000,
 }: RedirectProps) {

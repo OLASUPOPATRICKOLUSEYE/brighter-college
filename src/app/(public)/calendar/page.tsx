@@ -7,12 +7,12 @@ import MainFooter from '@/components/MainFooter'
 const AnnualCalendar = () => {
   return (
     <>
-      <MainHeader />
+      {/* <MainHeader /> */}
         <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
           <CalendarHero />
         </div>
       <CalendarListTable />
-      <MainFooter />
+      {/* <MainFooter /> */}
     </>
   )
 }

@@ -8,7 +8,7 @@ import MainFooter from '@/components/MainFooter';
 const Contact = () => {
   return (
     <>
-      <MainHeader />
+      {/* <MainHeader /> */}
         <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
           <ContactHero />
         </div>
@@ -23,7 +23,7 @@ const Contact = () => {
       </div>
       <UserGeneralComplaintForm type="create" />
       <ContactDes />
-      <MainFooter />
+      {/* <MainFooter /> */}
     </>
   )
 }

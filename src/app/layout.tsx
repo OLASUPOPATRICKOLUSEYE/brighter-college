@@ -3,10 +3,6 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from 'react-hot-toast';
 import { ClerkProvider } from "@clerk/nextjs";
-import MainHeader from "@/components/MainHeader";
-import MainFooter from "@/components/MainFooter";
-
-
 
 const inter = Inter({ subsets: ["latin"] });
 

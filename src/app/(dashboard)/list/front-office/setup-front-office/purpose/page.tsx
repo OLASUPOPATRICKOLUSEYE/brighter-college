@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const Purpose = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [purposes, setPurposes] = useState<any[]>([]);
@@ -65,6 +67,8 @@ const Purpose = () => {
     }
   };
 
+  const colCount = isAdmin ? 4 : 3;
+
   return (
     <div className="bg-white rounded-md flex-1">
       <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0">
@@ -107,13 +111,15 @@ const Purpose = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    {isAdmin && 
+                      <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    }
                   </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Purpose..." />
                 </td>
               </tr>
@@ -121,7 +127,7 @@ const Purpose = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -129,7 +135,7 @@ const Purpose = () => {
 
             {!loading && !error && purposes.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Purpose Available." />
                 </td>
               </tr>
@@ -140,13 +146,15 @@ const Purpose = () => {
                   <td className="p-4">{item.purposeId}</td>
                   <td className="p-4">{item.purpose}</td>
                   <td className="p-4">{item.description}</td>
-                  <td className="p-4">
+                  {isAdmin && (
+                    <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <FormModal table="purpose" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="purpose" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="purpose" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

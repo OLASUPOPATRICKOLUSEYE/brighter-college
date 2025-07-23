@@ -9,8 +9,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const PostalDispatchPage = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [postalDispatches, setPostalDispatches] = useState<any[]>([]);
@@ -66,6 +68,8 @@ const PostalDispatchPage = () => {
       setSortOrder("asc");
     }
   };
+
+  const colCount = isAdmin ? 8 : 7;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -147,13 +151,15 @@ const PostalDispatchPage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                <th className="p-4 whitespace-nowrap text-right">Action</th>
+                {isAdmin && 
+                  <th className="p-4 whitespace-nowrap text-right">Action</th>
+                }
               </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Postal Dispatch..." />
                 </td>
               </tr>
@@ -161,7 +167,7 @@ const PostalDispatchPage = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -169,7 +175,7 @@ const PostalDispatchPage = () => {
 
             {!loading && !error && postalDispatches.length === 0 && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Postal Dispatch Available." />
                 </td>
               </tr>
@@ -202,13 +208,15 @@ const PostalDispatchPage = () => {
                       "-"
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  {isAdmin && (
+                    <td className="p-4 text-right">
+                    <div className="flex gap-2 justify-end">
                       <FormModal table="postaldispatch" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="postaldispatch" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="postaldispatch" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

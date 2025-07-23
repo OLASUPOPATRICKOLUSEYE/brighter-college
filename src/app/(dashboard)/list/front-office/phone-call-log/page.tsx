@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const PhoneCallLogPage = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [phonecalllogs, setPhoneCallLogs] = useState<any[]>([]);
@@ -65,6 +67,8 @@ const PhoneCallLogPage = () => {
       setSortOrder("asc");
     }
   };
+
+  const colCount = isAdmin ? 9 : 8;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -155,14 +159,14 @@ const PhoneCallLogPage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                <th className="p-4 whitespace-nowrap text-right">Action</th>
+                {isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
               </tr>
             </thead>
 
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={9} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching All Phone Calls Log..." />
                 </td>
               </tr>
@@ -170,7 +174,7 @@ const PhoneCallLogPage = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={9} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -178,7 +182,7 @@ const PhoneCallLogPage = () => {
 
             {!loading && !error && phonecalllogs.length === 0 && (
               <tr>
-                <td colSpan={9} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Phone Calls Log." />
                 </td>
               </tr>
@@ -194,13 +198,15 @@ const PhoneCallLogPage = () => {
                 <td className="p-4 break-words">{item.callduration}</td>
                 <td className="p-4 break-words">{item.note}</td>
                 <td className="p-4 break-words">{item.calltype}</td>
-                <td className="p-4">
-                  <div className="flex gap-2">
+                {isAdmin && (
+                  <td className="p-4 text-right">
+                  <div className="flex gap-2 justify-end">
                     <FormModal table="phonecalllog" type="view" data={item} onSuccess={handleSuccess} />
                     <FormModal table="phonecalllog" type="update" data={item} onSuccess={handleSuccess} />
                     <FormModal table="phonecalllog" type="delete" id={item._id} onSuccess={handleSuccess} />
                   </div>
                 </td>
+                )}
               </tr>
               ))}
             </tbody>

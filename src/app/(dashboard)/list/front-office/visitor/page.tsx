@@ -9,8 +9,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const VisitorListPage = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [visitors, setVisitors] = useState<any[]>([]);
@@ -66,6 +68,8 @@ const VisitorListPage = () => {
       setSortOrder("asc");
     }
   };
+
+  const colCount = isAdmin ? 8 : 7;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -147,14 +151,16 @@ const VisitorListPage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                <th className="p-4 whitespace-nowrap text-right">Action</th>
+                {isAdmin && 
+                  <th className="p-4 whitespace-nowrap text-right">Action</th>
+                }
               </tr>
             </thead>
 
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Visitors..." />
                 </td>
               </tr>
@@ -162,7 +168,7 @@ const VisitorListPage = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -170,7 +176,7 @@ const VisitorListPage = () => {
 
             {!loading && !error && visitors.length === 0 && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Visitors Available." />
                 </td>
               </tr>
@@ -210,13 +216,15 @@ const VisitorListPage = () => {
                       "-"
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  {isAdmin && (
+                    <td className="p-4 text-right">
+                    <div className="flex gap-2 justify-end">
                       <FormModal table="visitor" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="visitor" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="visitor" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

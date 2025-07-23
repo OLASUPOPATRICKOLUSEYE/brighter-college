@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const UserGeneralComplaint = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [complaints, setComplaints] = useState<any[]>([]);
@@ -65,6 +67,8 @@ const UserGeneralComplaint = () => {
       setSortOrder("asc");
     }
   };
+
+  const colCount = isAdmin ? 7 : 6;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -136,13 +140,15 @@ const UserGeneralComplaint = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    {isAdmin && 
+                      <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    }
                   </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={5} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Users General Complaints..." />
                 </td>
               </tr>
@@ -150,7 +156,7 @@ const UserGeneralComplaint = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={5} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -158,7 +164,7 @@ const UserGeneralComplaint = () => {
 
             {!loading && !error && complaints.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Users General Complaints Available." />
                 </td>
               </tr>
@@ -173,13 +179,15 @@ const UserGeneralComplaint = () => {
                   <td className="p-4 break-words">{item.subject}</td>
                   <td className="p-4 break-words">{item.date}</td>
                   <td className="p-4 break-words">{item.description}</td>
-                  <td className="p-4">
+                  {isAdmin && (
+                    <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <FormModal table="usergeneralcomplaint" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="usergeneralcomplaint" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="usergeneralcomplaint" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

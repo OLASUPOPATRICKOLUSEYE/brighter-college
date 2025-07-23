@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const StudentHouse = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [studentHouses, setStudentHouses] = useState<any[]>([]);
@@ -66,6 +68,8 @@ const StudentHouse = () => {
     }
   };
 
+  const colCount = isAdmin ? 4 : 3;
+
   return (
     <div className="bg-white rounded-md flex-1">
       {/* Header */}
@@ -74,13 +78,15 @@ const StudentHouse = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="studenthouse" type="create" onSuccess={handleSuccess} />
+          { isAdmin && (
+            <FormModal table="studenthouse" type="create" onSuccess={handleSuccess} /> 
+          )}
         </div>
       </div>
 
         {/* Table */}
-        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
+        <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="w-full border-collapse mt-4 text-sm">
             <thead>
                   <tr className="text-left text-gray-500">
                     <th
@@ -110,13 +116,13 @@ const StudentHouse = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    { isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
                   </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Student House..." />
                 </td>
               </tr>
@@ -124,7 +130,7 @@ const StudentHouse = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -132,7 +138,7 @@ const StudentHouse = () => {
 
             {!loading && !error && studentHouses.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Student House Available." />
                 </td>
               </tr>
@@ -147,13 +153,15 @@ const StudentHouse = () => {
                   <td className="p-4 break-words">{item.houseId}</td>
                   <td className="p-4 break-words">{item.studenthouse}</td>
                   <td className="p-4 break-words">{item.description}</td>
-                  <td className="p-4 break-words">
+                  { isAdmin && (
+                    <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <FormModal table="studenthouse" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studenthouse" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studenthouse" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

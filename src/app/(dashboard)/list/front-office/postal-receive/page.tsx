@@ -9,8 +9,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const PostalReceivePage = () => {
+  const { isAdmin } = useUserRole(); 
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [postalReceives, setPostalReceives] = useState<any[]>([]);
@@ -67,6 +69,8 @@ const PostalReceivePage = () => {
     }
   };
 
+  const colCount = isAdmin ? 8 : 7;
+
   return (
     <div className="bg-white rounded-md flex-1">
       {/* Header */}
@@ -81,7 +85,7 @@ const PostalReceivePage = () => {
 
       {/* Table */}
         <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
+          <table className="w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
                 <th
@@ -147,13 +151,13 @@ const PostalReceivePage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                <th className="p-4 whitespace-nowrap text-right">Action</th>
+                {isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
               </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Postal Received..." />
                 </td>
               </tr>
@@ -161,7 +165,7 @@ const PostalReceivePage = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -169,7 +173,7 @@ const PostalReceivePage = () => {
 
             {!loading && !error && postalReceives.length === 0 && (
               <tr>
-                <td colSpan={8} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Postal Received Available." />
                 </td>
               </tr>
@@ -202,13 +206,15 @@ const PostalReceivePage = () => {
                       "-"
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  {isAdmin && (
+                    <td className="p-4 text-right">
+                    <div className="flex gap-2 justify-end">
                       <FormModal table="postalreceive" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="postalreceive" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="postalreceive" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

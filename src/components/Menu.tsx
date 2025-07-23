@@ -148,8 +148,8 @@ const menuItems: MenuGroup[] = [
     title: "Front Office",
     icon: <MdQuestionAnswer className="text-lg" />,
     items: [
-      { icon: <MdQuestionAnswer />, label: "Admission Enquiry", href: "/list/front-office/admission", visible: ["admin", "receptionist"] },
-      { icon: <MdBookOnline />, label: "Visitor Book", href: "/list/front-office/visitor", visible: ["admin", "receptionist", "parent", "student"] },
+      { icon: <MdQuestionAnswer />, label: "Admission Enquiry", href: "/list/front-office/admission", visible: ["admin", "receptionist", "parent", "accountant", "librarian", "teacher", "student" ] },
+      { icon: <MdBookOnline />, label: "Visitor Book", href: "/list/front-office/visitor", visible: ["admin", "receptionist", "parent", "accountant", "librarian", "teacher", "student"] },
       { icon: <MdCall />, label: "Phone Call Log", href: "/list/front-office/phone-call-log", visible: ["admin", "receptionist"] },
       { icon: <MdSend />, label: "Postal Dispatch", href: "/list/front-office/postal-dispatch", visible: ["admin", "receptionist"] },
       { icon: <MdInbox />, label: "Postal Receive", href: "/list/front-office/postal-receive", visible: ["admin", "receptionist"] },

@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const DisableReason = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [disableReasons, setDisableReasons] = useState<any[]>([]);
@@ -66,19 +68,23 @@ const DisableReason = () => {
     }
   };
 
+  const colCount = isAdmin ? 4 : 3;
+
   return (
     <div className="bg-white rounded-md flex-1">
       <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0">
         <h1 className="text-lg font-semibold">All Disable Reason</h1>
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="disablereason" type="create" onSuccess={handleSuccess} />
+          { isAdmin && (
+            <FormModal table="disablereason" type="create" onSuccess={handleSuccess} /> 
+          )}
         </div>
       </div>
 
         {/* Table */}
-        <div className="overflow-x-auto w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-          <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
+        <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+          <table className="w-full border-collapse mt-4 text-sm">
           <thead>
                 <tr className="text-left text-gray-500">
                   <th
@@ -108,13 +114,13 @@ const DisableReason = () => {
                       {sortOrder === "asc" ? "↑" : "↓"}
                     </span>
                   </th>
-                  <th className="p-4 whitespace-nowrap text-right">Action</th>
+                  { isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
                 </tr>
               </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Disable Reason..." />
                 </td>
               </tr>
@@ -122,7 +128,7 @@ const DisableReason = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -130,7 +136,7 @@ const DisableReason = () => {
 
             {!loading && !error && disableReasons.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Disable Reason Available." />
                 </td>
               </tr>
@@ -145,13 +151,15 @@ const DisableReason = () => {
                 <td className="p-4 break-words">{item.disablereasonId}</td>
                 <td className="p-4 break-words">{item.disablereason}</td>
                 <td className="p-4 break-words">{item.description}</td>
-                <td className="p-4">
-                  <div className="flex justify-end gap-2 flex-wrap">
+                { isAdmin && (
+                  <td className="p-4 text-right">
+                  <div className="flex justify-end gap-2">
                     <FormModal table="disablereason" type="view" data={item} onSuccess={handleSuccess} />
                     <FormModal table="disablereason" type="update" data={item} onSuccess={handleSuccess} />
                     <FormModal table="disablereason" type="delete" id={item._id} onSuccess={handleSuccess} />
                   </div>
                 </td>
+                )}
                 </tr>
               ))}
             </tbody>

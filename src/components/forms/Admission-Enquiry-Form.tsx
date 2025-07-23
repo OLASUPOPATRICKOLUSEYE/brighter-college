@@ -137,7 +137,7 @@ export default function AdmissionEnquiryForm({
         />
         <InputField 
           label="Class *" 
-          name="class" 
+          name="classenquiry" 
           register={register} 
           error={errors.classenquiry} 
         />

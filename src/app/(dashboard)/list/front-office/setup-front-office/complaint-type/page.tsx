@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const ComplaintType = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [complaintTypes, setComplaintTypes] = useState<any[]>([]);
@@ -64,6 +66,8 @@ const ComplaintType = () => {
     }
   };
 
+  const colCount = isAdmin ? 4 : 3;
+
   return (
     <div className="bg-white rounded-md flex-1">
       <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0">
@@ -106,13 +110,15 @@ const ComplaintType = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    {isAdmin && 
+                      <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    }
                   </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={3} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Complaint Type..." />
                 </td>
               </tr>
@@ -120,7 +126,7 @@ const ComplaintType = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={3} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -128,7 +134,7 @@ const ComplaintType = () => {
 
             {!loading && !error && complaintTypes.length === 0 && (
               <tr>
-                <td colSpan={3} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Complaint Type Available." />
                 </td>
               </tr>
@@ -140,13 +146,15 @@ const ComplaintType = () => {
                   <td className="p-4 break-words">{item.complainttypeId}</td>
                   <td className="p-4 break-words">{item.complainttype}</td>
                   <td className="p-4 break-words">{item.description}</td>
-                  <td className="p-4">
+                  {isAdmin && (
+                    <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <FormModal table="complainttype" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="complainttype" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="complainttype" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

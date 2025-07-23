@@ -72,7 +72,7 @@ const MainGallery = () => {
 
   return (
     <>
-    <MainHeader />
+    {/* <MainHeader /> */}
       <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
         <GalleryHero />
       </div>
@@ -142,7 +142,7 @@ const MainGallery = () => {
           />
         )}
       </section>
-      <MainFooter />
+      {/* <MainFooter /> */}
     </>
   );
 };

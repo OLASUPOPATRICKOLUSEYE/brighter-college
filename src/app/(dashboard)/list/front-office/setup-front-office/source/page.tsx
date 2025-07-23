@@ -8,8 +8,10 @@ import Pagination from "@/components/Pagination";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const Source = () => {
+  const {isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [sources, setSources] = useState<any[]>([]);
@@ -64,6 +66,8 @@ const Source = () => {
     }
   };
 
+  const colCount = isAdmin ? 4 : 3;
+
   return (
     <div className="bg-white rounded-md flex-1">
       <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0">
@@ -106,27 +110,29 @@ const Source = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
+                    {isAdmin && 
                     <th className="p-4 whitespace-nowrap text-right">Action</th>
+                    }
                   </tr>
             </thead>
             <tbody>
             {loading && (
               <tr>
-                <td colSpan={3} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Sources..." />
                 </td>
               </tr>
             )}
             {!loading && error && (
               <tr>
-                <td colSpan={3} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
             )}
             {!loading && !error && sources.length === 0 && (
               <tr>
-                <td colSpan={3} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Sources Available." />
                 </td>
               </tr>
@@ -138,13 +144,15 @@ const Source = () => {
                   <td className="p-4 break-words">{item.sourceId}</td>
                   <td className="p-4 break-words">{item.source}</td>
                   <td className="p-4 break-words">{item.description}</td>
-                  <td className="p-4 break-words">
+                  {isAdmin && (
+                    <td className="p-4 text-write">
                     <div className="flex justify-end gap-2">
                       <FormModal table="source" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="source" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="source" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

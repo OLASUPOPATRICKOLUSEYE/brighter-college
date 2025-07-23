@@ -8,8 +8,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import FormModal from "@/components/FormModal";
 import TableLoading from "@/components/TableLoading";
 import TableNotFound from "@/components/TableNotFound";
+import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const AdmissionEnquiry = () => {
+  const { isAdmin } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -65,6 +67,8 @@ const AdmissionEnquiry = () => {
       setSortOrder("asc");
     }
   };
+
+  const colCount = isAdmin ? 11 : 10;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -172,13 +176,15 @@ const AdmissionEnquiry = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
+                {isAdmin &&                 
                 <th className="p-4 text-right">Actions</th>
+                }
               </tr>
             </thead>
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={100} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableLoading message="Fetching Admission Enquiries..." />
                 </td>
               </tr>
@@ -186,7 +192,7 @@ const AdmissionEnquiry = () => {
 
             {!loading && error && (
               <tr>
-                <td colSpan={10} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message={error} />
                 </td>
               </tr>
@@ -194,7 +200,7 @@ const AdmissionEnquiry = () => {
 
             {!loading && !error && enquiries.length === 0 && (
               <tr>
-                <td colSpan={10} className="p-6 text-center">
+                <td colSpan={colCount} className="p-6 text-center">
                   <TableNotFound message="No Admission Enquiries Available." />
                 </td>
               </tr>
@@ -223,13 +229,15 @@ const AdmissionEnquiry = () => {
                   <td className="p-4 break-words">{item.assignedstaff}</td>
                   <td className="p-4 break-words">{item.reference}</td>
                   <td className="p-4 break-words">{item.source}</td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  {isAdmin && (
+                  <td className="p-4 text-right">
+                    <div className="flex gap-2 justify-end">
                       <FormModal table="admissionenquiry" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="admissionenquiry" type="update" data={item} onSuccess={handleSuccess} />
                       <FormModal table="admissionenquiry" type="delete" id={item._id} onSuccess={handleSuccess} />
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
           </tbody>

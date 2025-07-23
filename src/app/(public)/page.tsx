@@ -13,7 +13,7 @@ import MainTestimony from "@/components/MainTestimony";
 export default function HomePage() {
   return (
     <>
-        <MainHeader />
+        {/* <MainHeader /> */}
           <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
         <MainHero />
           </div>
@@ -23,7 +23,7 @@ export default function HomePage() {
         <MainAchievement />
         <MainStaff />
         <MainTestimony />
-        <MainFooter />
+        {/* <MainFooter /> */}
     </>
   );
 }

@@ -8,13 +8,13 @@ import MainHeader from '@/components/MainHeader'
 const AboutUs = () => {
   return (
     <>
-      <MainHeader />
+      {/* <MainHeader /> */}
         <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
           <AboutHero />
         </div>
       <AboutUsDes />
       <WhyChooseUs />
-      <MainFooter />
+      {/* <MainFooter /> */}
     </>
   )
 }

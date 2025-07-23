@@ -6,8 +6,8 @@ export default function NotFound() {
   return (
     <Redirect
       to="/"
-      message="Page Not Found. Redirecting to Home..."
-      delay={2000} 
+      message="Page 404 Not Found. Redirecting to Home..."
+      delay={1000} 
     />
   );
 }
