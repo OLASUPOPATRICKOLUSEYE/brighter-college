@@ -154,6 +154,7 @@ export const transportPickupSchema = z.object({
 export const feesPayableSchema = z.object({
   feeName: z.string().min(3, "Fee name is required"),
   description: z.string().min(2, "Description must be at least 2 characters"),
+  monthly: z.boolean().optional(), // ✅ Add this
 });
 
 export const roomSchema = z.object({
