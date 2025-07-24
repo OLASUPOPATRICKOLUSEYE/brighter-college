@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface IComplaint extends Document {
-  sno: string;
+  complaintId: string;
   complaintType: string;
   source: string;
   complainBy: string;
@@ -11,11 +11,12 @@ export interface IComplaint extends Document {
   actionTaken: string;
   assignedStaff: string;
   note: string;
-  attachment: string[]; // Array of uploaded document/image URLs
+  attachment: string[]; 
 }
 
 const ComplaintSchema = new Schema<IComplaint>(
   {
+    complaintId: { type: String, required: true, unique: true },
     complaintType: {
       type: String,
       required: [true, "Complaint Type is required"],

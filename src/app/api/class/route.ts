@@ -18,10 +18,11 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.clasName = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.clasName = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { classId: { $regex: search, $options: "i" } },
+        { className: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await Class.countDocuments(query);

@@ -9,7 +9,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <MainHeader />
-      <main className="">{children}</main>
+        <main className="pt-[80px]">{children}</main>
       <MainFooter />
     </>
   );

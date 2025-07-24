@@ -12,7 +12,7 @@ import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const ComplaintPage = () => {
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isReceptionist } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [complaints, setComplaints] = useState<any[]>([]);
@@ -78,7 +78,17 @@ const ComplaintPage = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="complaint" type="create" onSuccess={handleSuccess} />
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button>           
+              {(isAdmin || isReceptionist) && (
+                <FormModal table="complaint" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -87,6 +97,15 @@ const ComplaintPage = () => {
           <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("complaintId")}
+                >
+                  Complaint ID{" "}
+                  <span className={sortBy === "complaintId" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>                
                 <th
                   className="p-4 whitespace-nowrap cursor-pointer select-none"
                   onClick={() => handleSort("complaintType")}
@@ -177,9 +196,9 @@ const ComplaintPage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                {isAdmin && 
+                {isAdmin && (
                   <th className="p-4 whitespace-nowrap text-right">Action</th>
-                }
+                )}
               </tr>
             </thead>
 
@@ -210,6 +229,7 @@ const ComplaintPage = () => {
             {!loading && !error &&
               complaints.map((item) => ( 
                 <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                  <td className="p-4 break-words">{item.complaintId}</td>
                   <td className="p-4 break-words">{item.complaintType}</td>
                   <td className="p-4 break-words">{item.source}</td>
                   <td className="p-4 break-words">{item.complainBy}</td>
@@ -238,7 +258,7 @@ const ComplaintPage = () => {
                     )}
                   </td>
                   {isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex gap-2 justify-end">
                       <FormModal table="complaint" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="complaint" type="update" data={item} onSuccess={handleSuccess} />

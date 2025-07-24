@@ -1,17 +1,19 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface IPostalReceive extends Document {
+  postalreceiveId: string;
   fromTitle: string;
   referenceNo: string;
   address: string;
   note: string;
   toTitle: string;
   date: Date;
-  attachment: string[]; // Array of uploaded document/image URLs
+  attachment: string[]; 
 }
 
 const PostalReceiveSchema = new Schema<IPostalReceive>(
   {
+    postalreceiveId: { type: String, required: true, unique: true },
     fromTitle: {
       type: String,
       required: [true, "To Title is required"],

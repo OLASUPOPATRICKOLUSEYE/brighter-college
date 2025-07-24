@@ -87,7 +87,7 @@ export default function TransportPickUpForm({
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5 pt-4">
-        <InputField label="Transport Route Pick Up *" name="pickupPoint" register={register} error={errors.pickupPoint} />      
+        <InputField label="Transport Route Pick Up *" name="pickuppoint" register={register} error={errors.pickuppoint} />      
         {/* Description */}
         <div className="flex flex-col">
           <label className="text-[16px] font-medium text-black mb-1">Description *</label>

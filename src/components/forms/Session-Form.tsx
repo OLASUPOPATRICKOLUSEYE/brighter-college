@@ -87,7 +87,6 @@ export default function SessionForm({
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5 pt-4">
-        {/* <InputField label="Session ID *" name="sessionId" register={register} error={errors.sessionId} />  */}
         <InputField label="Session *" name="session" register={register} error={errors.session} />
         {/* Description */}
         <div className="flex flex-col">

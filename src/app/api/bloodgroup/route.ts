@@ -17,11 +17,13 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.bloodGroup = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.bloodGroup = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { bloodGroupId: { $regex: search, $options: "i" } },
+        { BloodGroup: { $regex: search, $options: "i" } },
+      ];
     }
+
 
     const total = await BloodGroup.countDocuments(query);
     const results = await BloodGroup.find(query)

@@ -1,14 +1,14 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface ITransportPickup extends Document {
-  pickupPoint: string;
+  pickuppoint: string;
   description?: string;
   pickupId: string;
 }
 
 const TransportPickupSchema = new Schema<ITransportPickup>(
   {
-    pickupPoint: { type: String, required: true, minlength: 3 },
+    pickuppoint: { type: String, required: true, minlength: 3 },
     description: { type: String },
     pickupId: { type: String, required: true, unique: true },
   },

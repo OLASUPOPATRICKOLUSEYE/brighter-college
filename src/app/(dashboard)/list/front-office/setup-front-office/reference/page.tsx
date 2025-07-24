@@ -9,9 +9,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
 
 const Reference = () => {
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isReceptionist } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [references, setReferences] = useState<any[]>([]);
@@ -74,7 +75,17 @@ const Reference = () => {
         <h1 className="text-lg font-semibold">All References</h1>
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="reference" type="create" onSuccess={handleSuccess} />
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button> 
+              {(isAdmin || isReceptionist) && (          
+                <FormModal table="reference" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -146,7 +157,7 @@ const Reference = () => {
                   <td className="p-4 break-words">{item.reference}</td>
                   <td className="p-4 break-words">{item.description}</td>
                   {isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex justify-end gap-2">
                       <FormModal table="reference" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="reference" type="update" data={item} onSuccess={handleSuccess} />

@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
 import GalleryHero from "./GalleryHero";
-import MainHeader from "@/components/MainHeader";
-import MainFooter from "@/components/MainFooter";
 
 const galleryItems = [
   {
@@ -71,12 +68,8 @@ const MainGallery = () => {
 
 
   return (
-    <>
-    {/* <MainHeader /> */}
-      <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
-        <GalleryHero />
-      </div>
-      
+    <div>
+      <GalleryHero />      
       <section className="bg-white py-10 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
         <div className="max-w-6xl mx-auto mb-10 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-[#7a1f1f] mb-3">School Gallery</h2>
@@ -142,8 +135,7 @@ const MainGallery = () => {
           />
         )}
       </section>
-      {/* <MainFooter /> */}
-    </>
+    </div>
   );
 };
 

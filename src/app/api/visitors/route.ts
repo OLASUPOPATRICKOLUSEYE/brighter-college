@@ -16,10 +16,13 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.visitorName = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.visitorName = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { visitorId: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        { inTime: { $regex: search, $options: "i" } },
+        { outTime: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await Visitor.countDocuments(query);
@@ -40,51 +43,68 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    const requiredFields = [
-      "purpose",
-      "meetingWith",
-      "visitorName",
-      "phone",
-      "idCard",
-      "numberOfPerson",
-      "date",
-      "inTime",
-      "outTime",
-      "attachment",
-      "note",
-    ];
+    const { 
+     purpose,
+     meetingWith,
+     visitorName,
+     phone,
+     idCard,
+     numberOfPerson,
+     date,
+     inTime,
+     outTime,
+     attachment,
+     note
+     } = body;
 
-    for (const field of requiredFields) {
-      if (
-        body[field] === undefined ||
-        body[field] === null ||
-        (typeof body[field] === "string" && body[field].trim() === "") ||
-        (Array.isArray(body[field]) && body[field].length === 0)
-      ) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-      }
+    if (
+      !purpose || !meetingWith || !visitorName || !phone || !idCard ||
+      !numberOfPerson || !date || !inTime || !outTime ||
+      !attachment || !note
+    ) {
+      return NextResponse.json({ error: "All field Required" }, { status: 400 });
     }
 
-    const newVisitor = await Visitor.create({
-      purpose: body.purpose,
-      meetingWith: body.meetingWith,
-      visitorName: body.visitorName,
-      phone: body.phone,
-      idCard: body.idCard,
-      numberOfPerson: body.numberOfPerson,
-      date: body.date,
-      inTime: body.inTime,
-      outTime: body.outTime,
-      attachment: body.attachment,
-      note: body.note,
+    const exists = await Visitor.findOne({ 
+     purpose,
+     meetingWith,
+     visitorName,
+     phone,
+     idCard,
+     numberOfPerson,
+     date,
+     inTime,
+     outTime,
+     attachment,
+     note,
+    });
+    if (exists) {
+      return NextResponse.json({ error: "This Visitor Already Exists" }, { status: 400 });
+    }
+
+    const count = await Visitor.countDocuments();
+    const nextId = `VST-${String(count + 1).padStart(4, "0")}`;
+
+    const newVisitor = new Visitor({
+    visitorId: nextId,
+    purpose,
+    meetingWith,
+    visitorName,
+    phone,
+    idCard,
+    numberOfPerson,
+    date,
+    inTime,
+    outTime,
+    attachment,
+    note
     });
 
-    return NextResponse.json(
-      { message: "Visitor Created Successfully", data: newVisitor },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("POST /api/visitors error:", error);
-    return NextResponse.json({ error: "Failed to create visitor" }, { status: 500 });
+    await newVisitor.save();
+
+    return NextResponse.json({ message: "Visitor Created", data: newVisitor }, { status: 201 });
+  } catch (error: any) {
+    console.error("POST /api/visitors Error:", error);
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

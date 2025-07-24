@@ -9,6 +9,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
 
 const BloodGroup = () => {
   const { isAdmin } = useUserRole();
@@ -76,9 +77,17 @@ const BloodGroup = () => {
         <h1 className="text-lg font-semibold">All Blood Groups</h1>
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          { isAdmin && (
-            <FormModal table="bloodgroup" type="create" onSuccess={handleSuccess} />
-          )}
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button>           
+              { isAdmin && (
+                <FormModal table="bloodgroup" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -114,7 +123,9 @@ const BloodGroup = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    { isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
+                    { isAdmin && (
+                      <th className="p-4 whitespace-nowrap text-right">Action</th> 
+                    )}
                   </tr>
             </thead>
             <tbody>
@@ -152,7 +163,7 @@ const BloodGroup = () => {
                   <td className="p-4 break-words">{item.bloodGroup}</td>
                   <td className="p-4 break-words">{item.description}</td>
                   { isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex justify-end gap-2">
                       <FormModal table="bloodgroup" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="bloodgroup" type="update" data={item} onSuccess={handleSuccess} />

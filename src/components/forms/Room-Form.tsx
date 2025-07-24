@@ -88,6 +88,18 @@ export default function RoomForm({
 
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5 pt-4">
         <InputField label="Room Name*" name="roomName" register={register} error={errors.roomName} />      
+        {/* Description */}
+        <div className="flex flex-col">
+          <label className="text-[16px] font-medium text-black mb-1">Description *</label>
+          <textarea
+            rows={3}
+            className="p-2 border rounded-md text-sm"
+            {...register("description")}
+          ></textarea>
+          {errors.description && (
+            <span className="text-xs text-red-400">{errors.description.message}</span>
+          )}
+        </div>        
       </div>
 
       <div>

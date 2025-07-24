@@ -1,11 +1,190 @@
-import React from 'react'
+"use client";
 
-const FeesPayable  = () => {
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import TableSearch from "@/components/TableSearch";
+import FormModal from "@/components/FormModal";
+import Pagination from "@/components/Pagination";
+import { ITEM_PER_PAGE } from "@/lib/settings";
+import TableNotFound from "@/components/TableNotFound";
+import TableLoading from "@/components/TableLoading";
+import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
+
+const FeesPayable = () => {
+  const { isAdmin } = useUserRole();
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [feesList, setFeesList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [total, setTotal] = useState<number>(0);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = Number(searchParams.get("page")) || 1;
+
+  const fetchFees = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryParams = new URLSearchParams();
+      if (searchTerm) queryParams.append("search", searchTerm);
+      queryParams.append("page", page.toString());
+      queryParams.append("sortBy", sortBy);
+      queryParams.append("sortOrder", sortOrder);
+
+      const res = await fetch(`/api/feespayable?${queryParams.toString()}`);
+      if (!res.ok) throw new Error("Fees Not Found");
+
+      const data = await res.json();
+      setFeesList(data.data || []);
+      setTotal(data.total || 0);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed To Fetch Data");
+      setFeesList([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, page, sortBy, sortOrder]);
+
+  useEffect(() => {
+    fetchFees();
+  }, [fetchFees]);
+
+  const handleSuccess = () => {
+    fetchFees();
+    router.refresh();
+  };
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const colCount = isAdmin ? 5 : 4;
+
   return (
-    <div>
-      FeesPayable
-    </div>
-  )
-}
+    <div className="bg-white rounded-md flex-1">
+      <div className="flex px-4 pt-4 flex-col md:flex-row md:justify-between mb-4 gap-2 md:gap-0">
+        <h1 className="text-lg font-semibold">All Fees Payable</h1>
+        <div className="flex flex-col sm:flex-row gap-2 items-center">
+          <TableSearch value={searchTerm} onChange={setSearchTerm} />
+          <div className="flex items-center gap-4 self-center">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+              <Image src="/filter.png" alt="" width={14} height={14} />
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+              <Image src="/sort.png" alt="" width={14} height={14} />
+            </button>
+            {isAdmin && (
+              <FormModal table="feespayable" type="create" onSuccess={handleSuccess} />
+            )}
+          </div>
+        </div>
+      </div>
 
-export default FeesPayable
+      {/* Table */}
+      <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+        <table className="w-full border-collapse mt-4 text-sm">
+          <thead>
+            <tr className="text-left text-gray-500">
+              <th className="p-4 cursor-pointer" onClick={() => handleSort("feesId")}>
+                Fees ID{" "}
+                <span className={sortBy === "feesId" ? "text-black" : "text-gray-300"}>
+                  {sortOrder === "asc" ? "↑" : "↓"}
+                </span>
+              </th>
+              <th className="p-4 cursor-pointer" onClick={() => handleSort("feeName")}>
+                Fee Name{" "}
+                <span className={sortBy === "feeName" ? "text-black" : "text-gray-300"}>
+                  {sortOrder === "asc" ? "↑" : "↓"}
+                </span>
+              </th>
+              <th className="p-4 cursor-pointer" onClick={() => handleSort("monthly")}>
+                Monthly{" "}
+                <span className={sortBy === "monthly" ? "text-black" : "text-gray-300"}>
+                  {sortOrder === "asc" ? "↑" : "↓"}
+                </span>
+              </th>
+                  <th
+                    className="p-4 whitespace-nowrap cursor-pointer select-none"
+                    onClick={() => handleSort("description")}
+                  >
+                    Description{" "}
+                    <span className={sortBy === "description" ? "text-black" : "text-gray-300"}>
+                      {sortOrder === "asc" ? "↑" : "↓"}
+                    </span>
+                  </th>              
+              {isAdmin && (
+                <th className="p-4 text-right">Action</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={colCount} className="p-6 text-center">
+                  <TableLoading message="Fetching Fees..." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={colCount} className="p-6 text-center">
+                  <TableNotFound message={error} />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && feesList.length === 0 && (
+              <tr>
+                <td colSpan={colCount} className="p-6 text-center">
+                  <TableNotFound message="No Fees Payable Available." />
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error &&
+              feesList.map((item) => (
+                <tr
+                  key={item._id}
+                  className="border-b border-gray-200 hover:bg-slate-100"
+                >
+                  <td className="p-4 break-words">{item.feesId}</td>
+                  <td className="p-4 break-words">{item.feeName}</td>
+                  <td className="p-4 break-words">
+                    {item.monthly ? "Yes" : "No"}
+                  </td>
+                  <td className="p-4 break-words">{item.description}</td>
+                  {isAdmin && (
+                    <td className="p-4">
+                      <div className="flex justify-end gap-2">
+                        <FormModal table="feespayable" type="view" data={item} onSuccess={handleSuccess} />
+                        <FormModal table="feespayable" type="update" data={item} onSuccess={handleSuccess} />
+                        <FormModal table="feespayable" type="delete" id={item._id} onSuccess={handleSuccess} />
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+
+      {!loading && total > ITEM_PER_PAGE && (
+        <Pagination page={page} count={total} />
+      )}
+    </div>
+  );
+};
+
+export default FeesPayable;

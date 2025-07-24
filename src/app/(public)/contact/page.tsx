@@ -2,17 +2,11 @@ import React from 'react'
 import ContactHero from './ContactHero'
 import ContactDes from './ContactDes';
 import UserGeneralComplaintForm from '@/components/forms/User-General-Complaint-Form';
-import MainHeader from '@/components/MainHeader';
-import MainFooter from '@/components/MainFooter';
 
 const Contact = () => {
   return (
-    <>
-      {/* <MainHeader /> */}
-        <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
-          <ContactHero />
-        </div>
-              {/* Header */}
+    <div>
+      <ContactHero />
       <div className="mx-auto my-10 text-center px-4 sm:px-6 md:px-10 lg:px-16 xl:px-32 2xl:px-48 w-full">
         <h2 className="text-3xl sm:text-4xl font-bold text-[#7a1f1f] mb-4">
           Get In Touch Via The Details Below?
@@ -23,8 +17,7 @@ const Contact = () => {
       </div>
       <UserGeneralComplaintForm type="create" />
       <ContactDes />
-      {/* <MainFooter /> */}
-    </>
+    </div>
   )
 }
 

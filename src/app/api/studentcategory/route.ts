@@ -14,8 +14,12 @@ export async function GET(req: Request) {
     const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     const query: any = {};
+
     if (search) {
-      query.category = { $regex: search, $options: "i" };
+      query.$or = [
+        { categoryId: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await StudentCategory.countDocuments(query);
@@ -65,28 +69,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }
-
-
-
-
-// export async function POST(req: Request) {
-//   try {
-//     await connectDB();
-//     const body = await req.json();
-
-//     if (!body.category || !body.categoryId) {
-//       return NextResponse.json({ error: "Student Category and Category ID are required" }, { status: 400 });
-//     }
-
-//     const newEntry = await StudentCategory.create({
-//       category: body.category,
-//       description: body.description,
-//       categoryId: body.categoryId,
-//     });
-
-//     return NextResponse.json({ message: "Student Category created", data: newEntry }, { status: 201 });
-//   } catch (error: any) {
-//     console.error("POST /api/studentcategory error:", error);
-//     return NextResponse.json({ error: error.message || "Failed to create" }, { status: 500 });
-//   }
-// }

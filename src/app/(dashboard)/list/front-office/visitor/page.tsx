@@ -12,7 +12,7 @@ import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const VisitorListPage = () => {
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isAccountant, isLibrarian, isTeacher, isReceptionist } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [visitors, setVisitors] = useState<any[]>([]);
@@ -69,7 +69,7 @@ const VisitorListPage = () => {
     }
   };
 
-  const colCount = isAdmin ? 8 : 7;
+  const colCount = isAdmin ? 9 : 8;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -79,7 +79,17 @@ const VisitorListPage = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="visitor" type="create" onSuccess={handleSuccess} />
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button> 
+              {(isAdmin || isReceptionist || isAccountant || isLibrarian || isTeacher) && (
+                <FormModal table="visitor" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -88,6 +98,15 @@ const VisitorListPage = () => {
           <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("visitorId")}
+                >
+                  Visitor ID{" "}
+                  <span className={sortBy === "visitorId" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
                 <th
                   className="p-4 whitespace-nowrap cursor-pointer select-none"
                   onClick={() => handleSort("visitorDetails")}
@@ -151,9 +170,9 @@ const VisitorListPage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                {isAdmin && 
+                {isAdmin && (
                   <th className="p-4 whitespace-nowrap text-right">Action</th>
-                }
+                )}
               </tr>
             </thead>
 
@@ -185,6 +204,7 @@ const VisitorListPage = () => {
             {!loading && !error &&
               visitors.map((item) => (
                 <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                  <td className="p-4 break-words">{item.visitorId}</td>
                   <td className="p-4 break-words">
                     <div className="flex flex-col gap-1">
                       <h3 className="font-semibold">{item.visitorName}</h3>
@@ -217,7 +237,7 @@ const VisitorListPage = () => {
                     )}
                   </td>
                   {isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex gap-2 justify-end">
                       <FormModal table="visitor" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="visitor" type="update" data={item} onSuccess={handleSuccess} />

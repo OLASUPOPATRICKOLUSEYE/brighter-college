@@ -14,8 +14,12 @@ export async function GET(req: Request) {
     const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
   
     const query: any = {};
+
     if (search) {
-      query.disablereason = { $regex: search, $options: "i" };
+      query.$or = [
+        { disablereasonId: { $regex: search, $options: "i" } },
+        { disablereason: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await DisableReason.countDocuments(query);

@@ -147,14 +147,14 @@ export const transportRouteSchema = z.object({
 });
 
 export const transportPickupSchema = z.object({
-  pickupPoint: z.string().min(3, "Pickup point is required"),
+  pickuppoint: z.string().min(3, "Pickup point is required"),
   description: z.string().min(2, "Description must be at least 2 characters"),
 });
 
 export const feesPayableSchema = z.object({
   feeName: z.string().min(3, "Fee name is required"),
   description: z.string().min(2, "Description must be at least 2 characters"),
-  monthly: z.boolean().optional(), // ✅ Add this
+  monthly: z.boolean(),
 });
 
 export const roomSchema = z.object({

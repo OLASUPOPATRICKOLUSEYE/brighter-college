@@ -17,6 +17,7 @@ export async function GET(req: Request) {
 
     if (search) {
       query.$or = [
+        { admissionenquiryId: { $regex: search, $options: "i" } },
         { name: { $regex: search, $options: "i" } },
         { phone: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
@@ -36,7 +37,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Failed to fetch enquiries" }, { status: 500 });
   }
 }
-
 
 export async function POST(req: Request) {
   try {

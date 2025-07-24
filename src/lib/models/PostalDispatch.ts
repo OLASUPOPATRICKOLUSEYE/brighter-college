@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface IPostalDispatch extends Document {
+  postaldispatchId: string;
   toTitle: string;
   referenceNo: string;
   address: string;
@@ -12,6 +13,7 @@ export interface IPostalDispatch extends Document {
 
 const PostalDispatchSchema = new Schema<IPostalDispatch>(
   {
+    postaldispatchId: { type: String, required: true, unique: true },
     toTitle: {
       type: String,
       required: [true, "To Title is required"],

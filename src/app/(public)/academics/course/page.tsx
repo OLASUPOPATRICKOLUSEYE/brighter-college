@@ -1,19 +1,13 @@
 import React from 'react'
 import CourseHero from './CourseHero'
-import MainHeader from '@/components/MainHeader'
 import MainCourse from '@/components/MainCourse'
-import MainFooter from '@/components/MainFooter'
 
 const Course = () => {
   return (
-    <>
-      {/* <MainHeader /> */}
-        <div className="pt-[100px] md:pt-[150px] lg:pt-[100px]">
-          <CourseHero />
-        </div>
+    <div>
+      <CourseHero />
       <MainCourse />
-      {/* <MainFooter /> */}
-    </>
+    </div>
   )
 }
 

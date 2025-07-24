@@ -16,10 +16,13 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.toTitle = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.toTitle = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { postaldispatchId: { $regex: search, $options: "i" } },
+        { referenceNo: { $regex: search, $options: "i" } },
+        { toTitle: { $regex: search, $options: "i" } },
+        { fromTitle: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await PostalDispatch.countDocuments(query);
@@ -40,43 +43,55 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    const requiredFields = [
-      "toTitle",
-      "referenceNo",
-      "address",
-      "note",
-      "fromTitle",
-      "date",
-      "attachment",
-    ];
+    const { 
+      toTitle,
+      referenceNo,
+      address,
+      note,
+      fromTitle,
+      date,
+      attachment,
+    } = body;
 
-    for (const field of requiredFields) {
-      if (
-        body[field] === undefined ||
-        body[field] === null ||
-        (typeof body[field] === "string" && body[field].trim() === "") ||
-        (Array.isArray(body[field]) && body[field].length === 0)
-      ) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-      }
+    if (
+      !toTitle || !referenceNo || !address || !note || !fromTitle || !date ||
+      !attachment 
+    ) {
+      return NextResponse.json({ error: "All field Required" }, { status: 400 });
     }
 
-    const newDispatch = await PostalDispatch.create({
-      toTitle: body.toTitle,
-      referenceNo: body.referenceNo,
-      address: body.address,
-      note: body.note,
-      fromTitle: body.fromTitle,
-      date: body.date,
-      attachment: body.attachment,
+    const exists = await PostalDispatch.findOne({ 
+      toTitle,
+      referenceNo,
+      address,
+      note,
+      fromTitle,
+      date,
+      attachment,
+    });
+    if (exists) {
+      return NextResponse.json({ error: "This Postal Dispatch Already Exists" }, { status: 400 });
+    }
+
+    const count = await PostalDispatch.countDocuments();
+    const nextId = `POD-${String(count + 1).padStart(4, "0")}`;
+
+    const newPostalDispatch = new PostalDispatch({
+      postaldispatchId: nextId,
+      toTitle,
+      referenceNo,
+      address,
+      note,
+      fromTitle,
+      date,
+      attachment,
     });
 
-    return NextResponse.json(
-      { message: "Postal Dispatch Created Successfully", data: newDispatch },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newPostalDispatch.save();
+
+    return NextResponse.json({ message: "Postal Dispatch Created", data: newPostalDispatch }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/postaldispatch error:", error);
-    return NextResponse.json({ error: "Failed to Create Postal Dispatch" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

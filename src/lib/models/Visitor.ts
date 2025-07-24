@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface IVisitor extends Document {
+  visitorId: string;
   purpose: string;
   meetingWith: string;
   visitorName: string;
@@ -16,6 +17,7 @@ export interface IVisitor extends Document {
 
 const VisitorSchema = new Schema<IVisitor>(
   {
+    visitorId: { type: String, required: true, unique: true },
     purpose: {
       type: String,
       required: [true, "Purpose is required"],

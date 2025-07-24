@@ -15,11 +15,13 @@ export async function GET(req: Request) {
 
 
     let query: any = {};
-    if (startsWith) {
-      query.genotype = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.genotype = { $regex: search, $options: "i" };
-    }
+
+    if (search) {
+      query.$or = [
+        { genotypeId: { $regex: search, $options: "i" } },
+        { genotype: { $regex: search, $options: "i" } },
+      ];
+    }    
 
     const total = await Genotype.countDocuments(query);
     const results = await Genotype.find(query)

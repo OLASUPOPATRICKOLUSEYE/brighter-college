@@ -9,9 +9,14 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
+import { MdPrint } from "react-icons/md";
+import { AiFillFilePdf, AiOutlineFileExcel } from "react-icons/ai";
+import { VscFileBinary } from "react-icons/vsc";
+import { FiCopy } from "react-icons/fi";
 
 const ComplaintType = () => {
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isReceptionist } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [complaintTypes, setComplaintTypes] = useState<any[]>([]);
@@ -74,7 +79,36 @@ const ComplaintType = () => {
         <h1 className="text-lg font-semibold">All Complaint Type</h1>
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="complainttype" type="create" onSuccess={handleSuccess} />
+            <div className="flex items-center gap-4 self-center flex flex-wrap justify-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <FiCopy className="text-sm" />
+              </button>
+
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <AiOutlineFileExcel className="text-sm" />
+              </button>
+
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <VscFileBinary className="text-sm" />
+              </button>
+
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <AiFillFilePdf className="text-sm" />
+              </button>
+
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <MdPrint className="text-sm" />
+              </button>                
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button> 
+              {(isAdmin || isReceptionist) && (          
+                <FormModal table="complainttype" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -110,9 +144,9 @@ const ComplaintType = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    {isAdmin && 
+                    {isAdmin && (
                       <th className="p-4 whitespace-nowrap text-right">Action</th>
-                    }
+                    )}
                   </tr>
             </thead>
             <tbody>
@@ -147,7 +181,7 @@ const ComplaintType = () => {
                   <td className="p-4 break-words">{item.complainttype}</td>
                   <td className="p-4 break-words">{item.description}</td>
                   {isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex justify-end gap-2">
                       <FormModal table="complainttype" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="complainttype" type="update" data={item} onSuccess={handleSuccess} />

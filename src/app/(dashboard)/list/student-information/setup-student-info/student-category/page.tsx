@@ -9,6 +9,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
 
 const StudentCategory = () => {
   const { isAdmin } = useUserRole();
@@ -78,9 +79,17 @@ const StudentCategory = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          { isAdmin && (
-            <FormModal table="studentcategory" type="create" onSuccess={handleSuccess} /> 
-          )}
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button>           
+              { isAdmin && (
+                <FormModal table="studentcategory" type="create" onSuccess={handleSuccess} /> 
+              )}
+            </div>
         </div>
       </div>
 
@@ -116,7 +125,9 @@ const StudentCategory = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    { isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
+                    { isAdmin && (
+                      <th className="p-4 whitespace-nowrap text-right">Action</th> 
+                    )}
                   </tr>
             </thead>
             <tbody>
@@ -154,7 +165,7 @@ const StudentCategory = () => {
                   <td className="p-4 break-words">{item.category}</td>
                   <td className="p-4 break-words">{item.description}</td>
                   { isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex justify-end gap-2">
                       <FormModal table="studentcategory" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studentcategory" type="update" data={item} onSuccess={handleSuccess} />

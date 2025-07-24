@@ -10,14 +10,15 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
-const sortBy = searchParams.get("sortBy") || "createdAt";
-const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
 
   let query: any = {};
+
     if (search) {
-      // Search by name, phone or description (optional, add/remove fields)
       query.$or = [
+        { phonecalllogId: { $regex: search, $options: "i" } },
         { name: { $regex: search, $options: "i" } },
         { phone: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
@@ -43,31 +44,57 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    const requiredFields = ["name", "phone", "date", "description", "nextfollowupdate", "callduration", "note", "calltype"];
+    const { 
+    name,
+    phone,
+    date,
+    description,
+    nextfollowupdate,
+    callduration,
+    note,
+    calltype,
+    } = body;
 
-    for (const field of requiredFields) {
-      if (!body[field] || body[field].toString().trim() === "") {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-      }
+    if (
+      !name || !phone || !date || !description || !nextfollowupdate || !callduration ||
+      !note || !calltype      
+    ) {
+      return NextResponse.json({ error: "All field Required" }, { status: 400 });
     }
 
-    const newPhoneCallLog = await PhoneCallLog.create({
-      name: body.name,
-      phone: body.phone,
-      date: new Date(body.date),
-      description: body.description,
-      nextfollowupdate: new Date(body.nextfollowupdate),
-      callduration: body.callduration,
-      note: body.note,
-      calltype: body.calltype,
+    const exists = await PhoneCallLog.findOne({ 
+    name,
+    phone,
+    date,
+    description,
+    nextfollowupdate,
+    callduration,
+    note,
+    calltype,     });
+    if (exists) {
+      return NextResponse.json({ error: "This Phone Call Log Already Exists" }, { status: 400 });
+    }
+
+    const count = await PhoneCallLog.countDocuments();
+    const nextId = `PCL-${String(count + 1).padStart(4, "0")}`;
+
+    const newPhoneCallLog = new PhoneCallLog({
+      phonecalllogId: nextId,
+      name,
+      phone,
+      date,
+      description,
+      nextfollowupdate,
+      callduration,
+      note,
+      calltype,
     });
 
-    return NextResponse.json(
-      { message: "Phone Call Log created successfully", data: newPhoneCallLog },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newPhoneCallLog.save();
+
+    return NextResponse.json({ message: "Phone Call Log Created", data: newPhoneCallLog }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/phonecalllog error:", error);
-    return NextResponse.json({ error: "Failed to create phone call log" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

@@ -17,10 +17,11 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.session = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.session = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { sessionId: { $regex: search, $options: "i" } },
+        { session: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await Session.countDocuments(query);

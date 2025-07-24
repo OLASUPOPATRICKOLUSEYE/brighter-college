@@ -9,6 +9,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
 
 const StudentHouse = () => {
   const { isAdmin } = useUserRole();
@@ -78,9 +79,17 @@ const StudentHouse = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          { isAdmin && (
-            <FormModal table="studenthouse" type="create" onSuccess={handleSuccess} /> 
-          )}
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button>           
+              { isAdmin && (
+                <FormModal table="studenthouse" type="create" onSuccess={handleSuccess} /> 
+              )}
+            </div>
         </div>
       </div>
 
@@ -90,7 +99,7 @@ const StudentHouse = () => {
             <thead>
                   <tr className="text-left text-gray-500">
                     <th
-                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      className="p-4 whitespace-nowrap cursor-pointer select-none w-1/5"
                       onClick={() => handleSort("studentId")}
                     >
                       Student House ID{" "}
@@ -99,7 +108,7 @@ const StudentHouse = () => {
                       </span>
                     </th>
                     <th
-                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      className="p-4 whitespace-nowrap cursor-pointer select-none w-1/5"
                       onClick={() => handleSort("studenthouse")}
                     >
                       House{" "}
@@ -108,7 +117,7 @@ const StudentHouse = () => {
                       </span>
                     </th>
                     <th
-                      className="p-4 whitespace-nowrap cursor-pointer select-none"
+                      className="p-4 whitespace-nowrap cursor-pointer select-none w-2/5"
                       onClick={() => handleSort("description")}
                     >
                       Description{" "}
@@ -116,7 +125,9 @@ const StudentHouse = () => {
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
                     </th>
-                    { isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
+                    { isAdmin && (
+                      <th className="p-4 whitespace-nowrap text-right w-1/5">Action</th> 
+                    )}
                   </tr>
             </thead>
             <tbody>
@@ -150,11 +161,11 @@ const StudentHouse = () => {
                   key={item._id}
                   className="border-b border-gray-200 hover:bg-slate-100"
                 >
-                  <td className="p-4 break-words">{item.houseId}</td>
-                  <td className="p-4 break-words">{item.studenthouse}</td>
-                  <td className="p-4 break-words">{item.description}</td>
+                  <td className="p-4 break-words w-1/5">{item.houseId}</td>
+                  <td className="p-4 break-words w-1/5">{item.studenthouse}</td>
+                  <td className="p-4 break-words w-2/5">{item.description}</td>
                   { isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4 w-1/5">
                     <div className="flex justify-end gap-2">
                       <FormModal table="studenthouse" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="studenthouse" type="update" data={item} onSuccess={handleSuccess} />

@@ -16,12 +16,15 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.toTitle = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.toTitle = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { postalreceiveId: { $regex: search, $options: "i" } },
+        { referenceNo: { $regex: search, $options: "i" } },
+        { toTitle: { $regex: search, $options: "i" } },
+        { fromTitle: { $regex: search, $options: "i" } },
+      ];
     }
-
+    
     const total = await PostalReceive.countDocuments(query);
     const receives = await PostalReceive.find(query)
     .sort({ [sortBy]: sortOrder })
@@ -35,48 +38,61 @@ export async function GET(req: Request) {
   }
 }
 
+
 export async function POST(req: Request) {
   try {
     await connectDB();
     const body = await req.json();
 
-    const requiredFields = [
-      "fromTitle",
-      "referenceNo",
-      "address",
-      "note",
-      "toTitle",
-      "date",
-      "attachment",
-    ];
+    const { 
+      fromTitle,
+      referenceNo,
+      address,
+      note,
+      toTitle,
+      date,
+      attachment,
+    } = body;
 
-    for (const field of requiredFields) {
-      if (
-        body[field] === undefined ||
-        body[field] === null ||
-        (typeof body[field] === "string" && body[field].trim() === "") ||
-        (Array.isArray(body[field]) && body[field].length === 0)
-      ) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-      }
+    if (
+      !toTitle || !referenceNo || !address || !note || !fromTitle || !date ||
+      !attachment 
+    ) {
+      return NextResponse.json({ error: "All field Required" }, { status: 400 });
     }
 
-    const newReceive = await PostalReceive.create({
-      toTitle: body.toTitle,
-      referenceNo: body.referenceNo,
-      address: body.address,
-      note: body.note,
-      fromTitle: body.fromTitle,
-      date: body.date,
-      attachment: body.attachment,
+    const exists = await PostalReceive.findOne({ 
+      fromTitle,
+      referenceNo,
+      address,
+      note,
+      toTitle,
+      date,
+      attachment,
+    });
+    if (exists) {
+      return NextResponse.json({ error: "This Postal Receive Already Exists" }, { status: 400 });
+    }
+
+    const count = await PostalReceive.countDocuments();
+    const nextId = `POR-${String(count + 1).padStart(4, "0")}`;
+
+    const newPostalReceive = new PostalReceive({
+      postalreceiveId: nextId,
+      fromTitle,
+      referenceNo,
+      address,
+      note,
+      toTitle,
+      date,
+      attachment,
     });
 
-    return NextResponse.json(
-      { message: "Postal Receive Created Successfully", data: newReceive },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newPostalReceive.save();
+
+    return NextResponse.json({ message: "Postal Receive Created", data: newPostalReceive }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/postalreceive error:", error);
-    return NextResponse.json({ error: "Failed to Create Postal Receive" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }

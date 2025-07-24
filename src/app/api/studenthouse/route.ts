@@ -14,8 +14,12 @@ export async function GET(req: Request) {
     const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     const query: any = {};
+
     if (search) {
-      query.studenthouse = { $regex: search, $options: "i" };
+      query.$or = [
+        { houseId: { $regex: search, $options: "i" } },
+        { studenthouse: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await StudentHouse.countDocuments(query);

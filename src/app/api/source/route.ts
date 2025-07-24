@@ -16,10 +16,11 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.source = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.source = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { sourceId: { $regex: search, $options: "i" } },
+        { source: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await Source.countDocuments(query);

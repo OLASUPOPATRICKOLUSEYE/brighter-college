@@ -4,12 +4,14 @@ export interface IFeesPayable extends Document {
   feeName: string;
   monthly: boolean;
   feesId: string;
+  description?: string;
 }
 
 const FeesPayableSchema = new Schema<IFeesPayable>(
   {
     feeName: { type: String, required: true, minlength: 3 },
     monthly: { type: Boolean, required: true },
+    description: { type: String },
     feesId: { type: String, required: true, unique: true },
   },
   { timestamps: true }

@@ -32,27 +32,32 @@ export default function FeesPayableForm({
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(feesPayableSchema),
-    defaultValues: {},
+    defaultValues: {
+      feeName: "",
+      monthly: false,
+      description: "",
+    },
   });
 
   useEffect(() => {
     if (type === "update" && data) {
-      Object.keys(data).forEach((key) => {
-        if (key in data) {
-          setValue(key as keyof FormData, data[key]);
-        }
-      });
+      setValue("feeName", data.feeName || "");
+      setValue("monthly", data.monthly || false);
+      setValue("description", data.description || "");
     }
   }, [type, data, setValue]);
 
   const onSubmit = async (formData: FormData) => {
     setLoading(true);
-    const toastId = toast.loading(type === "create" ? "Fees Payable Submitting..." : "Fees Payable Updating...");
-
+    const toastId = toast.loading(
+      type === "create" ? "Submitting Fee..." : "Updating Fee..."
+    );
 
     try {
       const res = await fetch(
-        type === "create" ? "/api/feespayable" : `/api/feespayable/${data?._id}`,
+        type === "create"
+          ? "/api/feespayable"
+          : `/api/feespayable/${data?._id}`,
         {
           method: type === "create" ? "POST" : "PUT",
           headers: { "Content-Type": "application/json" },
@@ -61,13 +66,12 @@ export default function FeesPayableForm({
       );
 
       const result = await res.json();
-
       if (!res.ok) throw new Error(result.error || "Something Went Wrong");
 
       toast.success(
         type === "create"
-          ? "Fees Payable Submitted Successfully!"
-          : "Fees Payable Updated Successfully!",
+          ? "Fee Submitted Successfully!"
+          : "Fee Updated Successfully!",
         { id: toastId }
       );
 
@@ -75,22 +79,25 @@ export default function FeesPayableForm({
       onSuccess?.();
       router.refresh();
     } catch (err: any) {
-      toast.error(err.message || "Submission Failed!", { id: toastId });
+      toast.error(err.message || "Failed To Submit", { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col text-black space-y-4 text-sm">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col text-black space-y-4 text-sm"
+    >
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Fees Payable" : "Update Fees Payable"}
+        {type === "create" ? "Create Fee Payable" : "Update Fee Payable"}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5 pt-4">
+      <div className="grid grid-cols-1 gap-5 pt-4">
         <InputField
-          label="Fee Name *"
-          name="feeName"
+          label="Fees Name *"
+          name="feeName" 
           register={register}
           error={errors.feeName}
         />
@@ -107,7 +114,23 @@ export default function FeesPayableForm({
           </label>
         </div>
         {errors.monthly && (
-          <span className="text-xs text-red-400">{errors.monthly.message}</span>
+          <span className="text-xs text-red-400">
+            {errors.monthly.message}
+          </span>
+        )}
+      </div>
+      {/* Description */}
+      <div className="flex flex-col">
+        <label className="text-[16px] font-medium mb-1">Description *</label>
+        <textarea
+          rows={3}
+          className="p-2 border rounded-md text-sm"
+          {...register("description")}
+        ></textarea>
+        {errors.description && (
+          <span className="text-xs text-red-400">
+            {errors.description.message}
+          </span>
         )}
       </div>
 

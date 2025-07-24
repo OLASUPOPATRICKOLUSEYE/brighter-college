@@ -16,10 +16,11 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.complainttype = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.complainttype = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { complainttypeId: { $regex: search, $options: "i" } },
+        { complainttype: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await ComplaintType.countDocuments(query);

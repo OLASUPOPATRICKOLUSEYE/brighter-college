@@ -9,9 +9,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import Image from "next/image";
 
 const PhoneCallLogPage = () => {
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isReceptionist } = useUserRole();
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [phonecalllogs, setPhoneCallLogs] = useState<any[]>([]);
@@ -68,7 +69,7 @@ const PhoneCallLogPage = () => {
     }
   };
 
-  const colCount = isAdmin ? 9 : 8;
+  const colCount = isAdmin ? 10 : 9;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -78,7 +79,17 @@ const PhoneCallLogPage = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="phonecalllog" type="create" onSuccess={handleSuccess} />
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button> 
+              {(isAdmin || isReceptionist) && (
+                <FormModal table="phonecalllog" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -87,6 +98,15 @@ const PhoneCallLogPage = () => {
           <table className="min-w-[700px] w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("phonecalllogId")}
+                >
+                  Phone Call Log ID{" "}
+                  <span className={sortBy === "phonecalllogId" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>                
                 <th
                   className="p-4 whitespace-nowrap cursor-pointer select-none"
                   onClick={() => handleSort("name")}
@@ -159,7 +179,9 @@ const PhoneCallLogPage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                {isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
+                {isAdmin && ( 
+                  <th className="p-4 whitespace-nowrap text-right">Action</th> 
+                )}
               </tr>
             </thead>
 
@@ -190,6 +212,7 @@ const PhoneCallLogPage = () => {
             {!loading && !error &&
               phonecalllogs.map((item) => (
               <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                <td className="p-4 break-words">{item.phonecalllogId}</td>
                 <td className="p-4 break-words">{item.name}</td>
                 <td className="p-4 break-words">{item.phone}</td>
                 <td className="p-4 break-words">{new Date(item.date).toLocaleDateString()}</td>

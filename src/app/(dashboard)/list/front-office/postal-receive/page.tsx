@@ -12,7 +12,7 @@ import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
 
 const PostalReceivePage = () => {
-  const { isAdmin } = useUserRole(); 
+  const { isAdmin, isReceptionist } = useUserRole(); 
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [postalReceives, setPostalReceives] = useState<any[]>([]);
@@ -69,7 +69,7 @@ const PostalReceivePage = () => {
     }
   };
 
-  const colCount = isAdmin ? 8 : 7;
+  const colCount = isAdmin ? 9 : 8;
 
   return (
     <div className="bg-white rounded-md flex-1">
@@ -79,7 +79,17 @@ const PostalReceivePage = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <FormModal table="postalreceive" type="create" onSuccess={handleSuccess} />
+            <div className="flex items-center gap-4 self-center">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button> 
+              {(isAdmin || isReceptionist) && (
+                <FormModal table="postalreceive" type="create" onSuccess={handleSuccess} />
+              )}
+            </div>
         </div>
       </div>
 
@@ -88,6 +98,15 @@ const PostalReceivePage = () => {
           <table className="w-full border-collapse mt-4 text-sm">
             <thead>
               <tr className="text-left text-gray-500">
+                <th
+                  className="p-4 whitespace-nowrap cursor-pointer select-none"
+                  onClick={() => handleSort("postalreceiveId")}
+                >
+                  Postal Receive ID{" "}
+                  <span className={sortBy === "postalreceiveId" ? "text-black" : "text-gray-300"}>
+                    {sortOrder === "asc" ? "↑" : "↓"}
+                  </span>
+                </th>
                 <th
                   className="p-4 whitespace-nowrap cursor-pointer select-none"
                   onClick={() => handleSort("fromTitle")}
@@ -151,7 +170,9 @@ const PostalReceivePage = () => {
                     {sortOrder === "asc" ? "↑" : "↓"}
                   </span>
                 </th>
-                {isAdmin && <th className="p-4 whitespace-nowrap text-right">Action</th> }
+                {isAdmin && ( 
+                  <th className="p-4 whitespace-nowrap text-right">Action</th> 
+                )}
               </tr>
             </thead>
             <tbody>
@@ -182,6 +203,7 @@ const PostalReceivePage = () => {
             {!loading && !error &&
               postalReceives.map((item) => (
                 <tr key={item._id} className="border-b border-gray-200 text-sm hover:bg-slate-100">
+                  <td className="p-4 break-words">{item.postalreceiveId}</td>
                   <td className="p-4 break-words">{item.fromTitle}</td>
                   <td className="p-4 break-words">{item.referenceNo}</td>
                   <td className="p-4 break-words">{item.address}</td>
@@ -207,7 +229,7 @@ const PostalReceivePage = () => {
                     )}
                   </td>
                   {isAdmin && (
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                     <div className="flex gap-2 justify-end">
                       <FormModal table="postalreceive" type="view" data={item} onSuccess={handleSuccess} />
                       <FormModal table="postalreceive" type="update" data={item} onSuccess={handleSuccess} />

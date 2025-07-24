@@ -16,10 +16,12 @@ export async function GET(req: Request) {
 
     let query: any = {};
 
-    if (startsWith) {
-      query.complaintType = { $regex: `^${startsWith}`, $options: "i" };
-    } else if (search) {
-      query.complaintType = { $regex: search, $options: "i" };
+    if (search) {
+      query.$or = [
+        { complaintId: { $regex: search, $options: "i" } },
+        { complaintType: { $regex: search, $options: "i" } },
+        { complaintBy: { $regex: search, $options: "i" } },
+      ];
     }
 
     const total = await Complaint.countDocuments(query);
@@ -40,49 +42,64 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    const requiredFields = [
-      "complaintType",
-      "source",
-      "complainBy",
-      "phone",
-      "date",
-      "description",
-      "actionTaken",
-      "assignedStaff",
-      "note",
-      "attachment",
-    ];
+    const { 
+      complaintType,
+      source,
+      complainBy,
+      phone,
+      date,
+      description,
+      actionTaken,
+      assignedStaff,
+      note,
+      attachment,
+    } = body;
 
-    for (const field of requiredFields) {
-      if (
-        body[field] === undefined ||
-        body[field] === null ||
-        (typeof body[field] === "string" && body[field].trim() === "") ||
-        (Array.isArray(body[field]) && body[field].length === 0)
-      ) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-      }
+    if (
+      !complaintType || !source || !complainBy || !phone || !date || !description ||
+      !actionTaken || !assignedStaff || !note || !attachment
+    ) {
+      return NextResponse.json({ error: "All field Required" }, { status: 400 });
     }
 
-    const newComplaint = await Complaint.create({
-      complaintType: body.complaintType,
-      source: body.source,
-      complainBy: body.complainBy,
-      phone: body.phone,
-      date: body.date,
-      description: body.description,
-      actionTaken: body.actionTaken,
-      assignedStaff: body.assignedStaff,
-      note: body.note,
-      attachment: body.attachment,
+    const exists = await Complaint.findOne({ 
+      complaintType,
+      source,
+      complainBy,
+      phone,
+      date,
+      description,
+      actionTaken,
+      assignedStaff,
+      note,
+      attachment,
+    });
+    if (exists) {
+      return NextResponse.json({ error: "This Complaint Already Exists" }, { status: 400 });
+    }
+
+    const count = await Complaint.countDocuments();
+    const nextId = `COM-${String(count + 1).padStart(4, "0")}`;
+
+    const newComplaint = new Complaint({
+      complaintId: nextId,
+      complaintType,
+      source,
+      complainBy,
+      phone,
+      date,
+      description,
+      actionTaken,
+      assignedStaff,
+      note,
+      attachment,
     });
 
-    return NextResponse.json(
-      { message: "Complaint Created Successfully", data: newComplaint },
-      { status: 201 }
-    );
-  } catch (error) {
+    await newComplaint.save();
+
+    return NextResponse.json({ message: "Complaint Created", data: newComplaint }, { status: 201 });
+  } catch (error: any) {
     console.error("POST /api/complaint error:", error);
-    return NextResponse.json({ error: "Failed to Create Complaint" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed To Create" }, { status: 500 });
   }
 }
