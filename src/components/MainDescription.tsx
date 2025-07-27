@@ -52,7 +52,7 @@ const MainDescription = () => {
         {/* Text */}
         <div className="flex-1 text-center lg:text-left">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7a1f1f] mb-6">
-            Brighter College Residential School
+            Pascal College Residential School
           </h2>
           <p className="text-gray-600 text-sm sm:text-base leading-relaxed text-justify">
             Tmply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard
