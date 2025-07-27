@@ -8,6 +8,7 @@ import {
   FaInstagram,
   FaLinkedinIn,
   FaGithub,
+  FaWhatsapp,
 } from "react-icons/fa";
 
 const MainFooter = () => {
@@ -29,7 +30,7 @@ const MainFooter = () => {
         <div className="grid md:grid-cols-2 gap-8 border-b pb-8">
           <div className="flex flex-col md:flex-row items-center md:items-center gap-4">
             <Image src="/images.png" alt="School Logo" width={90} height={90} />
-            <h2 className="text-2xl font-bold text-[#7a1f1f]">Brighter College</h2>
+            <h2 className="text-2xl font-bold text-[#7a1f1f]">Pascal College</h2>
           </div>
 
           <div>
@@ -119,10 +120,11 @@ const MainFooter = () => {
 
         <div className="flex flex-col md:flex-row justify-between bg-pascalRed rounded-md items-center border-t px-5 py-5 text-sm text-white">
           <span className="mb-4 md:mb-0 text-center">
-            © {new Date().getFullYear()} <a href="#" className="font-semibold hover:underline">Brighter College™</a>. All Rights Reserved.
+            © {new Date().getFullYear()} <a href="#" className="font-semibold hover:underline">Pascal College™</a>. All Rights Reserved.
           </span>
           <div className="flex space-x-4">
             <a href="#" className="p-2 bg-white rounded-full text-gray-700 hover:bg-pascalBlue hover:text-white transition"><FaFacebookF className="text-lg" /></a>
+            <a href="#" className="p-2 bg-white rounded-full text-gray-700 hover:bg-pascalBlue hover:text-white transition"><FaWhatsapp className="text-lg" /></a>
             <a href="#" className="p-2 bg-white rounded-full text-gray-700 hover:bg-pascalBlue hover:text-white transition"><FaTwitter className="text-lg" /></a>
             <a href="#" className="p-2 bg-white rounded-full text-gray-700 hover:bg-pascalBlue hover:text-white transition"><FaInstagram className="text-lg" /></a>
             <a href="#" className="p-2 bg-white rounded-full text-gray-700 hover:bg-pascalBlue hover:text-white transition"><FaLinkedinIn className="text-lg" /></a>

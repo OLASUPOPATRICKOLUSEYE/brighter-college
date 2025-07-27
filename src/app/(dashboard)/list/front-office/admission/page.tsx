@@ -14,6 +14,7 @@ import { FiCopy } from "react-icons/fi";
 import { VscFileBinary } from "react-icons/vsc";
 import { AiFillFilePdf, AiOutlineFileExcel } from "react-icons/ai";
 import { MdPrint } from "react-icons/md";
+import IconButton from "@/components/TableActionButton";
 
 
 
@@ -84,32 +85,14 @@ const AdmissionEnquiry = () => {
         <h1 className="text-lg font-semibold">All Admission Enquiries</h1>
         <div className="flex flex-col sm:flex-row gap-4 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-          <div className="flex items-center gap-4 self-center flex flex-wrap justify-center">
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <FiCopy className="text-sm" />
-              </button>
-
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <AiOutlineFileExcel className="text-sm" />
-              </button>
-
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <VscFileBinary className="text-sm" />
-              </button>
-
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <AiFillFilePdf className="text-sm" />
-              </button>
-
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <MdPrint className="text-sm" />
-              </button>                      
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <Image src="/filter.png" alt="" width={14} height={14} />
-              </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <Image src="/sort.png" alt="" width={14} height={14} />
-              </button>          
+            <div className="flex items-center gap-4 self-center flex flex-wrap justify-center">
+              <IconButton icon={<FiCopy className="text-sm" />} title="Copy" />
+              <IconButton icon={<AiOutlineFileExcel className="text-sm" />} title="Export to Excel" />
+              <IconButton icon={<VscFileBinary className="text-sm" />} title="Export as CSV" />
+              <IconButton icon={<AiFillFilePdf className="text-sm" />} title="Export as PDF" />
+              <IconButton icon={<MdPrint className="text-sm" />} title="Print" />
+              <IconButton imgSrc="/filter.png" alt="Filter" title="Filter" />
+              <IconButton imgSrc="/sort.png" alt="Sort" title="Sort" />        
               <FormModal table="admissionenquiry" type="create" onSuccess={handleSuccess} />
           </div>
         </div>

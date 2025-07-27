@@ -10,6 +10,11 @@ import Image from "next/image";
 import TableNotFound from "@/components/TableNotFound";
 import TableLoading from "@/components/TableLoading";
 import { useUserRole } from "@/lib/hooks/useUserRole";
+import IconButton from "@/components/TableActionButton";
+import { MdPrint } from "react-icons/md";
+import { AiFillFilePdf, AiOutlineFileExcel } from "react-icons/ai";
+import { VscFileBinary } from "react-icons/vsc";
+import { FiCopy } from "react-icons/fi";
 
 const ComplaintPage = () => {
   const { isAdmin, isReceptionist } = useUserRole();
@@ -78,13 +83,14 @@ const ComplaintPage = () => {
 
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <TableSearch value={searchTerm} onChange={setSearchTerm} />
-            <div className="flex items-center gap-4 self-center">
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <Image src="/filter.png" alt="" width={14} height={14} />
-              </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <Image src="/sort.png" alt="" width={14} height={14} />
-              </button>           
+            <div className="flex items-center gap-4 self-center flex flex-wrap justify-center">
+              <IconButton icon={<FiCopy className="text-sm" />} title="Copy" />
+              <IconButton icon={<AiOutlineFileExcel className="text-sm" />} title="Export to Excel" />
+              <IconButton icon={<VscFileBinary className="text-sm" />} title="Export as CSV" />
+              <IconButton icon={<AiFillFilePdf className="text-sm" />} title="Export as PDF" />
+              <IconButton icon={<MdPrint className="text-sm" />} title="Print" />
+              <IconButton imgSrc="/filter.png" alt="Filter" title="Filter" />
+              <IconButton imgSrc="/sort.png" alt="Sort" title="Sort" />          
               {(isAdmin || isReceptionist) && (
                 <FormModal table="complaint" type="create" onSuccess={handleSuccess} />
               )}

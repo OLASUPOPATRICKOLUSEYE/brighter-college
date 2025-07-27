@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
     const uploadResponse = await cloudinary.uploader.upload(file, {
-      folder: "complaints",
+      folder: "brighter-college",
     });
 
     return NextResponse.json({ url: uploadResponse.secure_url }, { status: 200 });

@@ -1,15 +1,5 @@
 export const ITEM_PER_PAGE = 10;
 
-export const role = {
-  ADMIN: "admin",
-  TEACHER: "teacher",
-  ACCOUNTANT: "accountant",
-  RECEPTIONIST: "receptionist",
-  LIBRARIAN: "librarian",
-  PARENT: "parent",
-  STUDENT: "student",
-};
-
 type RouteAccessMap = {
   [key: string]: string[];
 };

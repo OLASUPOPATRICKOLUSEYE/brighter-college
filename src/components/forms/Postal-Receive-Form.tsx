@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/lib/utils";
 import InputField from "@/components/InputField";
 import { postalReceiveSchema } from "@/lib/validation/validationSchemas";
 import { z } from "zod";

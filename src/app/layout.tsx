@@ -7,7 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Brighter College Management System",
+  title: "Pascal College Management System",
   description: "Designed and Developed By: ZachPascal Global Tech",
 };
 
@@ -20,7 +20,6 @@ export default function RootLayout({
   <ClerkProvider>
     <html lang="en">
     <body className={inter.className}>
-    {/* <MainHeader /> */}
         {children}
          <Toaster
           position="bottom-right"
@@ -39,7 +38,6 @@ export default function RootLayout({
             },
           }}
         />
-      {/* <MainFooter /> */}
       </body>
     </html>
   </ClerkProvider>

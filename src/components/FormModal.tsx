@@ -5,6 +5,7 @@ import { FiPlus, FiEdit2, FiTrash2, FiX, FiEye } from "react-icons/fi";
 import toast from "react-hot-toast";
 import FormLoader from "./FormLoader";
 import Image from "next/image";
+// import StudentAdmissionForm from "./forms/Student-Admission-Form";
 
 
 // FOR FRONT OFFICE
@@ -32,6 +33,8 @@ const TransportPickupForm = dynamic(() => import("./forms/Transport-PickUp-Form"
 const FeesPayableForm = dynamic(() => import("./forms/Fees-Payable-Form"), { loading: FormLoader });
 const RoomForm = dynamic(() => import("./forms/Room-Form"), { loading: FormLoader });
 const HostelForm = dynamic(() => import("./forms/Hostel-Form"), { loading: FormLoader });
+const StudentAdmissionForm = dynamic(() => import("./forms/Student-Admission-Form"), { loading: FormLoader });
+
 
 // FOR USER PANEL
 const UserGeneralComplaintForm = dynamic(() => import("./forms/User-General-Complaint-Form"), { loading: FormLoader });
@@ -65,6 +68,7 @@ const forms: {
   feespayable: ({ type, data, onClose, onSuccess }) => ( <FeesPayableForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
   room: ({ type, data, onClose, onSuccess }) => ( <RoomForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
   hostel: ({ type, data, onClose, onSuccess }) => ( <HostelForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
+  studentadmission: ({ type, data, onClose, onSuccess }) => ( <StudentAdmissionForm type={type} data={data} onClose={onClose} onSuccess={onSuccess} /> ),
 
 
 // FOR USER PANEL
@@ -93,13 +97,13 @@ const forms: {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.entries(data).map(([key, value]) => (
-          <div key={key} className="p-4 rounded border border-gray-200 bg-white shadow-sm">
-            <span className="block font-semibold capitalize text-pascalRed mb-1">
+          <div key={key} className="flex gap-2 p-4 rounded border border-gray-100 shadow-lg">
+            <span className="block font-semibold break-words text-[12px] uppercase text-pascalRed mb-1">
               {key}:
             </span>
-            <span className="text-pascalBlue break-words">
+            <span className="text-pascalBlue break-words text-[12px]">
               {typeof value === "string" || typeof value === "number"
                 ? value
                 : JSON.stringify(value)}
@@ -138,6 +142,7 @@ interface FormModalProps {
   | "feespayable"
   | "room"
   | "hostel"
+  | "studentadmission"
   type: 
       "create" 
     | "update" 
@@ -190,7 +195,8 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
     if (type === "view") {
       return (
         <div className="p-4">
-          <h2 className="text-lg font-bold mb-4 capitalize ">View {table} Details</h2>
+          <h2 className="text-xl font-bold">View {table} Details</h2>
+          <hr className="w-full my-4" />
           <ViewModalContent data={data} />
         </div>
       );
@@ -250,7 +256,7 @@ const FormModal = ({ table, type, data, id, onSuccess }: FormModalProps) => {
             <Form />
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className="absolute top-0 right-0 text-gray-400 hover:text-white hover:bg-pascalBlue hover:text-white bg-pascalRed p-4 rounded-tr-md"
               title="Close"
             >
               <FiX size={18} />

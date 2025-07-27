@@ -12,7 +12,7 @@ const AboutUsDes = () => {
             Who We Are
           </h2>
           <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-6 text-justify">
-            Brighter College Residential School is a beacon of academic excellence and character development. 
+            Pascal College Residential School is a beacon of academic excellence and character development. 
             Our mission is to nurture inquisitive minds and foster a sense of integrity, responsibility, and confidence in our students.
           </p>
 

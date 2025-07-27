@@ -17,7 +17,7 @@ const contactDetails = [
     title: "Call Us",
     content: (
       <>
-        <div>Email: brightercollege@gmail.com</div>
+        <div>Email: pascalcollege@gmail.com</div>
         <div>Mobile: +91 -89562423934</div>
       </>
     ),

@@ -167,20 +167,6 @@ export const hostelSchema = z.object({
   description: z.string().min(2, "Description must be at least 2 characters"),
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // USER PANEL
 export const userGeneralComplaintSchema = z.object({
   name: z.string().min(5, "Name must be at least 5 characters"),
@@ -188,4 +174,104 @@ export const userGeneralComplaintSchema = z.object({
   subject: z.string().min(5, "Subject must be at least 5 characters"),
   description: z.string().min(5, "Description must be at least 5 characters"),
   date: z.union([z.string(), z.date()]).transform(val => new Date(val)),
+});
+
+export const studentAdmissionSchema = z.object({
+  // Student Details
+  studentName: z.string(),
+  gender: z.string(),
+  dateofBirth: z.union([z.string(), z.date()]),
+  category: z.string(),
+  religion: z.string(),
+  session: z.string(),
+  className: z.string(),
+  caste: z.string(),
+  phoneNumber: z.string(),
+  email: z.string(),
+  admissionDate: z.union([z.string(), z.date()]),
+  studentAttachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  bloodGroup: z.string(),
+  genotype: z.string(),
+  studenthouse: z.string(),
+  height: z.string(),
+  weight: z.string(),
+  measurementDate: z.union([z.string(), z.date()]),
+  medicalHistory: z.string(),
+  address: z.string(),
+
+  // Sibling
+  siblingClass: z.string().optional(),
+  siblingSession: z.string().optional(),
+  siblingName: z.string().optional(),
+
+  // Transport Details
+  routeName: z.string().optional(),
+  pickuppoint: z.string().optional(),
+  feesMonth: z.string().optional(),
+
+  // Hostel Details
+  hostelName: z.string().optional(),
+  roomName: z.string().optional(),
+
+  // Fees Details
+  feeDetails: z.string(),
+
+  // Fees Discount Details
+  feeDiscountDetail: z.string().optional(),
+
+  // Parent/Guardian Details
+  fatherName: z.string(),
+  fatherPhone: z.string(),
+  fatherOccupation: z.string(),
+  fatherAttachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  motherName: z.string(),
+  motherPhone: z.string(),
+  motherOccupation: z.string(),
+  motherAttachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  guardianIs: z.string(),
+  guardianName: z.string(),
+  guardianRelation: z.string(),
+  guardianEmail: z.string(),
+  guardianPhone: z.string(),
+  guardianOccupation: z.string(),
+  guardianAddress: z.string(),
+  guardianAttachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  // Address Checks
+  guardianSameAsCurrent: z.boolean().optional(),
+  permanentSameAsCurrent: z.boolean().optional(),
+  permanentAddress: z.string().optional(),
+
+  // Miscellaneous Details
+  accountNumber: z.string(),
+  bankName: z.string(),
+  sortCode: z.string(),
+  nin: z.string(),
+  previousSchoolDetails: z.string(),
+  note: z.string(),
+
+  // Other Documents
+  title1: z.string(),
+  title1Attachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  title2: z.string(),
+  title2Attachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  title3: z.string(),
+  title3Attachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
+  title4: z.string(),
+  title4Attachment: z
+    .array(z.union([z.string(), z.instanceof(File)]))
+    .optional(),
 });

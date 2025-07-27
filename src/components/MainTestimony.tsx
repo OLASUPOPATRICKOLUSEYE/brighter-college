@@ -8,7 +8,7 @@ const testimonies = [
     name: "OLASUPO, Patrick O",
     position: "CEO, PascalTech",
     image: "/staff1.jpg",
-    testimony: "This school transformed my child’s life. The teachers are truly passionate!",
+    testimony: "This school transformed my childs life. The teachers are truly passionate!",
   },
   {
     id: 2,

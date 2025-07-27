@@ -105,7 +105,7 @@ const MainHeader = () => {
                 href="mailto:brightercollege@gmail.com"
                 className="hover:underline text-sm sm:text-base"
               >
-                brightercollege@gmail.com
+                pascalcollege@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-3 text-sm sm:text-base">
@@ -135,7 +135,7 @@ const MainHeader = () => {
                 priority
               />
               <h1 className="text-xl sm:text-2xl font-bold text-[#7a1f1f] tracking-wide">
-                Brighter College
+                Pascal College
               </h1>
             </div>
             <div className="hidden md:flex items-center space-x-6">

@@ -57,7 +57,7 @@ const MainAbout = () => {
         <div className="w-full lg:w-1/2">
           <div className="mb-6">
             <h3 className="text-2xl sm:text-3xl font-bold text-[#7a1f1f] mb-3">
-              WELCOME TO Brighter College
+              WELCOME TO Pascal College
             </h3>
             <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

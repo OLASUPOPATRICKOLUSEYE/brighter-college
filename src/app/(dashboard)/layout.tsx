@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { IoClose } from "react-icons/io5";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   
@@ -30,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="hidden lg:block z-20 w-[16%] p-4 flex-col bg-white border-r overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-white">
         <Link href="/" className="flex items-center justify-center lg:justify-start gap-2 mb-4">
           <Image src="/images.png" alt="logo" width={50} height={50} />
-          <span className="hidden lg:block font-bold text-gray-800">Brighter College</span>
+          <span className="hidden lg:block font-bold text-gray-800">Pascal College</span>
         </Link>
         <hr className="w-full mb-2 border-gray-300" />
         <Menu />
@@ -46,7 +47,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex justify-between items-center mb-4">
               <Image src="/images.png" alt="logo" width={50} height={50} />
               <span className=" lg:block font-bold text-gray-800 pr-3">Brighter College</span>
-              <button onClick={() => setIsSidebarOpen(false)} className="text-xl font-bold">×</button>
+              <button onClick={() => setIsSidebarOpen(false)} className="text-xl font-bold"><IoClose /></button>
             </div>
             <hr className="mb-2 border-gray-300" />
             <Menu />

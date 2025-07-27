@@ -4,9 +4,9 @@ import * as Clerk from "@clerk/elements/common";
 import * as SignIn from "@clerk/elements/sign-in";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -64,7 +64,7 @@ const LoginModal = ({ onClose }: LoginModalProps) => {
         <SignIn.Root>
           <SignIn.Step name="start" className="flex flex-col gap-6">
             <div className="flex flex-col items-center justify-center text-center space-y-2">
-              <Image src="/logo.png" alt="logo" width={80} height={80} />
+              <Image src="/images.png" alt="logo" width={80} height={80} />
               <h1 className="text-2xl font-bold text-pascalBlue">Welcome, Login</h1>
               <hr className="w-full my-4 bg-pascalRed h-[3px] rounded" />
             </div>
@@ -98,7 +98,7 @@ const LoginModal = ({ onClose }: LoginModalProps) => {
                   className="absolute inset-y-0 right-3 flex items-center text-sm text-pascalRed hover:text-pascalBlue"
                   aria-label="Toggle password visibility"
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
               <Clerk.FieldError className="text-xs text-red-400" />
